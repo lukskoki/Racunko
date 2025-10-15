@@ -24,7 +24,12 @@ Kratko opisati cilj Vašeg projekta. Vaša motivacija?  (Napomena: odgovor nije 
 #Instalcija
 # Članovi tima 
 > Popis članova tima/linkovi/ glavni doprinos
->
+>Luka Kovačević
+> Luka Uršić
+> Luka Majcen
+> Filip Šturlić
+> Ante Galić
+> Timon Menalo
 
 # Kontribucije
 >Pravila ovise o organizaciji tima i su često izdvojena u CONTRIBUTING.md
