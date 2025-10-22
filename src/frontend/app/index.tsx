@@ -1,8 +1,9 @@
 import { Pressable, Text, View} from "react-native";
-import styles from "@/app/styles/styles";
+import styles from "@/app/styles/landingPage";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Image} from "expo-image";
 import {router} from "expo-router";
+import {images} from "@/app/assets";
 
 
 
@@ -16,7 +17,7 @@ export default function Index() {
           </View>
 
           <View style={styles.landingPageImgBox}>
-                <Image source={"@/pictures/img.png"}/>
+                <Image source={images.racunko}/>
           </View>
 
           <View style={styles.textBox}>
