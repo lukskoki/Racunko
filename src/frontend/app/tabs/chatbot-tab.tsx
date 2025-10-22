@@ -1,12 +1,12 @@
 import {StyleSheet, Text, View} from 'react-native'
 import React from 'react'
 
-const Grupa = () => {
+const ChatbotTab = () => {
     return (
         <View>
-            <Text>Grupa</Text>
+            <Text>Chatbot</Text>
         </View>
     )
 }
-export default Grupa
+export default ChatbotTab
 const styles = StyleSheet.create({})
