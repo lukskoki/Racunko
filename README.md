@@ -1,4 +1,4 @@
-# Programsko inženjerstvo
+# Računko
 
 > Ime projekta u naslovu ima cilj opisati namjenu projekta te pomoći u podizanju početnog interesa za projekt prezentirajući osnovnu svrhu projekta.
 > Isključivo ovisi o Vama!
@@ -8,12 +8,9 @@
 > Zašto ovaj dokument? Samo manji dio timova je do sada propoznao potrebu (a i meni je lakše pratiti Vaš rad).  
 
 # Opis projekta
-Ovaj projekt je reultat timskog rada u sklopu projeknog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu. 
-
-Kratko opisati cilj Vašeg projekta. Vaša motivacija?  (Napomena: odgovor nije »Zato što je to bio zadatak i nismo imali ideje za drugo.«). Koji problem rješavate?
-> Obzirom da je ovo zadani projekt navedite i što želite/jeste novo  naučili.
-
-> Dobro izrađen opis omogućuje vam da pokažete svoj rad drugim programerima, kao i potencijalnim poslodavcima. Ne samo da prvi dojam na stranici opisa često razlikuje dobar projekt od lošeg projekta već i predstavlja dobru praksu koju morate savladati.
+Ovaj projekt je rezultat timskog rada u sklopu projeknog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu. 
+Cilj ovog projekta je razviti mobilnu aplikaciju preko koje korisnici i obitelji kao grupe mogu pratiti svoje individualne ili zajedničke troškove tako što slikaju račune te dobiti analitički uvid u njih pomoču AI analize i predikcije prošlih i budućih troškova.
+Ovim projektom želimo pomoći ljudima da se lakše snalaze u vlastitim financijama i da pametnije planiraju troškove.
 
 # Funkcijski zahtjevi
 > Navedite ključne zahtjeve Vašeg projekta.
