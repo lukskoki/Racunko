@@ -1,20 +1,54 @@
 # Računko
 
-> Ime projekta u naslovu ima cilj opisati namjenu projekta te pomoći u podizanju početnog interesa za projekt prezentirajući osnovnu svrhu projekta.
-> Isključivo ovisi o Vama!
-> 
-> Naravno, nijedan predložak nije idealan za sve projekte jer su potrebe i ciljevi različiti. Ne bojte se naglasiti Vaš cilj u ovoj početnoj stranici projekta, podržat ćemo ga bez obzira usredotočili se Vi više na tenologiju ili marketing.
-> 
-> Zašto ovaj dokument? Samo manji dio timova je do sada propoznao potrebu (a i meni je lakše pratiti Vaš rad).  
-
 # Opis projekta
-Ovaj projekt je rezultat timskog rada u sklopu projeknog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu. 
-Cilj ovog projekta je razviti mobilnu aplikaciju preko koje korisnici i obitelji kao grupe mogu pratiti svoje individualne ili zajedničke troškove tako što slikaju račune te dobiti analitički uvid u njih pomoču AI analize i predikcije prošlih i budućih troškova.
+Ovaj projekt je rezultat timskog rada u sklopu projeknog zadatka kolegija [Programsko inženjerstvo](https://www.fer.unizg.hr/predmet/proinz) na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu. \
+Cilj ovog projekta je razviti mobilnu aplikaciju preko koje korisnici i obitelji kao grupe mogu pratiti svoje individualne ili zajedničke troškove tako što slikaju račune te dobiti analitički uvid u njih pomoču AI analize i predikcije prošlih i budućih troškova. \
 Ovim projektom želimo pomoći ljudima da se lakše snalaze u vlastitim financijama i da pametnije planiraju troškove.
 
 # Funkcijski zahtjevi
-> Navedite ključne zahtjeve Vašeg projekta.
 
+> **Visoki prioritet:**
+
+F-1 Registracija korisnika: Sustav mora omogućiti registraciju glavnog korisnika putem e-mail adrese ili vanjskih servisa (OAuth 2.0).\
+F-2 Prijava u sustav: Korisnici se moraju moći prijaviti putem e-mail adrese ili vanjskih servisa.\
+F-3 Postavljanje mjesečnog budžeta: Glavni korisnik mora moći definirati ukupni mjesečni budžet.\
+F-4 Upravljanje kategorijama troškova: Glavni korisnik mora moći pregledavati, dodavati, uređivati i brisati kategorije troškova.\
+F-5 Skeniranje računa: Korisnici moraju moći slikati ili učitati račun radi automatskog prepoznavanja podataka.\
+F-6 Automatska kategorizacija troškova: Sustav mora koristiti AI model za razvrstavanje proizvoda po kategorijama troškova.\
+F-7 Evidencija troškova: Sustav mora omogućiti pregled i uređivanje svih unesenih troškova.\
+F-10 Upravljanje sporednim korisnicima: Glavni korisnik mora moći dodati, urediti i izbrisati sporedne korisnike te im dodijeliti razine pristupa.\
+F-14 Administracija korisnika: Administrator mora imati mogućnost pregleda, uređivanja i brisanja svih korisničkih računa.
+
+> **Srednji prioritet:**
+
+F-8 Usporedba potrošnje po mjesecima: Sustav mora omogućiti usporedbu troškova između različitih mjeseci.\
+F-9 Dodavanje fiksnih troškova: Glavni korisnik može definirati fiksne troškove (npr. najam, kredit) koji se automatski dodaju svaki mjesec.\
+F-11 Evidencija zajedničkih troškova: Sustav mora omogućiti prikaz zajedničke potrošnje glavnog i sporednih korisnika.\
+F-12 ChatBot savjetnik: Sustav mora imati integriranog chatBota koji daje financijske savjete temeljem potrošnje.\
+F-13 Grafički prikaz troškova: Sustav mora omogućiti vizualizaciju potrošnje po kategorijama.\
+F-15 Generiranje izvještaja: Administrator mora moći generirati izvještaje o korištenju aplikacije i ukupnoj statistici troškova.\
+F-16 Pregled pohranjenih računa: Korisnici moraju moći pregledati slike računa pohranjene u bazi podataka.
+
+# Nefunkcionalni zahtjevi
+
+> **Visoki prioritet:**
+
+NF-1.1 – Autentifikacija i autorizacija: Sustav mora koristiti sigurne metode autentifikacije (OAuth 2.0, šifrirane lozinke).\
+NF-1.2 – Sigurnost podataka: Svi korisnički i financijski podaci moraju biti zaštićeni u skladu s GDPR regulativom.\
+NF-1.3 – Komunikacijski protokoli: Sva komunikacija između klijenta i poslužitelja mora koristiti HTTPS protokol.\
+NF-2.2 – Prepoznavanje računa: AI modul mora prepoznati tekst s računa s minimalno 90% točnosti.\
+NF-3.1 – Održavanje: Sustav treba biti razvijen prema MVC arhitekturi radi lakšeg održavanja i nadogradnje.\
+NF-3.2 – Dokumentacija: Sustav mora biti popraćen tehničkom dokumentacijom i korisničkim priručnikom.\
+NF-4.2 – Sigurnosno kopiranje: Podaci se moraju automatski arhivirati svakih 24 sata.\
+NF-5.1 – Podržane platforme: Aplikacija mora biti prilagođena za mobilne uređaje i preglednike (responsivni dizajn).\
+NF-6.1 – Testiranje: Sustav mora biti testiran automatiziranim alatima (npr. Selenium, Jest) za funkcionalnost i sigurnost.
+
+> **Srednji prioritet:**
+
+NF-2.1 – Performanse: Sustav mora obraditi i prikazati podatke o troškovima unutar 2 sekunde po zahtjevu korisnika.\
+NF-3.3 – Skalabilnost: Sustav mora biti dizajniran tako da podržava rast broja korisnika bez pada performansi.\
+NF-4.1 – Dostupnost: Sustav mora imati minimalno 99% dostupnost tijekom godine.\
+NF-6.2 – Integracija s vanjskim servisima: Sustav mora podržavati integraciju s autentifikacijskim i AI servisima (OAuth, OCR API).
 
 # Tehnologije
 
