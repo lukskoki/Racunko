@@ -1,8 +1,7 @@
-import {Button, Pressable, Text, View} from "react-native";
-import styles from "@/app/styles";
+import { Pressable, Text, View} from "react-native";
+import styles from "@/app/styles/styles";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Image} from "expo-image";
-import {StatusBar} from "expo-status-bar";
 import {router} from "expo-router";
 
 
@@ -10,7 +9,7 @@ import {router} from "expo-router";
 export default function Index() {
   return (
 
-      <SafeAreaView style={styles.display}>
+      <View style={styles.display}>
 
           <View style={styles.container}>
               <Text style={styles.mainHeader}>Računko</Text>
@@ -34,7 +33,7 @@ export default function Index() {
                     <Text style={styles.text1}>Prijava</Text>
                 </Pressable>
           </View>
-      </SafeAreaView>
+      </View>
 
   );
 }

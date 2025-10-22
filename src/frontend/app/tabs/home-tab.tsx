@@ -1,12 +1,12 @@
 import {StyleSheet, Text, View} from 'react-native'
 import React from 'react'
 
-const Grupa = () => {
+const Pocetna = () => {
     return (
         <View>
-            <Text>Grupa</Text>
+            <Text>Pocetna</Text>
         </View>
     )
 }
-export default Grupa
+export default Pocetna
 const styles = StyleSheet.create({})
