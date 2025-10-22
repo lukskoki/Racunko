@@ -16,7 +16,7 @@ export default StyleSheet.create({
         backgroundColor: '#2563EB',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        paddingTop:55,
+        paddingTop:85,
 
     },
     mainHeader:{
@@ -45,11 +45,12 @@ export default StyleSheet.create({
         alignItems:'center',
         height:'15%',
         backgroundColor:'white',
+        padding: 10,
     },
 
     text:{
         color:'black',
-        fontSize:40,
+        fontSize:35,
         fontWeight:'400',
     },
 
