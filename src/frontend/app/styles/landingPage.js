@@ -7,37 +7,46 @@ export default StyleSheet.create({
         justifyContent:'flex-start',
         width:'100%',
         height:'100%',
-        backgroundColor:'white',
+        backgroundColor:'#2563EB',
     },
     container: {
         width:'100%',
-        height:'27%',
+        height:'20%',
         flexDirection:'row',
         backgroundColor: '#2563EB',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        paddingTop:55,
-
+        paddingTop:85,
     },
     mainHeader:{
-      fontSize:50,
-      color:'#FFFFFF',
+        fontSize:50,
+        color:'#FFFFFF',
         fontWeight:'800',
     },
-
-    landingPageImgBox: {
-        marginTop:-42,
-        position:'fixed',
+    mainContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
         borderTopRightRadius:50,
         borderTopLeftRadius:50,
         shadowColor:'#3e3d3d',
         shadowOpacity:0.7,
         shadowOffset:{width:0, height:-4},
         backgroundColor:'white',
-        width: '100%',
-        height:'40%',
+        height: '80%',
+        paddingBottom: '8%',
     },
-
+    landingPageImgBox: {
+        width: '100%',
+        height:"50%",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    image: {
+        width:'75%',
+        height: '100%',
+    },
     textBox: {
         width: '100%',
         flexDirection:'column',
@@ -45,46 +54,48 @@ export default StyleSheet.create({
         alignItems:'center',
         height:'15%',
         backgroundColor:'white',
+        padding: 10,
     },
-
-    text:{
+    text1: {
         color:'black',
-        fontSize:40,
+        fontSize:35,
         fontWeight:'400',
     },
-
-    buttonBox:{
-      width:'100%',
-      height:'20%',
-        flexDirection:'row',
-      justifyContent:'center',
-      alignItems:'center',
-      gap:15,
-    backgroundColor:'white',
+    text2: {
+      color:'black',
+      fontSize: 25,
+      fontWeight:'300',
     },
-
-    prijava:{
-        width:'42%',
+    text3:{
+        color:'white',
+        fontSize:20,
+    },
+    buttonBox:{
+        width:'100%',
+        height:'20%',
+        flexDirection:'row',
         justifyContent:'center',
         alignItems:'center',
-        flexDirection:'row',
-        height:'35%',
-        backgroundColor:'#3F6CF4',
-        borderRadius: 20,
+        gap:15,
+        backgroundColor:'white',
     },
-
     registracija:{
         width:'42%',
         justifyContent:'center',
         alignItems:'center',
         flexDirection:'row',
-        height:'35%',
+        height:'45%',
         opacity:0.54,
         backgroundColor:'#2563EB',
         borderRadius: 20,
     },
-    text1:{
-        color:'white',
-        fontSize:20,
-    }
-})
+    prijava:{
+        width:'42%',
+        justifyContent:'center',
+        alignItems:'center',
+        flexDirection:'row',
+        height:'45%',
+        backgroundColor:'#3F6CF4',
+        borderRadius: 20,
+    },
+});
