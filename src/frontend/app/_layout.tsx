@@ -5,6 +5,6 @@ export default function RootLayout() {
     return <Stack>
         <Stack.Screen name="tabs" options={{headerShown: false}} />
         <Stack.Screen name="index" options={{headerShown: false}} />
-        <Stack.Screen name="loadingApp" options={{headerShown: false}} />
+        <Stack.Screen name="login-signup" options={{headerShown: false}} />
     </Stack>;
 }
