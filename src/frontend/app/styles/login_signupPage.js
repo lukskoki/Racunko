@@ -106,6 +106,10 @@ export default StyleSheet.create({
         width: '60%',
         alignItems: 'center',
     },
+    buttonDisabled: {
+        backgroundColor: '#93B7F1',
+        opacity: 0.6,
+    },
     text: {
         color:'white',
         fontSize:20,

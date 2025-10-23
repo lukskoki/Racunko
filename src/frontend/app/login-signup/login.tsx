@@ -1,4 +1,4 @@
-import { Pressable, Text, TextInput, View} from 'react-native'
+import { Pressable, Text, TextInput, View, Alert } from 'react-native'
 import React, {useState} from 'react'
 import stylesLandingPage from "@/app/styles/landingPage";
 import style from "@/app/styles/login_signupPage";
@@ -14,6 +14,17 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
 
+    // Ovdje handleamo input od usera i saljemo ga dalje u api request za login
+    const handleLogin = () => {
+    
+        // Ovdje jos treba dodat api implementaciju za login
+        router.push("/tabs/home-tab");
+    };
+
+
+    // S ovim provjeravamo da inputi nisu prazni - ako je prazno onda je gumb zasivljen
+    const isFormValid = email.trim() !== '' && password.trim() !== '';
+
     return (
         <View style={stylesLandingPage.display}>
 
@@ -27,7 +38,10 @@ const Login = () => {
                     <Text style={style.secondaryTitle}>Upišite svoje podatke</Text>
                 </View>
 
+
+         
                 <View style={style.textInputBox}>
+                    {/* Email */}
                     <View style={style.textInputBorder}>
                         <Text style={style.thirdTitle}>Email</Text>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -43,6 +57,8 @@ const Login = () => {
                             />
                         </TouchableWithoutFeedback>
                     </View>
+
+                    {/* Sifra */}
                     <View style={style.textInputBorderPassword}>
                         <View style={style.passwordBox}>
                             <Text style={style.thirdTitle}>Šifra</Text>
@@ -65,8 +81,16 @@ const Login = () => {
                     <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
                 </View>
 
+
+                
                 <View style={style.buttonsContainer}>
-                    <Pressable style={style.button} onPress={() => router.push("/tabs/home-tab")}>
+
+                    {/* Gumb za login */}
+                    <Pressable
+                        style={[style.button, !isFormValid && style.buttonDisabled]}
+                        onPress={handleLogin}
+                        disabled={!isFormValid}
+                    >
                         <Text style={style.text}>Prijavi se</Text>
                     </Pressable>
 
@@ -76,6 +100,7 @@ const Login = () => {
                         <View style={style.line}></View>
                     </View>
 
+                    {/* Google login */}
                     <Pressable style={style.googleButton} onPress={() => router.push("/tabs/home-tab")}>
                         <Image source={images.google} style={style.googleIcon}/>
                         <Text style={style.googleText}>Continue with Google</Text>
