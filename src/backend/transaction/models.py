@@ -1,0 +1,40 @@
+from django.db import models
+from user.models import *
+# Create your models here.
+
+class Category(models.Model):
+    categoryID = models.IntegerField(primary_key=True)
+    categoryName = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.categoryName
+
+
+class Store(models.Model):
+    storeID = models.IntegerField(primary_key=True)
+    storeName = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.storeName
+
+
+class Transaction(models.Model):
+    transactionID = models.CharField(max_length=255, primary_key=True)
+    username = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="transactions") #related_name omogucuje pristup svim transakcijama preko profile.transactions.all()
+    amount = models.IntegerField()
+    date = models.DateTimeField()
+    categoryID = models.OneToOneField(Category, null=True, on_delete=models.SET_NULL, related_name="transactions") #on_delete=models.SET_NULL ce postaviti taj categoryID na null
+    groupID = models.CharField(max_length=255, blank=True, null=True)
+    image = models.CharField(max_length=255, blank=True, null=True)
+    transactionNote = models.CharField(max_length=255, blank=True, null=True)
+    storeID = models.OneToOneField(Store, on_delete=models.SET_NULL, blank=True, null=True, related_name="transactions")
+
+class Expense(models.Model):
+    expenseID = models.CharField(max_length=255, primary_key=True)
+    username = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="expenses") #related_name omogucuje pristup svim expensa preko profile.expenses.all()
+    expenseName = models.CharField(max_length=150)
+    expenseNote = models.CharField(max_length=255, blank=True, null=True) #ovo mi ima vise smisla kao optional
+    expenseLength = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.expenseID
