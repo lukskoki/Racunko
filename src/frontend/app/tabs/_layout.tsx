@@ -10,12 +10,17 @@ export default function TabLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
+                tabBarStyle: {borderWidth: 2, borderTopRightRadius: 15, borderTopLeftRadius: 15, height: 90,  width: '100%', shadowColor: "#3e3d3d", shadowOpacity: 0.7,
+                    shadowOffset:{width:0, height:-4},shadowRadius:2, elevation:15},
+                tabBarLabelStyle: {fontSize: 11, fontWeight: "thin"},
+                tabBarItemStyle: {justifyContent: "center", alignItems: "center", paddingTop: 10},
             }}>
             <Tabs.Screen
                 name="home-tab"
                 options={{
                     title: 'Početna',
                     tabBarIcon: ({ color }) => <Feather name="home" size={24} color="black" />,
+
                     headerShown: false,
                 }}
             />
@@ -51,6 +56,7 @@ export default function TabLayout() {
                     headerShown: false,
                 }}
             />
+
 
         </Tabs>
     );

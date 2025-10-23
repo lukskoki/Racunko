@@ -32,6 +32,8 @@ export default StyleSheet.create({
         borderTopLeftRadius:50,
         shadowColor:'#3e3d3d',
         shadowOpacity:0.7,
+        shadowRadius:2,
+        elevation: 15,
         shadowOffset:{width:0, height:-4},
         backgroundColor:'white',
         width: '100%',
