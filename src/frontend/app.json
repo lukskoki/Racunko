@@ -9,6 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "Potrebna je kamera za snimanje fotografija."
+      },
       "supportsTablet": true
     },
     "android": {
@@ -39,7 +42,9 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-camera",
+      "react-native-vision-camera"
     ],
     "experiments": {
       "typedRoutes": true,
