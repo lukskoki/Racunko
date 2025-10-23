@@ -32,8 +32,8 @@ export default StyleSheet.create({
     },
     thirdTitle: {
       fontSize: 10,
-      color: '#000000',
-      opacity: 0.4,
+      color: '#6B7280',
+      fontWeight: '600',
     },
     textInputBox: {
         width: '100%',
@@ -54,7 +54,8 @@ export default StyleSheet.create({
       paddingHorizontal:10,
       paddingTop: 5,
       borderWidth: 1,
-      borderColor:'#888',
+      borderColor:'#D1D5DB',
+      backgroundColor: '#F3F4F6',
       borderRadius: 15,
     },
     input: {
@@ -74,7 +75,8 @@ export default StyleSheet.create({
         paddingHorizontal:10,
         paddingTop: 5,
         borderWidth: 1,
-        borderColor:'#888',
+        borderColor:'#D1D5DB',
+        backgroundColor: '#F3F4F6',
         borderRadius: 15,
     },
     passwordBox: {
@@ -105,6 +107,11 @@ export default StyleSheet.create({
         borderRadius: 25,
         width: '60%',
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
     },
     buttonDisabled: {
         backgroundColor: '#93B7F1',

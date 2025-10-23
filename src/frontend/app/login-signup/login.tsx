@@ -1,4 +1,4 @@
-import { Pressable, Text, TextInput, View, Alert } from 'react-native'
+import { Pressable, Text, TextInput, View, Alert, TouchableOpacity } from 'react-native'
 import React, {useState} from 'react'
 import stylesLandingPage from "@/app/styles/landingPage";
 import style from "@/app/styles/login_signupPage";
@@ -86,13 +86,14 @@ const Login = () => {
                 <View style={style.buttonsContainer}>
 
                     {/* Gumb za login */}
-                    <Pressable
+                    <TouchableOpacity
                         style={[style.button, !isFormValid && style.buttonDisabled]}
                         onPress={handleLogin}
                         disabled={!isFormValid}
+                        activeOpacity={0.7}
                     >
                         <Text style={style.text}>Prijavi se</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
                     <View style={style.separator}>
                         <View style={style.line}></View>
@@ -101,10 +102,14 @@ const Login = () => {
                     </View>
 
                     {/* Google login */}
-                    <Pressable style={style.googleButton} onPress={() => router.push("/tabs/home-tab")}>
+                    <TouchableOpacity
+                        style={style.googleButton}
+                        onPress={() => router.push("/tabs/home-tab")}
+                        activeOpacity={0.7}
+                    >
                         <Image source={images.google} style={style.googleIcon}/>
                         <Text style={style.googleText}>Continue with Google</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
