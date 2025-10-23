@@ -1,4 +1,4 @@
-import { Pressable, Text, View} from "react-native";
+import { Pressable, Text, View, TouchableOpacity} from "react-native";
 import styles from "@/app/styles/landingPage";
 import {Image} from "expo-image";
 import {router} from "expo-router";
@@ -25,13 +25,26 @@ export default function Index() {
               </View>
 
               <View style={styles.buttonBox}>
-                  <Pressable style={styles.registracija} onPress={() => router.push(("/login-signup/signup"))}>
-                      <Text style={styles.text3}>Registracija</Text>
-                  </Pressable>
+                {/* Registracija */}
+                  <TouchableOpacity 
+                    style={styles.registracija} 
+                    onPress={() => router.push(("/login-signup/signup"))}
+                    activeOpacity={0.7}
+                  >
 
-                  <Pressable style={styles.prijava} onPress={() => router.push("/login-signup/login")}>
+                      <Text style={styles.text3}>Registracija</Text>
+                  </TouchableOpacity>
+
+                    {/* Prijava */}
+                    <TouchableOpacity 
+                        style={styles.prijava} 
+                        onPress={() => router.push("/login-signup/login")}
+                        activeOpacity={0.7}
+                    >
+
                       <Text style={styles.text3}>Prijava</Text>
-                  </Pressable>
+
+                  </TouchableOpacity>
               </View>
           </View>
       </View>
