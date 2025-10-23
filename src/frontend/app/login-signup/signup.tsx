@@ -9,7 +9,7 @@ import {Ionicons} from "@expo/vector-icons";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 
-const Login = () => {
+const SignUp = () => {
 
     const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -83,4 +83,4 @@ const Login = () => {
         </View>
     )
 }
-export default Login
+export default SignUp
