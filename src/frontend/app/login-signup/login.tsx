@@ -10,7 +10,8 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 
 const Login = () => {
-
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     return (
@@ -30,21 +31,29 @@ const Login = () => {
                     <View style={style.textInputBorder}>
                         <Text style={style.thirdTitle}>Email</Text>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                            <TextInput style={style.input}
-                                       textContentType="emailAddress"
-                                       placeholder="primjer@gmail.com"
-                                       placeholderTextColor="#888"
-                                       autoCapitalize="none"></TextInput>
+                            <TextInput
+                                style={style.input}
+                                textContentType="emailAddress"
+                                placeholder="primjer@gmail.com"
+                                placeholderTextColor="#888"
+                                autoCapitalize="none"
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                            />
                         </TouchableWithoutFeedback>
-
                     </View>
                     <View style={style.textInputBorderPassword}>
                         <View style={style.passwordBox}>
                             <Text style={style.thirdTitle}>Šifra</Text>
-                            <TextInput style={style.inputPassword}
-                                       placeholder="sifra123"
-                                       placeholderTextColor="#888"
-                                       secureTextEntry={!passwordVisible}></TextInput>
+                            <TextInput
+                                style={style.inputPassword}
+                                placeholder="sifra123"
+                                placeholderTextColor="#888"
+                                secureTextEntry={!passwordVisible}
+                                value={password}
+                                onChangeText={setPassword}
+                            />
                         </View>
                         <Pressable style={style.eyeBtn} onPress={() => setPasswordVisible(!passwordVisible)} >
                             <Ionicons

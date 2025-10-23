@@ -9,8 +9,10 @@ import {Ionicons} from "@expo/vector-icons";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 
-const SignUp = () => {
-
+const Signup = () => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     return (
@@ -30,29 +32,42 @@ const SignUp = () => {
                     <View style={style.textInputBorder}>
                         <Text style={style.thirdTitle}>Ime i prezime</Text>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                            <TextInput style={style.input}
-                                       textContentType="name"
-                                       placeholder="Pero Perić"
-                                       placeholderTextColor="#888"></TextInput>
+                            <TextInput
+                                style={style.input}
+                                textContentType="name"
+                                placeholder="Pero Perić"
+                                placeholderTextColor="#888"
+                                value={name}
+                                onChangeText={setName}
+                            />
                         </TouchableWithoutFeedback>
                     </View>
                     <View style={style.textInputBorder}>
                         <Text style={style.thirdTitle}>Email</Text>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                            <TextInput style={style.input}
-                                       textContentType="emailAddress"
-                                       placeholder="primjer@gmail.com"
-                                       placeholderTextColor="#888"
-                                       autoCapitalize="none"></TextInput>
+                            <TextInput
+                                style={style.input}
+                                textContentType="emailAddress"
+                                placeholder="primjer@gmail.com"
+                                placeholderTextColor="#888"
+                                autoCapitalize="none"
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                            />
                         </TouchableWithoutFeedback>
                     </View>
                     <View style={style.textInputBorderPassword}>
                         <View style={style.passwordBox}>
                             <Text style={style.thirdTitle}>Šifra</Text>
-                            <TextInput style={style.inputPassword}
-                                       placeholder="sifra123"
-                                       placeholderTextColor="#888"
-                                       secureTextEntry={!passwordVisible}></TextInput>
+                            <TextInput
+                                style={style.inputPassword}
+                                placeholder="sifra123"
+                                placeholderTextColor="#888"
+                                secureTextEntry={!passwordVisible}
+                                value={password}
+                                onChangeText={setPassword}
+                            />
                         </View>
                         <Pressable style={style.eyeBtn} onPress={() => setPasswordVisible(!passwordVisible)} >
                             <Ionicons
@@ -65,12 +80,12 @@ const SignUp = () => {
 
                 <View style={style.buttonsContainer}>
                     <Pressable style={style.button} onPress={() => router.push("/tabs/home-tab")}>
-                        <Text style={style.text}>Prijavi se</Text>
+                        <Text style={style.text}>Registriraj se</Text>
                     </Pressable>
 
                     <View style={style.separator}>
                         <View style={style.line}></View>
-                        <Text style={style.secondaryTitle}>Ili se prijavite sa</Text>
+                        <Text style={style.secondaryTitle}>Ili se registrirajte sa</Text>
                         <View style={style.line}></View>
                     </View>
 
@@ -83,4 +98,4 @@ const SignUp = () => {
         </View>
     )
 }
-export default SignUp
+export default Signup
