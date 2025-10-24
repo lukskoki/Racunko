@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from models import *
-from backend.user.models import *
+from .models import Category, Store, Transaction, Expense
+from user.models import Profile, Group
 
 class categorySerializer(serializers.ModelSerializer):
     class Meta:

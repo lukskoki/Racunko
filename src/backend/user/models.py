@@ -21,7 +21,7 @@ class Group(models.Model):
 
 class Profile(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    groupName = models.ForeignKey(Group,on_delete=models.PROTECT, blank=True, null=True)
+    group = models.ForeignKey(Group,on_delete=models.PROTECT, blank=True, null=True) # Treba se zvat group
     role = models.CharField(max_length=150)
     isAdmin = models.BooleanField(default=False)
     budget = models.IntegerField(blank=True, null=True)
