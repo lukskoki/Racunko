@@ -3,6 +3,7 @@ import styles from "@/app/styles/landingPage";
 import {Image} from "expo-image";
 import {router} from "expo-router";
 import { images } from "@/app/assets";
+import React from "react";
 
 
 export default function Index() {
