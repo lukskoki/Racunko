@@ -22,12 +22,15 @@ class Transaction(models.Model):
     transactionID = models.CharField(max_length=255, primary_key=True)
     username = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="transactions") #related_name omogucuje pristup svim transakcijama preko profile.transactions.all()
     amount = models.IntegerField()
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True) #dodao auto_now_add da vidimo kada je napravljena instanca
     categoryID = models.OneToOneField(Category, null=True, on_delete=models.SET_NULL, related_name="transactions") #on_delete=models.SET_NULL ce postaviti taj categoryID na null
-    groupID = models.CharField(max_length=255, blank=True, null=True)
+    groupID = models.ForeignKey(Group, on_delete=models.PROTECT, related_name="transactions", blank=True, null=True)  # dodao da je groupID foreign key, ista sema kao username samo optional
     image = models.CharField(max_length=255, blank=True, null=True)
     transactionNote = models.CharField(max_length=255, blank=True, null=True)
     storeID = models.OneToOneField(Store, on_delete=models.SET_NULL, blank=True, null=True, related_name="transactions")
+
+    def __str__(self):        
+        return self.transactionID
 
 class Expense(models.Model):
     expenseID = models.CharField(max_length=255, primary_key=True)
