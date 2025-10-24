@@ -1,32 +1,37 @@
 import uuid
 from rest_framework import serializers
-from models import *
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from .models import Group, Profile
 
 
-class userSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']  # Dodao id i ime, prezime
         extra_kwargs = {
-            'password': {'write_only': True}   #ne vraca lozinku u responsu radi sigurnosti
+            'password': {'write_only': True}   # ne vraca lozinku u responsu radi sigurnosti
         }
-    def create(self, validated_data):               #lozinku spremamo kao hash, kasnije se mozemo provjeravati s check_password iz istog importa
-        validated_data['password'] = make_password(validated_data['password'])
-        return super().create(validated_data)
 
-class groupSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        # Koristimo create_user od djangovog User modela jer vec ima dosta funkcionalnosti
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
+        )
+        return user
+
+class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
-        extra_kwargs = {
-            'groupID' : {'read_only': True}
-        }
-    
 
-class profileSerializer(serializers.ModelSerializer):
-    username = serializers.StringRelatedField(read_only=True)
-    groupID = serializers.StringRelatedField(read_only =True)   # pri responsu vraca __str__ od Group tj. groupName
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    group = serializers.StringRelatedField(read_only=True)   # pri responsu vraca __str__ od Group tj. groupName
     class Meta:
         model = Profile
         fields = '__all__'
