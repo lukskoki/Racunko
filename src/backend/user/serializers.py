@@ -1,6 +1,6 @@
 import uuid
 from rest_framework import serializers
-from models import *
+from .models import User, Group, Profile
 from django.contrib.auth.hashers import make_password
 
 
@@ -19,14 +19,11 @@ class groupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
-        extra_kwargs = {
-            'groupID' : {'read_only': True}
-        }
     
 
 class profileSerializer(serializers.ModelSerializer):
-    username = serializers.StringRelatedField(read_only=True)
-    groupID = serializers.StringRelatedField(read_only =True)   # pri responsu vraca __str__ od Group tj. groupName
+    user = serializers.StringRelatedField(read_only=True)
+    group = serializers.StringRelatedField(read_only =True)   # pri responsu vraca __str__ od Group tj. groupName
     class Meta:
         model = Profile
         fields = '__all__'

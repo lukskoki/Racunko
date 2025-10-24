@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Category, Store, Transaction, Expense
-from user.models import Profile, Group
 
 class categorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,10 +12,10 @@ class storeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class transactionSerializer(serializers.ModelSerializer):
-    categoryID = serializers.StringRelatedField( read_only = True)
-    storeID = serializers.StringRelatedField(read_only = True)
+    category = serializers.StringRelatedField( read_only = True)
+    store = serializers.StringRelatedField(read_only = True)
     username = serializers.StringRelatedField(read_only = True)
-    groupID = serializers.StringRelatedField(read_only = True)
+    group = serializers.StringRelatedField(read_only = True)
 
     class Meta:
         model =Transaction
