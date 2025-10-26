@@ -1,11 +1,12 @@
 import React, { createContext, useState, ReactNode } from "react";
-
-interface LoginProps { // Format koji login funkcija prima
+import { login as apilogin} from '@/services/api';
+import type { User } from '@/services/api';
+export interface LoginProps { // Format koji login funkcija prima
     username: string;
     password: string;
 }
 
-interface RegisterProps { // Format koji register funkcija prima
+export interface RegisterProps { // Format koji register funkcija prima
     username: string;
     password: string;
     email: string;
@@ -14,7 +15,7 @@ interface RegisterProps { // Format koji register funkcija prima
 }
 
 interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim fajlovima
-    user: RegisterProps | undefined; // Za sad moze bit isto kao i registerProps, mozda cemo kasnije nadodat jos nesto pa ce imat svoj interface
+    user: User | undefined;
     token: string | null;
     login: (props: LoginProps) => Promise<void>;
     register: (props: RegisterProps) => Promise<void>;
@@ -26,14 +27,22 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 
 export function AuthProvider({ children } : { children: ReactNode }) {
-    const [user, setUser] = useState<RegisterProps | undefined>(undefined);
+    const [user, setUser] = useState<User | undefined>(undefined);
     const [token, setToken] = useState<string | null>(null); // Ovo je za zapamtit token koj cemo kasnije koristi
 
     async function login({username, password}: LoginProps) {
         console.log({
             username, password
         });
-    }
+
+        const response = await apilogin({username, password}); // Ovo je funkcija iz api.ts
+
+        setToken(response.token);
+        setUser(response.user);
+
+
+        console.log("Login uspjesan, token: ", token);
+    }   
 
 
     async function register({username, password, first_name, last_name, email}: RegisterProps) {
