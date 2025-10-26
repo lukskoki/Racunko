@@ -7,23 +7,35 @@ import {Image} from "expo-image";
 import { images } from "@/app/assets";
 import {Ionicons} from "@expo/vector-icons";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
-
+import { useAuth } from '@/hooks/useAuth';
 
 const Login = () => {
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
+    const { login } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za login
-    const handleLogin = () => {
-    
-        // Ovdje jos treba dodat api implementaciju za login
-        router.push("/tabs/home-tab");
+    const handleLogin = async() => {
+        
+        try {
+            await login({username: username, password});
+            router.push("/tabs/home-tab");
+        }
+        catch (error: any) {
+            console.error('login failed: ', error);
+            setErrorMessage(error.message || "Neispravan username ili password");
+
+        } 
+        
+        
     };
 
 
     // S ovim provjeravamo da inputi nisu prazni - ako je prazno onda je gumb zasivljen
-    const isFormValid = email.trim() !== '' && password.trim() !== '';
+    const isFormValid = username.trim() !== '' && password.trim() !== '';
 
     return (
         <View style={stylesLandingPage.display}>
@@ -38,22 +50,20 @@ const Login = () => {
                     <Text style={style.secondaryTitle}>Upišite svoje podatke</Text>
                 </View>
 
-
-         
-                <View style={style.textInputBox}>
-                    {/* Email */}
+                <View style={style.textInputBox}>      
+                    {/* Username */}
                     <View style={style.textInputBorder}>
-                        <Text style={style.thirdTitle}>Email</Text>
+                        <Text style={style.thirdTitle}>Username</Text>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                             <TextInput
                                 style={style.input}
-                                textContentType="emailAddress"
-                                placeholder="primjer@gmail.com"
+                                textContentType="username"
+                                placeholder="pero123"
                                 placeholderTextColor="#888"
                                 autoCapitalize="none"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
+                                value={username}
+                                onChangeText={setUsername}
+                                keyboardType="default"
                             />
                         </TouchableWithoutFeedback>
                     </View>
@@ -79,6 +89,11 @@ const Login = () => {
                         </Pressable>
                     </View>
                     <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
+                    {errorMessage && (
+                        <View style ={style.errorContainer}>
+                            <Text style={style.errorText}>{errorMessage}</Text>
+                        </View>
+                    )}
                 </View>
 
 
