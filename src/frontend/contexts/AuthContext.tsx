@@ -31,17 +31,20 @@ export function AuthProvider({ children } : { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null); // Ovo je za zapamtit token koj cemo kasnije koristi
 
     async function login({username, password}: LoginProps) {
-        console.log({
-            username, password
-        });
 
-        const response = await apilogin({username, password}); // Ovo je funkcija iz api.ts
+        try {
+            const response = await apilogin({username, password}); // Ovo je funkcija iz api.ts
+            
+            setToken(response.token);
+            setUser(response.user);
 
-        setToken(response.token);
-        setUser(response.user);
-
-
-        console.log("Login uspjesan, token: ", token);
+            console.log("Login uspio");
+        } 
+        catch(error: any) {
+            console.error("Login failed: ", error);
+            throw new Error(error.message || 'Neuspjesna prijava');
+        }
+        
     }   
 
 

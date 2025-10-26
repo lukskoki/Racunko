@@ -14,6 +14,7 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const { login } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za login
@@ -23,8 +24,9 @@ const Login = () => {
             await login({username: username, password});
             router.push("/tabs/home-tab");
         }
-        catch (error) {
+        catch (error: any) {
             console.error('login failed: ', error);
+            setErrorMessage(error.message || "Neispravan username ili password");
 
         } 
         
@@ -48,9 +50,7 @@ const Login = () => {
                     <Text style={style.secondaryTitle}>Upišite svoje podatke</Text>
                 </View>
 
-
-         
-                <View style={style.textInputBox}>
+                <View style={style.textInputBox}>      
                     {/* Username */}
                     <View style={style.textInputBorder}>
                         <Text style={style.thirdTitle}>Username</Text>
@@ -89,6 +89,11 @@ const Login = () => {
                         </Pressable>
                     </View>
                     <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
+                    {errorMessage && (
+                        <View style ={style.errorContainer}>
+                            <Text style={style.errorText}>{errorMessage}</Text>
+                        </View>
+                    )}
                 </View>
 
 
