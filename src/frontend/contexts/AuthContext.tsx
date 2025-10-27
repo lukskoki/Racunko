@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode } from "react";
-import { login as apilogin} from '@/services/api';
+import { login as apilogin, register as apiregister} from '@/services/api';
 import type { User } from '@/services/api';
 export interface LoginProps { // Format koji login funkcija prima
     username: string;
@@ -10,8 +10,8 @@ export interface RegisterProps { // Format koji register funkcija prima
     username: string;
     password: string;
     email: string;
-    first_name: string;
-    last_name: string;
+    first_name?: string;
+    last_name?: string;
 }
 
 interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim fajlovima
@@ -48,9 +48,22 @@ export function AuthProvider({ children } : { children: ReactNode }) {
     }   
 
 
-    async function register({username, password, first_name, last_name, email}: RegisterProps) {
-        console.log({username, password, first_name, last_name, email});
-    }
+    async function register({username, password, email}: RegisterProps) {
+
+        try {
+            const response = await apiregister({username, password, email}); // Ovo je funkcija iz api.ts
+            
+            setToken(response.token);
+            setUser(response.user);
+
+            console.log("Register uspio");
+        } 
+        catch(error: any) {
+            console.error("Register failed: ", error);
+            throw new Error(error.message || 'Neuspjesna registracija');
+        }
+        
+    }   
 
     return (
         // S ovim omotamo ostale sve ostale komponente npr. index.tsx, sve omotane onda mogu koristit AuthContext i pristupit tokenu, useru itd.

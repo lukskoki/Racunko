@@ -7,22 +7,34 @@ import {Image} from "expo-image";
 import { images } from "@/app/assets";
 import {Ionicons} from "@expo/vector-icons";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
-
+import { useAuth } from '@/hooks/useAuth';
 
 const Signup = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
+    const { register } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za register
-    const handleSignup = () => {
-        // Dodat api implementaciju za register
-        router.push("/tabs/home-tab");
+    const handleSignup = async() => {
+        
+        try {
+            await register({username: username, password, email});
+            router.push("/tabs/home-tab");
+        }
+        catch (error: any) {
+            console.error('Register failed: ', error);
+            setErrorMessage(error.message || "Registracija neuspjesna");
+
+        } 
+        
     };
 
     // S ovim provjeravamo da inputi nisu prazni - ako je prazno onda je gumb zasivljen
-    const isFormValid = name.trim() !== '' && email.trim() !== '' && password.trim() !== '';
+    const isFormValid = username.trim() !== '' && email.trim() !== '' && password.trim() !== '';
 
     return (
         <View style={stylesLandingPage.display}>
@@ -41,15 +53,15 @@ const Signup = () => {
                 {/* Ime i prezime */}
                 <View style={style.textInputBox}>
                     <View style={style.textInputBorder}>
-                        <Text style={style.thirdTitle}>Ime i prezime</Text>
+                        <Text style={style.thirdTitle}>Username</Text>
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                             <TextInput
                                 style={style.input}
                                 textContentType="name"
-                                placeholder="Pero Perić"
+                                placeholder="peroPeric123"
                                 placeholderTextColor="#888"
-                                value={name}
-                                onChangeText={setName} 
+                                value={username}
+                                onChangeText={setUsername} 
                             />
                         </TouchableWithoutFeedback>
                     </View>
@@ -95,6 +107,11 @@ const Signup = () => {
 
                 
                 <View style={style.buttonsContainer}>
+                    {errorMessage && (
+                        <View style ={style.errorContainer}>
+                            <Text style={style.errorText}>{errorMessage}</Text>
+                        </View>
+                    )}
                     {/* Gumb za registraciju */}
                     <TouchableOpacity
                         style={[style.button, !isFormValid && style.buttonDisabled]}
@@ -104,6 +121,7 @@ const Signup = () => {
                     >
                         <Text style={style.text}>Registriraj se</Text>
                     </TouchableOpacity>
+                    
 
                     <View style={style.separator}>
                         <View style={style.line}></View>
