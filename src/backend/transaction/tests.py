@@ -8,7 +8,7 @@ from django.db.models.deletion import ProtectedError
 
 from user.models import Group, Profile
 from .models import Category, Store, Transaction, Expense
-
+from .serializers import ExpenseSerializer
 
 class TestTransactionModels(TestCase):
     def setUp(self):
@@ -92,13 +92,27 @@ class TestTransactionModels(TestCase):
         with self.assertRaises(ProtectedError):
             self.group.delete()
 
-    def test_expense_create_str_and_reverse(self):
+    def test_expense_create_str_and_reverse(self):       #promjenio expense model pa mjenjam i ovo
         exp = Expense.objects.create(
             profile=self.profile,
-            expenseName='Rent',
+            category=self.category,
             expenseNote=None,
-            expenseLength=12
+            expenseLength=12,
+            amount = Decimal('250')
         )
+        self.assertEqual(str(exp), 'Food')
+        self.assertEqual(self.profile.expenses.count(), 1)
+
+    def test_expense_mimic_post(self):     #ovdje pokusavam simulirati POST request koji ce ici s frontena da vidim jeli se Rent automatski postavlja u category table
+        data = {
+        "category": "Rent",
+        "amount": Decimal('250'),
+        "expenseNote": None,
+        "expenseLength": 12
+    }
+        serializer = ExpenseSerializer(data=data, context={'profile': self.profile})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        exp = serializer.save()
         self.assertEqual(str(exp), 'Rent')
         self.assertEqual(self.profile.expenses.count(), 1)
         

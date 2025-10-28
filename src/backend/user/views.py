@@ -1,9 +1,9 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ProfileSerializer
 from .models import Profile
 from django.contrib.auth import authenticate
 @api_view(['POST'])
@@ -77,3 +77,16 @@ def login(request):
             'last_name': user.last_name,
         }
     }, status=status.HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  # samo ulogirani korisnici
+def profile_setup_income(request):
+    profile = request.user.profile
+    serializer = ProfileSerializer(profile, data = request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Setup 1 success', 'profile': serializer.data})
+    return Response(serializer.errors, status=400)
+

@@ -19,6 +19,9 @@ class Profile(models.Model):
     budget = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     income = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     allowance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    wants_notification = models.BooleanField(default=False)  #dodano za profile create page 1
+    income_date = models.IntegerField(blank=True, null=True)                      #dodano  za profile create page 1, stavljam integer za sad ako gledamo 1., 2. itd. u mjesecu. Ne tocan datum
+
 
     def __str__(self):
         return f"Profile({self.user.username})"
