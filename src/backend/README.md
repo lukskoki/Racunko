@@ -34,10 +34,10 @@ Kreiraj `.env` fajl u `/backend` folderu sa sljedecim sadrzajem:
 DEBUG=True
 ```
 
-### 5. Konfiguracija .env fajla
+### 5. Konfiguracija IP u .env fajla
 
-Treba u core/settings.py u allowed hosts stavit svoju ip adresu preko koje se server runna
-npr. ALLOWED_HOSTS=['123.123.123.123']
+Treba u .env u allowed hosts stavit svoju ip adresu preko koje se server runna
+npr. ALLOWED_HOSTS=123.123.123.123
 
 
 
