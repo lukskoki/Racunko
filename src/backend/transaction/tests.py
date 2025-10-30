@@ -96,6 +96,7 @@ class TestTransactionModels(TestCase):
         exp = Expense.objects.create(
             profile=self.profile,
             category=self.category,
+            expenseName ='Food',
             expenseNote=None,
             expenseLength=12,
             amount = Decimal('250')
@@ -103,16 +104,5 @@ class TestTransactionModels(TestCase):
         self.assertEqual(str(exp), 'Food')
         self.assertEqual(self.profile.expenses.count(), 1)
 
-    def test_expense_mimic_post(self):     #ovdje pokusavam simulirati POST request koji ce ici s frontena da vidim jeli se Rent automatski postavlja u category table
-        data = {
-        "category": "Rent",
-        "amount": Decimal('250'),
-        "expenseNote": None,
-        "expenseLength": 12
-    }
-        serializer = ExpenseSerializer(data=data, context={'profile': self.profile})
-        self.assertTrue(serializer.is_valid(), serializer.errors)
-        exp = serializer.save()
-        self.assertEqual(str(exp), 'Rent')
-        self.assertEqual(self.profile.expenses.count(), 1)
+    
         

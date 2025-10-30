@@ -35,7 +35,7 @@ class TestModels(TestCase):
             budget=300.11,
             income=1000.99,
             allowance=0,
-            wants_notification = False,
+            notifications = False,
             income_date = 1
         )
         self.assertEqual(str(profile), 'Profile(testuser)')
@@ -43,4 +43,4 @@ class TestModels(TestCase):
         self.assertEqual(profile.role, 'parent')
         self.assertTrue(profile.isAdmin)
         self.assertEqual(profile.group, self.group)
-        self.assertFalse(profile.wants_notification)
+        self.assertFalse(profile.notifications)
