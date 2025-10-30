@@ -6,4 +6,5 @@ export const images = {
     flipCamera: require('./assets/icons/camera-flip.png'),
     thumbnail: require('./assets/icons/thumbnail.png'),
     google: require('./assets/icons/google.png'),
+    profileIconWhite: require('./assets/icons/profileIconWhite.png'),
 }
