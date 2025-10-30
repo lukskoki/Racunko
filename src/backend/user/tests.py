@@ -35,9 +35,12 @@ class TestModels(TestCase):
             budget=300.11,
             income=1000.99,
             allowance=0,
+            notifications = False,
+            income_date = 1
         )
         self.assertEqual(str(profile), 'Profile(testuser)')
         self.assertTrue(isinstance(profile, Profile))
         self.assertEqual(profile.role, 'parent')
         self.assertTrue(profile.isAdmin)
         self.assertEqual(profile.group, self.group)
+        self.assertFalse(profile.notifications)

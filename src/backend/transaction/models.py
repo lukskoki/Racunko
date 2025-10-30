@@ -33,9 +33,10 @@ class Transaction(models.Model):
 
 class Expense(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="expenses") #related_name omogucuje pristup svim expensa preko profile.expenses.all()
-    expenseName = models.CharField(max_length=150)
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL, related_name="expenses") #dodao kategorije u expense kako bi ostvarili profile create i buduce funkcije
+    expenseName = models.CharField(max_length=150, default='General') #dodao nazad expenseName
     expenseNote = models.CharField(max_length=255, blank=True, null=True) #ovo mi ima vise smisla kao optional
     expenseLength = models.IntegerField(blank=True, null=True)
-
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0) #dodao amount u expense
     def __str__(self):
         return self.expenseName
