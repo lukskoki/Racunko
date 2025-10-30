@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 from .models import Category, Store, Transaction, Expense
 
@@ -31,11 +32,12 @@ class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
         fields = '__all__'
-    def create(self, validated_data):     #dodano da se automatski rade kateogrije ako se posalje samo ime kategorije kao u profile create
-        category_name = validated_data.pop('category', None)
-        if category_name:
-            category_obj, _ignore = Category.objects.get_or_create(categoryName=category_name)
-            validated_data['category'] = category_obj
-
+    def create(self, validated_data):     #promjenjeno tako da se dohvacaju samo kategory koje smo naveli
+        category_id = validated_data.pop('category', None)
+        if category_id:
+            try:
+                category = Category.objects.get(pk = category_id)
+            except Category.DoesNotExist:
+                raise ValidationError("Category doesn't exist")
         validated_data['profile'] = self.context['profile'] #dodavamo profil u koji je ulogiran user
-        return Expense.objects.create(**validated_data)
+        return Expense.objects.create(category=category, **validated_data)
