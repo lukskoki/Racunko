@@ -22,8 +22,8 @@ const Signup = () => {
     const handleSignup = async() => {
         
         try {
-            await register({username: username, password, email});
-            router.push("/tabs/home-tab");
+
+            router.push("/login-signup/profileSetup");
         }
         catch (error: any) {
             console.error('Register failed: ', error);
