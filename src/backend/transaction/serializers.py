@@ -16,15 +16,27 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField(read_only=True)
+    category = serializers.CharField()
     store = serializers.StringRelatedField(read_only=True)
     profile = serializers.StringRelatedField(read_only=True) 
     group = serializers.StringRelatedField(read_only=True)
+    
 
     class Meta:
         model = Transaction
         fields = '__all__'
 
+    def create(self, validated_data):            #podesio create da se moze poslat categoryID samo i da se profil veze na profil s kojega se salje request
+        category_id = validated_data.pop('category', None)
+        if category_id:
+            try:
+                category = Category.objects.get(pk =category_id)
+            except Category.DoesNotExist:
+                raise ValidationError("Category doesn't exist")
+        validated_data['profile'] = self.context['profile']
+        return Transaction.objects.create(category=category, **validated_data)
+
+     
 
 class ExpenseSerializer(serializers.ModelSerializer):
     profile = serializers.StringRelatedField(read_only=True) 
