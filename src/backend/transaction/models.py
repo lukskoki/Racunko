@@ -1,5 +1,6 @@
 from django.db import models
 from user.models import Profile, Group
+from django.utils import timezone
 # Create your models here.
 
 class Category(models.Model):
@@ -19,7 +20,7 @@ class Store(models.Model):
 class Transaction(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT, related_name="transactions") #related_name omogucuje pristup svim transakcijama preko profile.transactions.all()
     amount = models.DecimalField(max_digits=10, decimal_places=2) # Mora bit decimal, a ne integer
-    date = models.DateTimeField(auto_now_add=True) #dodao auto_now_add da vidimo kada je napravljena instanca
+    date = models.DateTimeField(default=timezone.now) #maknuo da se sam ispuni, posto dopustamo korisniku da sam odabere date kada manualno radi transakciju, stavio kao default
     # Category Id mora bit foreignKey
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL, related_name="transactions") #on_delete=models.SET_NULL ce postaviti taj categoryID na null
     group = models.ForeignKey(Group, on_delete=models.PROTECT, related_name="transactions", blank=True, null=True)  # dodao da je groupID foreign key, ista sema kao username samo optional

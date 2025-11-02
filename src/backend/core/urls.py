@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('user.urls')),  # Auth endpoints
+    path('api/transaction/', include('transaction.urls')), #endpoint za categories i transaction create
 ]
