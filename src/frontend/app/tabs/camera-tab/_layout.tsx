@@ -1,28 +1,31 @@
-import React from "react";
-import {createMaterialTopTabNavigator} from "@react-navigation/material-top-tabs";
-import {Camera} from "expo-camera";
-import Skeniraj from "@/app/tabs/camera-tab/camera-tab";
-import {SafeAreaView} from "react-native-safe-area-context";
-import Profil from "@/app/tabs/profile-tab";
+import React from 'react'
+import {Stack} from "expo-router";
 
-const Tab = createMaterialTopTabNavigator();
-
-export default function TopTabs() {
+const _Layout = () => {
     return (
-        <SafeAreaView style={{flex: 1}} edges={["top"]}>
-            <Tab.Navigator
-                screenOptions={{
-                    tabBarScrollEnabled: false,
-                    tabBarIndicatorStyle:{height:3},
-                    tabBarLabelStyle: { fontWeight: "600" , fontSize: 16},
-                    tabBarStyle: { backgroundColor: "#fff"},
+        <Stack>
 
+            {/* ovo otvara kameru */}
+            <Stack.Screen
+                name="index"
+                options={{ headerShown: false }}
+            />
+            
+            {/* ovo otvara rucni unos racuna */}
+            <Stack.Screen
+                name="manual-input"
+                options={{ headerShown: false }}
+            />
+
+            {/* ovo je dodatni ekran koji se otvara kada se stisne desna strelica za kategorije */}
+            <Stack.Screen
+                name="categoryList"
+                options={{
+                    title: "Kategorije",
+                    headerBackTitleVisible: false,
                 }}
-            >
-                <Tab.Screen name={"Skeniraj"} component={Skeniraj} options={{title: "Skeniraj"}}/>
-                <Tab.Screen name={"Unesi"} component={Profil} options={{title: "Unesi"}}/>
-            </Tab.Navigator>
-        </SafeAreaView>
-
-    );
+            />
+        </Stack>
+    )
 }
+export default _Layout;

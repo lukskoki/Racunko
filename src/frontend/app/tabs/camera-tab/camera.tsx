@@ -96,9 +96,6 @@ const Skeniraj = () => {
             </View>
         );
     }
-
-
-
 }
 
 export default Skeniraj;

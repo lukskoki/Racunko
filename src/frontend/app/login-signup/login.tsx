@@ -27,10 +27,7 @@ const Login = () => {
         catch (error: any) {
             console.error('login failed: ', error);
             setErrorMessage(error.message || "Neispravan username ili password");
-
-        } 
-        
-        
+        }
     };
 
 

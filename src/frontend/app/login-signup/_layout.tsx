@@ -11,5 +11,4 @@ const _Layout = () => {
         </Stack>
     )
 }
-export default _Layout
-const styles = StyleSheet.create({})
+export default _Layout;
