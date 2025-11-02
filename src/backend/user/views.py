@@ -21,13 +21,6 @@ def register(request):
         # Kreiraj token za usera, ovo koristimo za autentikaciju u buducim requestovima
         token, created = Token.objects.get_or_create(user=user)
 
-        # Kreiraj prazan profile za usera pa cemo ga kasnije updateat
-        Profile.objects.create(
-            user=user,
-            role=request.data.get('role', 'user'),  # Default role
-            isAdmin=False
-        )
-
         return Response({
             'token': token.key, # Ovo cemo onda spremit u frontendu i koristit za buduce requests
             'user': {
