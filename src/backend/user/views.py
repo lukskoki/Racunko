@@ -7,8 +7,13 @@ from rest_framework.views import APIView
 from transaction.serializers import ExpenseSerializer
 from .serializers import UserSerializer, ProfileSerializer
 from .models import Profile
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
+import requests as http
+from django.conf import settings
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests as google_requests
+
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Dopusti bilo kome da se registrira
 def register(request):
@@ -21,6 +26,13 @@ def register(request):
 
         # Kreiraj token za usera, ovo koristimo za autentikaciju u buducim requestovima
         token, created = Token.objects.get_or_create(user=user)
+
+        # Kreiraj prazan profile za usera pa cemo ga kasnije updateat
+        Profile.objects.create(
+            user=user,
+            role=request.data.get('role', 'user'),  # Default role
+            isAdmin=False
+        )
 
         return Response({
             'token': token.key, # Ovo cemo onda spremit u frontendu i koristit za buduce requests
@@ -36,6 +48,67 @@ def register(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def google_auth(request):
+    code = request.data.get("code")
+    id_tok_direct = request.data.get("id_token")
+
+    if not code and not id_tok_direct:
+        return Response({"detail": "Missing 'code' or 'id_token'."}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    try:
+        if id_tok_direct:
+            idinfo = google_id_token.verify_oauth2_token(
+                id_tok_direct, google_requests.Request(), settings.GOOGLE_WEB_CLIENT_ID
+            )
+        else:
+            data = {
+                "code": code,
+                "client_id": settings.GOOGLE_WEB_CLIENT_ID,
+                "client_secret": settings.GOOGLE_WEB_CLIENT_SECRET,
+                "redirect_uri": settings.GOOGLE_REDIRECT_URI,  # "postmessage"
+                "grant_type": "authorization_code",
+            }
+            r = http.post("https://oauth2.googleapis.com/token", data=data, timeout=10)
+            if r.status_code != 200:
+                return Response({"detail": "Token exchange failed", "google": r.json()}, status=status.HTTP_400_BAD_REQUEST)
+
+            tok = r.json()
+            id_tok = tok.get("id_token")
+            if not id_tok:
+                return Response({"detail": "No id_token from Google"}, status=status.HTTP_400_BAD_REQUEST)
+
+            idinfo = google_id_token.verify_oauth2_token(
+                id_tok, google_requests.Request(), settings.GOOGLE_WEB_CLIENT_ID
+            )
+    except Exception as e:
+        return Response({"detail": f"Invalid id_token: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    email = idinfo.get("email")
+    name = idinfo.get("name") or ""
+    if not email:
+        return Response({"detail": "Google token has no email"}, status=status.HTTP_400_BAD_REQUEST)
+
+    User = get_user_model()
+    base_username = (email.split("@")[0] or "user").lower()
+    username = base_username
+    i = 1
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{i}"
+        i += 1
+
+    user, _ = User.objects.get_or_create(
+        email=email,
+        defaults={"username": username, "first_name": name.split(" ")[0] if name else ""},
+    )
+    # osigura da postoji i Profile kao u register-u
+    Profile.objects.get_or_create(user=user, defaults={"role": "user", "isAdmin": False})
+
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({"token": token.key, "email": email, "name": name}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
