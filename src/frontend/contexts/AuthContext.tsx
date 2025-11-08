@@ -1,6 +1,14 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { login as apilogin, register as apiregister} from '@/services/api';
 import type { User } from '@/services/api';
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
+import {
+  AuthRequestConfig,
+  DiscoveryDocument,
+  makeRedirectUri,
+  useAuthRequest,
+} from "expo-auth-session";
+
 export interface LoginProps { // Format koji login funkcija prima
     username: string;
     password: string;
@@ -19,7 +27,18 @@ interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim faj
     token: string | null;
     login: (props: LoginProps) => Promise<void>;
     register: (props: RegisterProps) => Promise<void>;
+    loginGoogle: () => Promise<void>;
 }
+
+const config: AuthRequestConfig = {
+  clientId: "google",
+  scopes: ["openid", "profile", "email"], // Podaci koje trazimo od google-a
+  redirectUri: makeRedirectUri(), // Kreira URL automatki, npr. ako je development onda exp://, u produkciji ce bit racunko://
+};
+
+const discovery: DiscoveryDocument = {
+  authorizationEndpoint: `${BASE_URL}/api/auth/authorize`, // Odredimo gdje se salje usera da se napravi authorization
+};
 
 // Sa createcontext stavaramo state koje mogu koristit sve komponente, kao neki globalni state
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +48,52 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children } : { children: ReactNode }) {
     const [user, setUser] = useState<User | undefined>(undefined);
     const [token, setToken] = useState<string | null>(null); // Ovo je za zapamtit token koj cemo kasnije koristi
+
+    // PromptAsync otvara browser u aplikaciji i ide na url koji smo zadali u DiscoveryDocument
+    // useAuthRequst handle-a oauth flow, response i request su states koji se mjenjaju kroz proces
+    const [request, response, promptAsync] = useAuthRequest(config, discovery);
+
+    // Uhvati response kad se vrati iz Google OAuth-a
+    useEffect(() => {
+     
+        if (response?.type === 'success') {
+            const { code } = response.params;
+
+            if (code) {
+                // Posalji code na backend za DRF token
+                handleGoogleCode(code);
+            }
+        } else if (response?.type === 'error') {
+            console.error('Google OAuth error:', response.error);
+        }
+    }, [response]); // Kad se response promjeni, onda prolazimo kroz funkciju
+
+    async function handleGoogleCode(code: string) {
+        try {
+            // Posalji code na backend /api/auth/google/
+            const res = await fetch(`${BASE_URL}/api/auth/google/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code })
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.detail || 'Google login failed');
+            }
+
+            const data = await res.json();
+
+            // Spremi token i user info, isto kao i obican login
+            setToken(data.token);
+            setUser(data.user);
+
+            console.log('Google login successful!');
+        } catch (error: any) {
+            console.error('Google code exchange failed:', error);
+            throw error;
+        }
+    }
 
     async function login({username, password}: LoginProps) {
 
@@ -63,12 +128,27 @@ export function AuthProvider({ children } : { children: ReactNode }) {
             throw new Error(error.message || 'Neuspjesna registracija');
         }
         
-    }   
+    } 
+    
+    async function loginGoogle() {
+
+        try{
+            if (!request) {
+                console.log("no request");
+            }
+
+            // Otvara browser i ide na zadani URL
+            // Ne vraca nista, nego samo updatea response state
+            await promptAsync();
+
+            
+        } catch(e) {console.log(e);}
+    }
 
     return (
         // S ovim omotamo ostale sve ostale komponente npr. index.tsx, sve omotane onda mogu koristit AuthContext i pristupit tokenu, useru itd.
         // children oznacava sve sto je unutar AuthProvider
-        <AuthContext.Provider value={{login, register, token, user}}>
+        <AuthContext.Provider value={{login, register,loginGoogle, token, user}}>
             {children} 
         </AuthContext.Provider>
     )
