@@ -13,7 +13,8 @@ import requests as http
 from django.conf import settings
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
-
+from urllib.parse import urlencode
+from django.http import HttpResponse
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Dopusti bilo kome da se registrira
 def register(request):
@@ -53,7 +54,6 @@ def register(request):
 def google_auth(request):
     code = request.data.get("code")
     id_tok_direct = request.data.get("id_token")
-
     if not code and not id_tok_direct:
         return Response({"detail": "Missing 'code' or 'id_token'."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,14 +64,19 @@ def google_auth(request):
                 id_tok_direct, google_requests.Request(), settings.GOOGLE_WEB_CLIENT_ID
             )
         else:
+            # redirect_uri mora biti isti kao u authorize view-u!
+            base_url = getattr(settings, 'BASE_URL', 'http://localhost:8000')
+
             data = {
                 "code": code,
                 "client_id": settings.GOOGLE_WEB_CLIENT_ID,
                 "client_secret": settings.GOOGLE_WEB_CLIENT_SECRET,
-                "redirect_uri": settings.GOOGLE_REDIRECT_URI,  # "postmessage"
+                "redirect_uri": f"{base_url}/api/auth/callback",
                 "grant_type": "authorization_code",
             }
+
             r = http.post("https://oauth2.googleapis.com/token", data=data, timeout=10)
+          
             if r.status_code != 200:
                 return Response({"detail": "Token exchange failed", "google": r.json()}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,11 +109,23 @@ def google_auth(request):
         email=email,
         defaults={"username": username, "first_name": name.split(" ")[0] if name else ""},
     )
+
     # osigura da postoji i Profile kao u register-u
     Profile.objects.get_or_create(user=user, defaults={"role": "user", "isAdmin": False})
 
     token, _ = Token.objects.get_or_create(user=user)
-    return Response({"token": token.key, "email": email, "name": name}, status=status.HTTP_200_OK)
+
+    # Vrati isti format kao i obican login
+    return Response({
+        'token': token.key,
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        }
+    }, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -185,3 +202,112 @@ def profile_setup(request):
         "expenses":ExpenseSerializer(created_expenses,many=True).data
     }, status=201)
 
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def authorize(request):
+    # Redirecta usera na google auth stranicu
+
+    google_client_id = settings.GOOGLE_WEB_CLIENT_ID
+    if not google_client_id:
+        return Response(
+            {"error": "Missing GOOGLE_WEB_CLIENT_ID"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+    # Dohvati query parametre
+    internal_client = request.GET.get("client_id")
+    redirect_uri = request.GET.get("redirect_uri")
+    state_param = request.GET.get("state", "")
+    scope = request.GET.get("scope", "openid email profile")
+
+    # Provjeri client_id
+    if internal_client != "google":
+        return Response({"error": "Invalid client"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Odredi platform (mobile ili web) na temelju redirect_uri
+    app_scheme = getattr(settings, 'APP_SCHEME')
+    base_url = getattr(settings, 'BASE_URL')
+
+    if redirect_uri == app_scheme:
+        platform = "mobile"
+    elif redirect_uri == base_url:
+        platform = "web"
+    else:
+        return Response({"error": "Invalid redirect_uri"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Dodaj platform u state (za callback)
+    state = f"{platform}|{state_param}"
+
+    if not state:
+        return Response({"error": "Invalid state"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Kreiraj Google OAuth URL
+    
+    google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
+
+    params = {
+        "client_id": google_client_id,
+        "redirect_uri": f"{base_url}/api/auth/callback",
+        "response_type": "code",
+        "scope": scope,
+        "state": state,
+        "prompt": "select_account",
+    }
+
+    redirect_url = f"{google_auth_url}?{urlencode(params)}"
+
+    print(redirect_uri)
+
+    # Django redirect
+    from django.shortcuts import redirect as django_redirect
+    return django_redirect(redirect_url)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def google_callback(request):
+
+    # Google redirecta ovdje nakon sto user odabere google account
+    # Prima code i state i onda redirecta nazad na frontend s tim podacima
+
+    code = request.GET.get('code')
+    combined_platform_and_state = request.GET.get('state')
+    error = request.GET.get('error')
+
+    if error:
+        return Response({"error": f"Google OAuth error: {error}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not combined_platform_and_state:
+        return Response({"error": "Invalid state"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Parsiraj platform i state (format: "platform|original_state")
+    parts = combined_platform_and_state.split("|", 1)
+    if len(parts) != 2:
+        return Response({"error": "Invalid state format"}, status=status.HTTP_400_BAD_REQUEST)
+
+    platform = parts[0]
+    state = parts[1]
+
+    # Kreiraj query parametre za redirect
+    outgoing_params = urlencode({
+        'code': code or '',
+        'state': state
+    })
+
+    # Odredi redirect URL na temelju platforme
+    app_scheme = getattr(settings, 'APP_SCHEME')
+    base_url = getattr(settings, 'BASE_URL')
+
+    if platform == "web":
+        redirect_url = f"{base_url}?{outgoing_params}"
+    else:  # mobile
+        redirect_url = f"{app_scheme}?{outgoing_params}"
+
+    # Redirectaj natrag na frontend s code i state
+    response = HttpResponse(
+        f'Redirecting to <a href="{redirect_url}">{redirect_url}</a>...',
+        status=302
+    )
+    response['Location'] = redirect_url
+    return response
