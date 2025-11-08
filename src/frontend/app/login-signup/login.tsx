@@ -16,7 +16,7 @@ const Login = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const { login } = useAuth();
+    const { login, loginGoogle } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za login
     const handleLogin = async() => {
         
@@ -29,6 +29,18 @@ const Login = () => {
             setErrorMessage(error.message || "Neispravan username ili password");
         }
     };
+
+    const handleLoginGoogle = async() => {
+        // Vratit ce isti response kao i obican login
+        try {
+            await loginGoogle();
+            router.push("/tabs/home-tab");
+        }
+        catch (error: any) {
+            console.error('login failed: ', error);
+            setErrorMessage(error.message || "Neispravan username ili password");
+        }
+    }
 
 
     // S ovim provjeravamo da inputi nisu prazni - ako je prazno onda je gumb zasivljen
@@ -116,7 +128,7 @@ const Login = () => {
                     {/* Google login */}
                     <TouchableOpacity
                         style={style.googleButton}
-                        onPress={() => router.push("/tabs/home-tab")}
+                        onPress={handleLoginGoogle}
                         activeOpacity={0.7}
                     >
                         <Image source={images.google} style={style.googleIcon}/>
