@@ -76,7 +76,7 @@ export default StyleSheet.create({
     },
     euro:{
         color:'#FFFFFF',
-        fontSize:37,
+        fontSize:30,
         fontWeight:'500',
     },
     profileTextContainer:{
@@ -89,14 +89,14 @@ export default StyleSheet.create({
     },
     mainProfileText:{
         width:'80%',
-        height:'45%',
+        height:'35%',
         flexDirection:'row',
         justifyContent:'flex-start',
         alignItems: 'center',
     },
     profileText: {
         color:'black',
-        fontSize:40,
+        fontSize:24,
         fontWeight:'700',
     },
     secondaryProfileText: {
@@ -106,13 +106,13 @@ export default StyleSheet.create({
     },
     detailText: {
         color:'gray',
-        fontSize:13,
+        fontSize:11,
     },
     inputContainer:{
         flexDirection:'column',
         justifyContent:'flex-start',
         alignItems:'center',
-        gap:10,
+        gap:25,
         width:'100%',
         height:'40%',
     },
@@ -142,13 +142,13 @@ export default StyleSheet.create({
     },
     input:{
         width:'70%',
-        fontSize:25,
+        fontSize:20,
         fontWeight:'300',
         textAlign:'right',
     },
     euro2: {
         color:'black',
-        fontSize:25,
+        fontSize:20,
         fontWeight:'300',
         marginRight: 15,
     },
@@ -167,7 +167,7 @@ export default StyleSheet.create({
         alignItems:'center',
     },
     buttonText:{
-        fontSize:25,
+        fontSize:20,
     },
     picker: {
         justifyContent:'center',
@@ -182,11 +182,11 @@ export default StyleSheet.create({
         alignItems:'center',
         width:'100%',
         height:'10%',
-        bottom: "8%"
+        bottom: "2%"
     },
     footerText:{
         color:'gray',
-        fontSize:13,
+        fontSize:11,
     },
     continueButton:{
         flexDirection:'row',
