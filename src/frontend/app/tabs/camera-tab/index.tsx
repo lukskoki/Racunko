@@ -2,7 +2,9 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Skeniraj from "@/app/tabs/camera-tab/camera";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ManualInput from "@/app/tabs/camera-tab/manual-input";
+
+import Unesi from "@/app/tabs/camera-tab/manual-input";
+
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -19,18 +21,17 @@ export default function TopTabs() {
                     tabBarStyle: { backgroundColor: "#fff" },
                 }}
             >
-                {/* Unesi */}
+                {/* Skeniraj */}
                 <Tab.Screen
                     name="Skeniraj"
                     component={Skeniraj}
-                    options={{ title: "Skeniraj",
-                    headerShown: false}}
+                    options={{ title: "Skeniraj"}}
                 />
 
-                {/* Skeniraj */}
+                {/* Unesi */}
                 <Tab.Screen
                     name="Unesi"
-                    component={ManualInput}
+                    component={Unesi}
                     options={{ title: "Unesi" }}
                 />
             </Tab.Navigator>

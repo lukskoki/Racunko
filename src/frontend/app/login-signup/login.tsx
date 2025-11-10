@@ -2,6 +2,7 @@ import { Pressable, Text, TextInput, View, Alert, TouchableOpacity } from 'react
 import React, {useState} from 'react'
 import stylesLandingPage from "@/app/styles/landingPage";
 import style from "@/app/styles/login_signupPage";
+import globals from "@/app/styles/globals";
 import { router } from "expo-router";
 import {Image} from "expo-image";
 import { images } from "@/app/assets";
@@ -99,8 +100,8 @@ const Login = () => {
                     </View>
                     <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
                     {errorMessage && (
-                        <View style ={style.errorContainer}>
-                            <Text style={style.errorText}>{errorMessage}</Text>
+                        <View style ={globals.errorContainer}>
+                            <Text style={globals.errorText}>{errorMessage}</Text>
                         </View>
                     )}
                 </View>

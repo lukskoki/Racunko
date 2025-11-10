@@ -2,50 +2,11 @@ import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
     container: {
-        width: '100%',
-        height: '100%',
         justifyContent: 'flex-start',
         alignSelf: 'center',
         paddingVertical: 40,
         gap: 30,
-    },
-    transactionType: {
-        width: '80%',
-        alignSelf: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    buttonExpense: {
-        backgroundColor: 'red',
-        width: '45%',
-        padding: 15,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-    },
-    buttonIncome: {
-        backgroundColor: 'green',
-        width: '45%',
-        padding: 15,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-    },
-    buttonGray: {
-        backgroundColor: 'gray',
-        opacity: 0.5,
-        width: '45%',
-        padding: 15,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
+        flex: 1,
     },
     inputContainer: {
         display: 'flex',
@@ -76,7 +37,6 @@ export default StyleSheet.create({
       display: 'flex',
       flexDirection: 'row',
       flex: 1,
-      justifyContent: 'flex-end',
     },
     text: {
         fontSize: 18,
@@ -87,6 +47,7 @@ export default StyleSheet.create({
         fontSize: 16,
         flex: 1,
         textAlign: 'right',
+        width: '100%',
     },
     text3: {
         fontSize: 20,
@@ -94,12 +55,6 @@ export default StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
-    text4: {
-        color: 'white',
-        fontSize: 20,
-        textAlign: 'center',
-    },
-
     buttonContainer: {
         display: 'flex',
         flexDirection: 'column',

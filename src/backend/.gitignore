@@ -24,7 +24,8 @@ media
 .idea/**/contentModel.xml
 
 
-
+# Node
+node_modules
 
 
 # File-based project format
