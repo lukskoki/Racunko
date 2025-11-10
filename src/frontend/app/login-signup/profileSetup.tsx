@@ -132,7 +132,7 @@ const  ProfileSetup = () => {
 
 
                    <View  style={styles.continueButton}>
-                       <Pressable style={styles.continueButtonBox} onPress={() => router.push("/login-signup/expenseSetup")}>
+                       <Pressable style={styles.continueButtonBox} onPress={() => router.push("/tabs/camera-tab/manual-input")}>
                            <Text style={styles.continue}> Nastavi </Text>
                        </Pressable>
 
