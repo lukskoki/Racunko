@@ -12,7 +12,12 @@ import { useAuth } from '@/hooks/useAuth';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {Ionicons} from "@expo/vector-icons";
 import { Picker } from '@react-native-picker/picker';
+import {SafeAreaView} from "react-native-safe-area-context";
 
+
+function UpperTab() {
+    return null;
+}
 
 const Skeniraj = () => {
     const [permission, requestPermission ] = useCameraPermissions();
@@ -117,7 +122,7 @@ const Skeniraj = () => {
                 category_id: aiResponse.category_id
             });
 
-            
+
             // Postavi editable polja
             setEditedAmount(aiResponse.amount.toString());
             setEditedCategoryId(aiResponse.category_id);
@@ -169,7 +174,7 @@ const Skeniraj = () => {
 
             console.log("Transaction created:", response);
 
-            
+
             setIsSaving(false);
             setShowSuccess(true);
 
@@ -197,10 +202,21 @@ const Skeniraj = () => {
         const yy = date.getFullYear();
         return `${dd}.${mm}.${yy}.`;
     }
-    if(!permission) return;
+    if (!permission) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }} edges={["top"]}>
+                <UpperTab />
+                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ color: "#fff" }}>Provjeravam dozvole…</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
     if(permission.granted){
         return (
             <View style={styles.container}>
+                {/* Gornji tab */}
+                <UpperTab />
                 <CameraView style={styles.camera} facing={facing} ref={cameraRef}/>
 
                 {/* Bottom Modal za rezultate */}
@@ -262,7 +278,7 @@ const Skeniraj = () => {
                                                 <Picker
                                                     selectedValue={editedCategoryId}
                                                     onValueChange={(itemValue) => setEditedCategoryId(itemValue)}
-                                                    
+
                                                     itemStyle={{fontSize: 16, color: '#333'}}
                                                 >
                                                     <Picker.Item label="Odaberi kategoriju..." value={null} />
