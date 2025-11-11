@@ -1,21 +1,45 @@
-import {Camera, CameraType, CameraView, useCameraPermissions} from "expo-camera";
-import {Button, Pressable, View, Text, TouchableOpacity, Alert, Linking, AppState,Image} from "react-native";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {Pressable, View, Text, TouchableOpacity, Alert, Linking, AppState,Image, ActivityIndicator, Modal, TextInput, Keyboard, TouchableWithoutFeedback} from "react-native";
+import {useCallback, useRef, useState} from "react";
 import styles from "../../styles/camera"
 import {useFocusEffect, useNavigation} from "expo-router";
 import {images} from "@/app/assets";
 import React from "react";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {text} from "node:stream/consumers";
+
+import { categorizeReceipt, type Category } from '@/services/api';
+import { useTransaction } from "@/hooks/useTransaction";
+import { useAuth } from '@/hooks/useAuth';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import {Ionicons} from "@expo/vector-icons";
+import { Picker } from '@react-native-picker/picker';
 
 
 const Skeniraj = () => {
     const [permission, requestPermission ] = useCameraPermissions();
     const [facing, setFacing] = useState<CameraType>('back');
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [showResultModal, setShowResultModal] = useState(false);
+    const [receiptData, setReceiptData] = useState<{
+        amount: number;
+        category_name: string;
+        category_id: number;
+    } | null>(null);
+    const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+
+    // Editable polja
+    const [editedAmount, setEditedAmount] = useState("");
+    const [editedCategoryId, setEditedCategoryId] = useState<number | null>(null);
+    const [editedDate, setEditedDate] = useState<Date>(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
     const navigation = useNavigation<any>();
     const comingFromSettings = useRef(false);
     const alertShown = useRef(false);
     const cameraRef = useRef<CameraView>(null);
+    const { token } = useAuth();
+    const {createTransaction, error} = useTransaction();
 
 
     useFocusEffect(
@@ -59,37 +83,253 @@ const Skeniraj = () => {
     }
 
     async function takePicture() {
+        if (!token) {
+            Alert.alert("Error", "Token nedostaje");
+            return;
+        }
         try {
+            setIsAnalyzing(true);
             const result = await cameraRef.current?.takePictureAsync({
                 quality: 1,
                 base64: true,
                 skipProcessing: true,
-            });
-            if(result?.uri){
-                Alert.alert(
-                    "Picture taken",
-                    result?.uri ?? "No such picture taken",
-                    [{text: "Ok", onPress: () => navigation.navigate("camera-tab")}],
-                )
+            })
+            if(!result?.base64){
+                Alert.alert("Error", "Slikanje neuspjelo");
+                setIsAnalyzing(false);
+                return;
             }
 
-        }catch(error){
-            console.log("Error taking picture:", error);
+            const aiResponse = await categorizeReceipt(result.base64, token!);
+
+            console.log("AI response:", aiResponse);
+
+            // Spremi dostupne kategorije
+            setAvailableCategories(aiResponse.available_categories);
+
+            console.log("kategorije: ", availableCategories);
+
+
+            // Spremi rezultat i prikaži ga u modalu
+            setReceiptData({
+                amount: aiResponse.amount,
+                category_name: aiResponse.category_name,
+                category_id: aiResponse.category_id
+            });
+
+            
+            // Postavi editable polja
+            setEditedAmount(aiResponse.amount.toString());
+            setEditedCategoryId(aiResponse.category_id);
+            setEditedDate(new Date());
+
+            setIsAnalyzing(false);
+            setShowResultModal(true);
+
+        } catch(error: any) {
+            console.error("Error analyzing receipt:", error);
+            setIsAnalyzing(false);
+            Alert.alert(
+                "Greška pri analizi",
+                error.message || "Nije moguće analizirati račun"
+            );
         }
+    }
+
+    async function handleSaveReceipt() {
+        try {
+            // Treba zamjenit zarez sa tockom jer se inace decimalno nece zapamtit
+            const normalizedAmount = editedAmount.replace(',', '.');
+
+            // Konvertiraj string u number
+            const amountNumber = parseFloat(normalizedAmount);
+
+            if (isNaN(amountNumber) || amountNumber <= 0) {
+                Alert.alert("Greška", "Molimo unesite ispravan iznos");
+                return;
+            }
+
+            if (!editedCategoryId) {
+                Alert.alert("Greška", "Kategorija nije odabrana");
+                return;
+            }
+
+            // Prikazi loading
+            setIsSaving(true);
+
+            // Format datuma za backend (YYYY-MM-DD)
+            const formattedDate = editedDate.toISOString().split('T')[0];
+
+            // Posalji transakciju na backend
+            const response = await createTransaction({
+                amount: amountNumber,
+                category: editedCategoryId,
+                date: formattedDate
+            });
+
+            console.log("Transaction created:", response);
+
+            
+            setIsSaving(false);
+            setShowSuccess(true);
+
+            // Zatvori modal nakon 2 sekunde
+            setTimeout(() => {
+                setShowSuccess(false);
+                setShowResultModal(false);
+                setReceiptData(null);
+            }, 2000);
+
+        } catch (error: any) {
+            setIsSaving(false);
+            Alert.alert("Greska", error.message || "Greska pri spremanju transakcije");
+        }
+    }
+
+    function handleCancelReceipt() {
+        setShowResultModal(false);
+        setReceiptData(null);
+    }
+
+    function formatDate(date: Date): string {
+        const dd = String(date.getDate()).padStart(2, "0");
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const yy = date.getFullYear();
+        return `${dd}.${mm}.${yy}.`;
     }
     if(!permission) return;
     if(permission.granted){
         return (
             <View style={styles.container}>
                 <CameraView style={styles.camera} facing={facing} ref={cameraRef}/>
+
+                {/* Bottom Modal za rezultate */}
+                <Modal
+                    visible={isAnalyzing || showResultModal}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={handleCancelReceipt}
+                >
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.bottomSheet}>
+                            {isAnalyzing ? (
+                                // Analiza racuna
+                                <>
+                                    <ActivityIndicator size="large" color="#007AFF" />
+                                    <Text style={styles.modalTitle}>Analiziram račun...</Text>
+                                    <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
+                                </>
+                            ) : isSaving ? (
+                                // Spremanje transakcije
+                                <>
+                                    <ActivityIndicator size="large" color="#007AFF" />
+                                    <Text style={styles.modalTitle}>Spremam transakciju...</Text>
+                                    <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
+                                </>
+                            ) : showSuccess ? (
+                                // Success
+                                <>
+                                    <View style={styles.successIcon}>
+                                        <Ionicons name="checkmark-circle" size={80} color="#34C759" />
+                                    </View>
+                                    <Text style={styles.modalTitle}>Uspješno spremljeno!</Text>
+                                    <Text style={styles.modalSubtitle}>Transakcija je dodana</Text>
+                                </>
+                            ) : receiptData ? (
+                                // Pregled responsa
+                                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                    <View style={{width: '100%', alignItems: 'center'}}>
+                                        <Text style={styles.modalTitle}>Račun analiziran!</Text>
+                                        <Text style={styles.modalSubtitle}>Provjerite i uredite podatke</Text>
+
+                                        <View style={styles.resultContainer}>
+                                        {/* Iznos */}
+                                        <View style={styles.inputGroup}>
+                                            <Text style={styles.inputLabel}>Iznos (€)</Text>
+                                            <TextInput
+                                                style={styles.input}
+                                                value={editedAmount}
+                                                onChangeText={setEditedAmount}
+                                                keyboardType="decimal-pad"
+                                                placeholder="0.00"
+                                            />
+                                        </View>
+
+                                        {/* Kategorija */}
+                                        <View style={styles.inputGroup}>
+                                            <Text style={styles.inputLabel}>Kategorija</Text>
+                                            <View style={styles.pickerContainer}>
+                                                <Picker
+                                                    selectedValue={editedCategoryId}
+                                                    onValueChange={(itemValue) => setEditedCategoryId(itemValue)}
+                                                    
+                                                    itemStyle={{fontSize: 16, color: '#333'}}
+                                                >
+                                                    <Picker.Item label="Odaberi kategoriju..." value={null} />
+                                                    {availableCategories.map((category) => (
+                                                        <Picker.Item
+                                                            key={category.id}
+                                                            label={category.categoryName}
+                                                            value={category.id}
+                                                        />
+                                                    ))}
+                                                </Picker>
+                                            </View>
+                                        </View>
+
+                                        {/* Datum */}
+                                        <View style={styles.inputGroup}>
+                                            <Text style={styles.inputLabel}>Datum</Text>
+                                            <Pressable onPress={() => setShowDatePicker(true)}>
+                                                <View style={styles.dateInput}>
+                                                    <Text style={styles.dateText}>{formatDate(editedDate)}</Text>
+                                                    <Ionicons name="calendar-outline" size={20} color="#007AFF" />
+                                                </View>
+                                            </Pressable>
+                                        </View>
+
+                                        {/* Date Picker Modal */}
+                                        <DateTimePickerModal
+                                            isVisible={showDatePicker}
+                                            mode="date"
+                                            onConfirm={(date) => {
+                                                setEditedDate(date);
+                                                setShowDatePicker(false);
+                                            }}
+                                            onCancel={() => setShowDatePicker(false)}
+                                        />
+                                    </View>
+
+                                    <View style={styles.buttonRow}>
+                                        <TouchableOpacity
+                                            style={styles.cancelButton}
+                                            onPress={handleCancelReceipt}
+                                        >
+                                            <Text style={styles.cancelButtonText}>Otkaži</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            style={styles.saveButton}
+                                            onPress={handleSaveReceipt}
+                                        >
+                                            <Text style={styles.saveButtonText}>Spremi</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            ) : null}
+                        </View>
+                    </View>
+                </Modal>
+
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={toggleCameraFacing} >
+                    <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing} >
                         <Image source={images.thumbnail} style={styles.flipButton}/>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={takePicture} >
+                    <TouchableOpacity onPress={takePicture} disabled={isAnalyzing}>
                         <Image source={images.shutter} style={styles.shutterButton}/>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={toggleCameraFacing}>
+                    <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing}>
                         <Image source={images.flipCamera} style={styles.flipButton}/>
                     </TouchableOpacity>
                 </View>
