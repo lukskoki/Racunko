@@ -60,7 +60,7 @@ export const register = async({username, password, email}: RegisterProps ): Prom
     if (!response.ok) {
         console.error('Register failed');
         throw new Error("Register failed");
-        
+
     }
 
     const data = await response.json();
@@ -70,54 +70,34 @@ export const register = async({username, password, email}: RegisterProps ): Prom
     return data as LoginResponse;
 }
 
+// Receipt categorization response interface
+export interface ReceiptAnalysisResponse {
+    message: string;
+    amount: number;
+    category_id: number;
+    category_name: string;
+}
 
-export async function GET(request: Request) {
-    if (!GOOGLE_CLIENT_ID) {
-        return Response.json(
-            {error: "GOOGLE_CLIENT_ID is not set"},
-            { status : 500}
-        );
+// Funkcija za slanje base64 slike racuna na AI endpoint
+export const categorizeReceipt = async(base64Image: string, token: string): Promise<ReceiptAnalysisResponse> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/transaction/categorize_receipt/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        },
+        body: JSON.stringify({
+            image: base64Image
+        })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Receipt analysis failed');
     }
 
-    const url = new URL(request.url);
-
-    let idpClientId: string;
-    const internalClient = url.searchParams.get("client_id")
-    const redirectUri = url.searchParams.get("redirect_uri");
-
-    let platform;
-
-    if (redirectUri === "racunko://") {
-        platform = "mobile";
-    }
-    else if (redirectUri === BASE_URL) {
-        platform="web";
-    }
-    else {
-        return Response.json({ error: "Invalid redirect URI"}, {status:400});
-    }
-
-
-    let state = platform + '|' + url.searchParams.get("state");
-
-    if (internalClient === "google") {
-        idpClientId= GOOGLE_CLIENT_ID;
-    } else {
-        return Response.json({error: "Invalid Client"}, {status:400});
-    }
-
-
-    const params = new URLSearchParams({
-        client_id: idpClientId,
-        redirect_uri: `${BASE_URL}/accounts/google/login/callback/`,
-        response_type: "code",
-        scope: url.searchParams.get("scope")  || "identity",
-        state: state,
-        prompt: "select_account"
-
-    })  
-
-    const googleUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-
-    return Response.redirect(googleUrl + "?" + params.toString());
+    const data = await response.json();
+    return data as ReceiptAnalysisResponse;
 }
