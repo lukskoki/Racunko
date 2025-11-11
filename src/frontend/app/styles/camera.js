@@ -166,5 +166,17 @@ export default StyleSheet.create({
         marginBottom: 20,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    pickerContainer: {
+        width: '100%',
+        backgroundColor: '#f5f5f5',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        overflow: 'hidden',
+    },
+    picker: {
+        width: '100%',
+        height: 50,
     }
 })

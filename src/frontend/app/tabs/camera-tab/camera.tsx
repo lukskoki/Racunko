@@ -1,16 +1,17 @@
 import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
-import {Pressable, View, Text, TouchableOpacity, Alert, Linking, AppState,Image, ActivityIndicator, Modal, TextInput} from "react-native";
+import {Pressable, View, Text, TouchableOpacity, Alert, Linking, AppState,Image, ActivityIndicator, Modal, TextInput, Keyboard, TouchableWithoutFeedback} from "react-native";
 import {useCallback, useRef, useState} from "react";
 import styles from "../../styles/camera"
 import {useFocusEffect, useNavigation} from "expo-router";
 import {images} from "@/app/assets";
 import React from "react";
 
-import { categorizeReceipt } from '@/services/api';
+import { categorizeReceipt, type Category } from '@/services/api';
 import { useTransaction } from "@/hooks/useTransaction";
 import { useAuth } from '@/hooks/useAuth';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {Ionicons} from "@expo/vector-icons";
+import { Picker } from '@react-native-picker/picker';
 
 
 const Skeniraj = () => {
@@ -25,10 +26,11 @@ const Skeniraj = () => {
         category_name: string;
         category_id: number;
     } | null>(null);
+    const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
 
     // Editable polja
     const [editedAmount, setEditedAmount] = useState("");
-    const [editedCategory, setEditedCategory] = useState("");
+    const [editedCategoryId, setEditedCategoryId] = useState<number | null>(null);
     const [editedDate, setEditedDate] = useState<Date>(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -102,6 +104,12 @@ const Skeniraj = () => {
 
             console.log("AI response:", aiResponse);
 
+            // Spremi dostupne kategorije
+            setAvailableCategories(aiResponse.available_categories);
+
+            console.log("kategorije: ", availableCategories);
+
+
             // Spremi rezultat i prikaži ga u modalu
             setReceiptData({
                 amount: aiResponse.amount,
@@ -109,9 +117,10 @@ const Skeniraj = () => {
                 category_id: aiResponse.category_id
             });
 
+            
             // Postavi editable polja
             setEditedAmount(aiResponse.amount.toString());
-            setEditedCategory(aiResponse.category_name);
+            setEditedCategoryId(aiResponse.category_id);
             setEditedDate(new Date());
 
             setIsAnalyzing(false);
@@ -140,8 +149,8 @@ const Skeniraj = () => {
                 return;
             }
 
-            if (!receiptData?.category_id) {
-                Alert.alert("Greska", "Kategorija nije odabrana");
+            if (!editedCategoryId) {
+                Alert.alert("Greška", "Kategorija nije odabrana");
                 return;
             }
 
@@ -154,7 +163,7 @@ const Skeniraj = () => {
             // Posalji transakciju na backend
             const response = await createTransaction({
                 amount: amountNumber,
-                category: receiptData.category_id,
+                category: editedCategoryId,
                 date: formattedDate
             });
 
@@ -228,11 +237,12 @@ const Skeniraj = () => {
                                 </>
                             ) : receiptData ? (
                                 // Pregled responsa
-                                <>
-                                    <Text style={styles.modalTitle}>Račun analiziran!</Text>
-                                    <Text style={styles.modalSubtitle}>Provjerite i uredite podatke</Text>
+                                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                    <View style={{width: '100%', alignItems: 'center'}}>
+                                        <Text style={styles.modalTitle}>Račun analiziran!</Text>
+                                        <Text style={styles.modalSubtitle}>Provjerite i uredite podatke</Text>
 
-                                    <View style={styles.resultContainer}>
+                                        <View style={styles.resultContainer}>
                                         {/* Iznos */}
                                         <View style={styles.inputGroup}>
                                             <Text style={styles.inputLabel}>Iznos (€)</Text>
@@ -248,12 +258,23 @@ const Skeniraj = () => {
                                         {/* Kategorija */}
                                         <View style={styles.inputGroup}>
                                             <Text style={styles.inputLabel}>Kategorija</Text>
-                                            <TextInput
-                                                style={styles.input}
-                                                value={editedCategory}
-                                                onChangeText={setEditedCategory}
-                                                placeholder="Kategorija"
-                                            />
+                                            <View style={styles.pickerContainer}>
+                                                <Picker
+                                                    selectedValue={editedCategoryId}
+                                                    onValueChange={(itemValue) => setEditedCategoryId(itemValue)}
+                                                    
+                                                    itemStyle={{fontSize: 16, color: '#333'}}
+                                                >
+                                                    <Picker.Item label="Odaberi kategoriju..." value={null} />
+                                                    {availableCategories.map((category) => (
+                                                        <Picker.Item
+                                                            key={category.id}
+                                                            label={category.categoryName}
+                                                            value={category.id}
+                                                        />
+                                                    ))}
+                                                </Picker>
+                                            </View>
                                         </View>
 
                                         {/* Datum */}
@@ -294,7 +315,8 @@ const Skeniraj = () => {
                                             <Text style={styles.saveButtonText}>Spremi</Text>
                                         </TouchableOpacity>
                                     </View>
-                                </>
+                                    </View>
+                                </TouchableWithoutFeedback>
                             ) : null}
                         </View>
                     </View>

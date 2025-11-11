@@ -1,7 +1,5 @@
 
 import type { LoginProps, RegisterProps } from "@/contexts/AuthContext";
-const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
-const GOOGLE_CLIENT_ID = "637622547581-11fsitp0jun44vlvrfm95li16gj9f2cn.apps.googleusercontent.com";
 export interface User {
     id: number;
     username: string;
@@ -70,12 +68,19 @@ export const register = async({username, password, email}: RegisterProps ): Prom
     return data as LoginResponse;
 }
 
+// Category interface
+export interface Category {
+    id: number;
+    categoryName: string;
+}
+
 // Receipt categorization response interface
 export interface ReceiptAnalysisResponse {
     message: string;
     amount: number;
     category_id: number;
     category_name: string;
+    available_categories: Category[];
 }
 
 // Funkcija za slanje base64 slike racuna na AI endpoint
