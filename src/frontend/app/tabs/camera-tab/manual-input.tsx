@@ -1,14 +1,5 @@
-import {
-    ActivityIndicator,
-    Animated, FlatList,
-    Keyboard, KeyboardAvoidingView, Modal, Platform,
-    Pressable,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
-} from 'react-native'
+import { Keyboard, Pressable, Text,
+    TextInput, TouchableOpacity, View} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import styles from "../../styles/manuallyTransaction";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -17,10 +8,7 @@ import {Ionicons} from "@expo/vector-icons";
 import { useTransactions } from "@/hooks/useTransactions";
 import globals from "@/app/styles/globals";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ScrollView = Animated.ScrollView;
-import {useCategories} from "@/hooks/useCategories";
-import type {Category} from "@/services/categories";
-
+import UpperTab from "@/app/tabs/camera-tab/upperTab";
 
     {/* Format za date varijablu */}
 function format(d?: Date | null) {
@@ -35,12 +23,48 @@ const ManualInput = () => {
 
     const [categoryId, setCategoryId] = useState<number | null>(null);
     const [categoryName, setCategoryName] = useState<string | null>(null);
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState<string>("");
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState<Date | null>(null);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const params = useLocalSearchParams<{
+        categoryId?: string | string[];
+        categoryName?: string | string[];
+        amount?: string | string[];
+        date?: string | string[];
+    }>();
 
+    // helper za normalizaciju
+    function toStr(v?: string | string[]) {
+        return Array.isArray(v) ? v[0] : v;   // uzmi prvi ako je array
+    }
+    const onAmountChange = (v: string) => {
+        // dopusti samo znamenke, jednu točku/zarez i max 2 decimale
+        const normalized = v.replace(",", ".");
+        if (/^\d*\.?\d{0,2}$/.test(normalized)) {
+            setAmount(v);
+        }
+    };
+
+    const idStr = toStr(params.categoryId);
+    const nameStr = toStr(params.categoryName);
+    const amountStr = toStr(params.amount);
+    const dateStr = toStr(params.date);
+
+    useEffect(() => {
+
+        if (typeof amountStr === "string") setAmount(amountStr);
+        if (dateStr) {
+            const d = new Date(dateStr);
+            if (!Number.isNaN(d.getTime())) setDate(d);
+        }
+
+        if (idStr && nameStr) {
+            setCategoryId(Number(idStr));
+            setCategoryName(nameStr);
+        }
+    }, [idStr, nameStr, amountStr, dateStr]);
 
     const { createTransaction } = useTransactions();
 
@@ -51,10 +75,11 @@ const ManualInput = () => {
             return;
         }
         const dateStr = date.toISOString().slice(0, 10);
+        const amountNumber = parseFloat(amount.replace(",", "."));
 
         {/* Tu se salju podaci na backend */}
         try {
-            await createTransaction({amount, category: categoryId, date: dateStr,});
+            await createTransaction({amount: amountNumber, category: categoryId, date: dateStr,});
             router.push("/tabs/home-tab");
         }
         catch (error: any) {
@@ -63,147 +88,96 @@ const ManualInput = () => {
         }
     }
 
-
-    const [data, setData] = useState<Category[]>([]);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [pickingCategory, setPickingCategory] = useState(false)
-    const { listCategories } = useCategories();
-
     const getCategories = async() => {
         Keyboard.dismiss();
-        setLoading(true)
-        try {
-            const res = await listCategories();
-            setPickingCategory(true);
-            setData(res);
-        } catch (e: any) {
-            setError(e.message || "Greška pri dohvaćanju kategorija");
-        } finally {
-            setLoading(false);
-        }
+        router.push({
+            pathname: "/tabs/camera-tab/categoryList",
+            params: {
+                amount: amount ? amount.toString() : "",
+                date: date ? date.toISOString() : "",
+            },
+        });
     }
 
-    if (loading) return <ActivityIndicator style={{ margin: 16 }} />;
-    if (error) return <Text style={{ color: "red", margin: 16 }}>{error}</Text>;
-
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.container}>
-                {/* Iznos */}
-                <View style={styles.inputContainer}>
+        <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+        <SafeAreaView style={[styles.container]} >
+            {/* Ovo je tab na vrhu ekrana */}
+            <UpperTab/>
 
-                    <Text style={styles.text}>Iznos</Text>
+            {/* Iznos */}
+            <View style={styles.inputContainer}>
 
-                    <View style={styles.amountWrap}>
-                        <TextInput
-                            value={amount}
-                            onChangeText={setAmount}
-                            keyboardType="decimal-pad"
-                            inputMode="numeric"
-                            maxLength={10}
-                            style={styles.amount}
-                            placeholder="0"
-                            placeholderTextColor="grey"
-                        />
-                        <Text style={{color: "red", fontSize: 25}}> €</Text>
-                    </View>
-                </View>
+                <Text style={styles.text}>Iznos</Text>
 
-                {/* Kategorija */}
-                <View style={styles.inputContainer}>
-                    <Text style={styles.text}>Kategorija</Text>
-                    <View style={styles.amountWrap}>
-
-                        {/* Ovo nas salje na categoyrList stranicu da se odabere kategorija */}
-                        <Pressable onPress={() => getCategories()}
-                                   style={styles.chooseCategory}>
-                            <Text style={styles.text2}>{!categoryName ? "Odaberi" : categoryName}</Text>
-                            <Ionicons name="chevron-forward" size={20}/>
-                        </Pressable>
-                    </View>
-                </View>
-
-                {/* Datum */}
-                <View style={styles.inputContainer}>
-                    <Text style={styles.text}>Datum</Text>
-
-                    {/* “Input” koji otvara modal */}
-                    <Pressable onPress={() => setOpen(true)}>
-                        <TextInput
-                            editable={false}
-                            pointerEvents="none"
-                            value={format(date) || "Odaberi"}
-                            style={styles.text2}
-                        />
-                    </Pressable>
-
-                    {/* Modal date picker */}
-                    <DateTimePickerModal
-                        isVisible={open}
-                        mode="date"
-                        onConfirm={(d) => { setDate(d); setOpen(false); }}
-                        onCancel={() => setOpen(false)}
+                <View style={styles.amountWrap}>
+                    <TextInput
+                        value={amount}
+                        onChangeText={onAmountChange}
+                        keyboardType="numeric"
+                        maxLength={10}
+                        style={styles.amount}
+                        placeholder="0"
+                        placeholderTextColor="grey"
                     />
-                </View>
-
-                {errorMessage && (
-                    <View style ={globals.errorContainer}>
-                        <Text style={globals.errorText}>{errorMessage}</Text>
-                    </View>
-                )}
-
-                {/* Spremi gumb */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => sendToBackend()}
-                    >
-                        <Text style={styles.text3}>SPREMI</Text>
-                    </TouchableOpacity>
+                    <Text style={{color: "red", fontSize: 25}}> €</Text>
                 </View>
             </View>
 
-            <Modal
-                visible={pickingCategory}
-                animationType="slide"
-                onRequestClose={() => {
-                    Keyboard.dismiss();
-                    setPickingCategory(false)
-                }}
-            >
-                <SafeAreaView style={{ flex: 1}}>
-                    {loading ? (
-                        <ActivityIndicator style={{ margin: 16 }} />
-                    ) :
-                        <View style={{ flex: 1 }}>
-                            <FlatList
-                                data={data}
-                                keyExtractor={(c) => String(c.id)}
-                                renderItem={({ item }) => (
-                                    <Pressable
-                                        onPress={() => setPickingCategory(false)}
-                                        style={{
-                                            paddingVertical: 12,
-                                            paddingHorizontal: 16,
-                                            borderBottomWidth: 1,
-                                            borderColor: "#eee",
-                                            backgroundColor: item.id === selectedId ? "#f2f2f2" : "white",
-                                        }}
-                                    >
-                                        <Text style={{ fontWeight: item.id === selectedId ? "700" : "400" }}>
-                                            {item.categoryName}
-                                        </Text>
-                                    </Pressable>
-                                )}
-                                ListEmptyComponent={<Text style={{ padding: 16 }}>Nema kategorija.</Text>}
-                            />
-                        </View>
-                    }
-                </SafeAreaView>
-            </Modal>
+            {/* Kategorija */}
+            <View style={styles.inputContainer}>
+                <Text style={styles.text}>Kategorija</Text>
+                <View style={styles.amountWrap}>
+
+                    {/* Ovo nas salje na categoyrList stranicu da se odabere kategorija */}
+                    <Pressable onPress={() => getCategories()}
+                               style={styles.chooseCategory}>
+                        <Text style={styles.text2}>{!categoryName ? "Odaberi" : categoryName}</Text>
+                        <Ionicons name="chevron-forward" size={20}/>
+                    </Pressable>
+                </View>
+            </View>
+
+            {/* Datum */}
+            <View style={styles.inputContainer}>
+                <Text style={styles.text}>Datum</Text>
+
+                {/* “Input” koji otvara modal */}
+                <Pressable onPress={() => setOpen(true)}>
+                    <TextInput
+                        editable={false}
+                        pointerEvents="none"
+                        value={format(date) || "Odaberi"}
+                        style={styles.text2}
+                    />
+                </Pressable>
+
+                {/* Modal date picker */}
+                <DateTimePickerModal
+                    isVisible={open}
+                    mode="date"
+                    onConfirm={(d) => { setDate(d); setOpen(false); }}
+                    onCancel={() => setOpen(false)}
+                />
+            </View>
+
+            {errorMessage && (
+                <View style ={globals.errorContainer}>
+                    <Text style={globals.errorText}>{errorMessage}</Text>
+                </View>
+            )}
+
+            {/* Spremi gumb */}
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => sendToBackend()}
+                >
+                    <Text style={styles.text3}>SPREMI</Text>
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
+        </Pressable>
     )
 }
 export default ManualInput;

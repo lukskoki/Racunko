@@ -9,10 +9,9 @@ const _Layout = () => {
                 keyboardHandlingEnabled: Platform.OS === "ios" ? false : undefined,
             }}
         >
-
             {/* ovo otvara kameru */}
             <Stack.Screen
-                name="index"
+                name="camera"
                 options={{ headerShown: false }}
             />
             
@@ -26,7 +25,9 @@ const _Layout = () => {
             <Stack.Screen
                 name="categoryList"
                 options={{
+                    headerShown: true,
                     title: "Kategorije",
+                    headerBackTitle: "Unesi",
                 }}
             />
         </Stack>
