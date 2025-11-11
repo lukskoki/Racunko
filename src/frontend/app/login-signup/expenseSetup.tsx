@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import styles from "@/app/styles/expenseSetup";
 import {Animated, FlatList, Modal, Pressable, Text, TextInput, View} from "react-native";
 import {Image} from "expo-image";
@@ -23,7 +23,7 @@ const Categories = [
 
 ];
 
-const expenseSetup = () => {
+const ExpenseSetup = () => {
         const [modalVisible, setModalVisible] = useState(false);
         const [isPressed, setIsPressed] = useState(false);
         const [isSelected, setSelected] = useState<string[]>([]);
@@ -176,4 +176,4 @@ const expenseSetup = () => {
 }
 
 
-export default expenseSetup;
+export default ExpenseSetup;

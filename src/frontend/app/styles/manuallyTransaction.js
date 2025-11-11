@@ -2,11 +2,12 @@ import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
     container: {
-        justifyContent: 'flex-start',
-        alignSelf: 'center',
-        paddingVertical: 40,
-        gap: 30,
+        display: 'flex',
         flex: 1,
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        alignSelf: 'center',
+        gap: 30,
     },
     inputContainer: {
         display: 'flex',

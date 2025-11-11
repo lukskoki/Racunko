@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Pressable, ActivityIndicator } from "react-native";
+import {Text, FlatList, Pressable, ActivityIndicator, View} from "react-native";
 import { useCategories } from "@/hooks/useCategories";
 import type { Category } from "@/services/categories";
-import {useLocalSearchParams, useRouter} from "expo-router";
+import { useLocalSearchParams, useRouter} from "expo-router";
+import {SafeAreaView} from "react-native-safe-area-context";
+import styles from "@/app/styles/expenseSetup";
+import {Image} from "expo-image";
+import {images} from "@/app/assets";
 
 export default function CategoryList({
                                          onSelect,
@@ -34,11 +38,7 @@ export default function CategoryList({
 
     function handlePick(cat: Category) {
         setSelectedId(cat.id);
-        // Ako ti je proslijeđen callback, zovi ga
         onSelect?.(cat.id);
-
-        // ⇩⇩ VAŽNO: vrati se na prvi ekran uz parametre
-        // Promijeni pathname u točan put do tvog prvog ekrana!
         router.replace({
             pathname: "/tabs/camera-tab/manual-input",
             params: {
@@ -51,28 +51,25 @@ export default function CategoryList({
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
             <FlatList
                 data={data}
                 keyExtractor={(c) => String(c.id)}
                 renderItem={({ item }) => (
                     <Pressable
                         onPress={() => handlePick(item)}
-                        style={{
-                            paddingVertical: 12,
-                            paddingHorizontal: 16,
-                            borderBottomWidth: 1,
-                            borderColor: "#eee",
-                            backgroundColor: item.id === selectedId ? "#f2f2f2" : "white",
-                        }}
+                        style={styles.modalBoxComponent}
                     >
-                        <Text style={{ fontWeight: item.id === selectedId ? "700" : "400" }}>
-                            {item.categoryName}
-                        </Text>
+                        <View style={styles.componentPictureBox}>
+                            <Image source={images.hrana} style={styles.componentPicture}/>
+                        </View>
+                        <View style={styles.componentBox}>
+                            <Text style={styles.componentName}> {item.categoryName} </Text>
+                        </View>
                     </Pressable>
                 )}
                 ListEmptyComponent={<Text style={{ padding: 16 }}>Nema kategorija.</Text>}
             />
-        </View>
+        </SafeAreaView>
     );
 }

@@ -3,8 +3,8 @@ import {StyleSheet} from 'react-native';
 export default StyleSheet.create({
     container: {
         width: '100%',
-        height: '100%',
         justifyContent: 'center',
+        flex: 1,
     },
     message: {
         textAlign: 'center',
@@ -24,7 +24,6 @@ export default StyleSheet.create({
         height:'12%',
 
     },
-
     text: {
         fontSize: 24,
         fontWeight: 'bold',
