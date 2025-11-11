@@ -161,5 +161,10 @@ export default StyleSheet.create({
     dateText: {
         fontSize: 16,
         color: '#333',
+    },
+    successIcon: {
+        marginBottom: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })

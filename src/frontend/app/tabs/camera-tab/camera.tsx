@@ -7,6 +7,7 @@ import {images} from "@/app/assets";
 import React from "react";
 
 import { categorizeReceipt } from '@/services/api';
+import { useTransaction } from "@/hooks/useTransaction";
 import { useAuth } from '@/hooks/useAuth';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {Ionicons} from "@expo/vector-icons";
@@ -16,6 +17,8 @@ const Skeniraj = () => {
     const [permission, requestPermission ] = useCameraPermissions();
     const [facing, setFacing] = useState<CameraType>('back');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [showResultModal, setShowResultModal] = useState(false);
     const [receiptData, setReceiptData] = useState<{
         amount: number;
@@ -34,6 +37,7 @@ const Skeniraj = () => {
     const alertShown = useRef(false);
     const cameraRef = useRef<CameraView>(null);
     const { token } = useAuth();
+    const {createTransaction, error} = useTransaction();
 
 
     useFocusEffect(
@@ -123,12 +127,54 @@ const Skeniraj = () => {
         }
     }
 
-    function handleSaveReceipt() {
+    async function handleSaveReceipt() {
+        try {
+            // Treba zamjenit zarez sa tockom jer se inace decimalno nece zapamtit
+            const normalizedAmount = editedAmount.replace(',', '.');
 
+            // Konvertiraj string u number
+            const amountNumber = parseFloat(normalizedAmount);
 
-        // Zatvori modal i resetuj state
-        setShowResultModal(false);
-        setReceiptData(null);
+            if (isNaN(amountNumber) || amountNumber <= 0) {
+                Alert.alert("Greška", "Molimo unesite ispravan iznos");
+                return;
+            }
+
+            if (!receiptData?.category_id) {
+                Alert.alert("Greska", "Kategorija nije odabrana");
+                return;
+            }
+
+            // Prikazi loading
+            setIsSaving(true);
+
+            // Format datuma za backend (YYYY-MM-DD)
+            const formattedDate = editedDate.toISOString().split('T')[0];
+
+            // Posalji transakciju na backend
+            const response = await createTransaction({
+                amount: amountNumber,
+                category: receiptData.category_id,
+                date: formattedDate
+            });
+
+            console.log("Transaction created:", response);
+
+            
+            setIsSaving(false);
+            setShowSuccess(true);
+
+            // Zatvori modal nakon 2 sekunde
+            setTimeout(() => {
+                setShowSuccess(false);
+                setShowResultModal(false);
+                setReceiptData(null);
+            }, 2000);
+
+        } catch (error: any) {
+            setIsSaving(false);
+            Alert.alert("Greska", error.message || "Greska pri spremanju transakcije");
+        }
     }
 
     function handleCancelReceipt() {
@@ -158,14 +204,30 @@ const Skeniraj = () => {
                     <View style={styles.modalOverlay}>
                         <View style={styles.bottomSheet}>
                             {isAnalyzing ? (
-                                // Loading faza
+                                // Analiza racuna
                                 <>
                                     <ActivityIndicator size="large" color="#007AFF" />
                                     <Text style={styles.modalTitle}>Analiziram račun...</Text>
                                     <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
                                 </>
+                            ) : isSaving ? (
+                                // Spremanje transakcije
+                                <>
+                                    <ActivityIndicator size="large" color="#007AFF" />
+                                    <Text style={styles.modalTitle}>Spremam transakciju...</Text>
+                                    <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
+                                </>
+                            ) : showSuccess ? (
+                                // Success
+                                <>
+                                    <View style={styles.successIcon}>
+                                        <Ionicons name="checkmark-circle" size={80} color="#34C759" />
+                                    </View>
+                                    <Text style={styles.modalTitle}>Uspješno spremljeno!</Text>
+                                    <Text style={styles.modalSubtitle}>Transakcija je dodana</Text>
+                                </>
                             ) : receiptData ? (
-                                // Rezultati
+                                // Pregled responsa
                                 <>
                                     <Text style={styles.modalTitle}>Račun analiziran!</Text>
                                     <Text style={styles.modalSubtitle}>Provjerite i uredite podatke</Text>

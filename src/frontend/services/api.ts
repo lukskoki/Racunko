@@ -101,3 +101,30 @@ export const categorizeReceipt = async(base64Image: string, token: string): Prom
     const data = await response.json();
     return data as ReceiptAnalysisResponse;
 }
+
+
+
+export const sendTransaction = async(amount: number, category:number, date:string , token: string): Promise<any> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/transaction/manual_create_transaction/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        },
+        body: JSON.stringify({
+            amount,
+            category,
+            date
+        })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Create transaction failed');
+    }
+
+    const data = await response.json();
+    return data;
+}
