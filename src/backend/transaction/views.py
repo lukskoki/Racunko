@@ -40,29 +40,19 @@ def manual_create_transaction(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def categorize_receipt(request):
-    # Ocekuje sliku racuna
+    # Ocekuje base64 encoded sliku racuna u JSON body-u
 
-    if 'image' not in request.FILES:
-        return Response(
-            {'error': 'Slika nije uploadana'}, status = 400
-        )
-    
-    image_file = request.FILES['image']
+    base64_image = request.data.get("image")
 
-    allowed_types=['image/jpeg', 'image/jpg', 'image/png']
-
-    if image_file.content_type not in allowed_types:
-        return Response(
-            {'error': f"Nepodrzan tip slike"}, status=400
-        )
+    if not base64_image:
+        return Response({
+            'error': 'Missing image field in request body'
+        }, status=400)
 
     categories = Category.objects.all()
     categories_data = CategorySerializer(categories, many=True).data # Pretvorimo u json da mozemo poslati AI-u
 
 
-    base64_image = base64.b64encode(image_file.read()).decode('utf-8') # Pretvorimo sliku u base64 da mozemo poslat prema OpenAI
-
-    
     try:
         ai_result = extract_category(base64_image, categories_data)
 
@@ -71,15 +61,16 @@ def categorize_receipt(request):
         return Response({
             'message': 'Success',
             'amount': ai_result['amount'],
-            'cateory_id': category.id, # Vratimo informaciju frontendu
-            'category_name': category.categoryName
+            'category_id': category.id, # Vratimo informaciju frontendu
+            'category_name': category.categoryName,
+            'available_categories': categories_data # Vratimo i sve kategorije koje postoje da ih u frontendu mozemo prikazat
         }, status = 200)
 
     except Category.DoesNotExist:
         return Response({
             'error': f"AI je vratio nepostojecu kategoriju: {ai_result['category']}"
         }, status = 400)
-    
+
     except Exception as e:
         return Response({
             'error': f"Greska pri kategorizaciji: {str(e)}"
