@@ -125,11 +125,53 @@ export const sendTransaction = async(amount: number, category:number, date:strin
         })
     });
 
+    const text = await response.text();
+    console.log('RAW response:', response.status, text);
+
+    if (!response.ok) {
+        try {
+            const errorData = JSON.parse(text);
+            throw new Error(errorData.error || 'Create transaction failed');
+        } catch {
+            throw new Error(`Create transaction failed (status ${response.status})`);
+        }
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch {
+        throw new Error('Server vratio neočekivan format odgovora (nije JSON)');
+    }
+
+    // Kovacevicev dio
+    // if (!response.ok) {
+    //     const errorData = await response.json();
+    //     throw new Error(errorData.error || 'Create transaction failed');
+    // }
+    //
+    // const data = await response.json();
+    // return data;
+}
+
+// s ovime se dohvacaju sve kategorije
+export const getCategories = async(token: string): Promise<Category[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/transaction/categories/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        }
+    });
+
+    console.log("Dohvaćam kategorije.");
+
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Create transaction failed');
+        throw new Error(errorData.error || 'Fetching categories failed');
     }
 
     const data = await response.json();
-    return data;
+    return data as Category[];
 }

@@ -5,7 +5,7 @@ import styles from "../../styles/manuallyTransaction";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {router, useLocalSearchParams} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
-import { useTransactions } from "@/hooks/useTransactions";
+import { useTransaction } from "@/hooks/useTransaction";
 import globals from "@/app/styles/globals";
 import { SafeAreaView } from "react-native-safe-area-context";
 import UpperTab from "@/app/tabs/camera-tab/upperTab";
@@ -66,7 +66,7 @@ const ManualInput = () => {
         }
     }, [idStr, nameStr, amountStr, dateStr]);
 
-    const { createTransaction } = useTransactions();
+    const { createTransaction } = useTransaction();
 
     const sendToBackend = async() => {
         // Minimalna validacija
@@ -77,9 +77,11 @@ const ManualInput = () => {
         const dateStr = date.toISOString().slice(0, 10);
         const amountNumber = parseFloat(amount.replace(",", "."));
 
+        console.log(`Amount: ${amountNumber}, category: ${categoryId}, date: ${dateStr}`);
+
         {/* Tu se salju podaci na backend */}
         try {
-            await createTransaction({amount: amountNumber, category: categoryId, date: dateStr,});
+            await createTransaction({amount: amountNumber, category: categoryId, date: dateStr});
             router.push("/tabs/home-tab");
         }
         catch (error: any) {

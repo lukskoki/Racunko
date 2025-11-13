@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Text, FlatList, Pressable, ActivityIndicator, View} from "react-native";
 import { useCategories } from "@/hooks/useCategories";
-import type { Category } from "@/services/categories";
+import type { Category } from "@/services/api";
 import { useLocalSearchParams, useRouter} from "expo-router";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styles from "@/app/styles/expenseSetup";
@@ -13,12 +13,10 @@ export default function CategoryList({
                                      }: { onSelect?: (id: number) => void }) {
     const router = useRouter();
     const { listCategories } = useCategories();
-    const [data, setData] = useState<Category[]>([]);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [data, setData] = useState<Category[]>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const params = useLocalSearchParams<{ amount?: string; date?: string }>();
-
 
     useEffect(() => {
         (async () => {
@@ -37,7 +35,6 @@ export default function CategoryList({
     if (error) return <Text style={{ color: "red", margin: 16 }}>{error}</Text>;
 
     function handlePick(cat: Category) {
-        setSelectedId(cat.id);
         onSelect?.(cat.id);
         router.replace({
             pathname: "/tabs/camera-tab/manual-input",
@@ -60,9 +57,9 @@ export default function CategoryList({
                         onPress={() => handlePick(item)}
                         style={styles.modalBoxComponent}
                     >
-                        <View style={styles.componentPictureBox}>
-                            <Image source={images.hrana} style={styles.componentPicture}/>
-                        </View>
+                        {/*<View style={styles.componentPictureBox}>*/}
+                        {/*    <Image source={images.hrana} style={styles.componentPicture}/>*/}
+                        {/*</View>*/}
                         <View style={styles.componentBox}>
                             <Text style={styles.componentName}> {item.categoryName} </Text>
                         </View>
