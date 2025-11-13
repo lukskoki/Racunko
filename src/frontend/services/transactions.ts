@@ -8,9 +8,9 @@ export interface TransactionInput {
 
 export interface Transaction {
     id: number;
-    amount: string;            // DRF najčešće vraća decimalu kao string
-    category: number | string; // uskladi s backend serializerom
-    date: string;              // ISO datum
+    amount: string;
+    category: number | string;
+    date: string;
 }
 
 export function buildTransactionPayload(input: TransactionInput) {

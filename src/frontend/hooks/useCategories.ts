@@ -1,13 +1,24 @@
-import type { Category } from "@/services/categories";
-import {CATEGORY_PATH} from "@/services/categories";
-import {useApi} from "@/services/api";
-
-export function useCategories() {
-    const { apiFetch } = useApi();
-
-    async function listCategories(): Promise<Category[]> {
-        return await apiFetch<Category[]>(CATEGORY_PATH, { method: "GET" });
-    }
-
-    return { listCategories };
-}
+// import { getCategories, type Category } from "@/services/categories";
+//
+// export function useCategories() {
+//     async function listCategories(): Promise<Category[]> {
+//         return getCategories();
+//     }
+//     return { listCategories };
+// }
+//
+//
+// import { Transaction, TransactionInput, buildTransactionPayload, TRANSACTION_PATH} from "@/services/transactions";
+// import {useApi} from "@/services/api";
+//
+// export function useTransactions() {
+//     const { apiFetch } = useApi();
+//
+//     async function createTransaction(input: TransactionInput): Promise<Transaction> {
+//         const payload = buildTransactionPayload(input);
+//
+//         return await apiFetch<Transaction>(TRANSACTION_PATH, { method: "POST", json: payload });
+//     }
+//
+//     return { createTransaction };
+// }
