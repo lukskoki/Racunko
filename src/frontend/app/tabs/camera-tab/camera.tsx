@@ -13,11 +13,8 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {Ionicons} from "@expo/vector-icons";
 import { Picker } from '@react-native-picker/picker';
 import {SafeAreaView} from "react-native-safe-area-context";
+import UpperTab from "@/app/tabs/camera-tab/upperTab";
 
-
-function UpperTab() {
-    return null;
-}
 
 const Skeniraj = () => {
     const [permission, requestPermission ] = useCameraPermissions();
@@ -204,7 +201,7 @@ const Skeniraj = () => {
     }
     if (!permission) {
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }} edges={["top"]}>
+            <SafeAreaView style={{ flex: 1}} edges={["top"]}>
                 <UpperTab />
                 <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
                     <Text style={{ color: "#fff" }}>Provjeravam dozvole…</Text>
@@ -214,142 +211,144 @@ const Skeniraj = () => {
     }
     if(permission.granted){
         return (
-            <View style={styles.container}>
-                {/* Gornji tab */}
-                <UpperTab />
-                <CameraView style={styles.camera} facing={facing} ref={cameraRef}/>
+            <SafeAreaView style={{ flex: 1}} edges={["top"]}>
+                <View style={styles.container}>
+                    {/* Gornji tab */}
+                    <UpperTab />
+                    <CameraView style={styles.camera} facing={facing} ref={cameraRef}/>
 
-                {/* Bottom Modal za rezultate */}
-                <Modal
-                    visible={isAnalyzing || showResultModal}
-                    transparent={true}
-                    animationType="slide"
-                    onRequestClose={handleCancelReceipt}
-                >
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.bottomSheet}>
-                            {isAnalyzing ? (
-                                // Analiza racuna
-                                <>
-                                    <ActivityIndicator size="large" color="#007AFF" />
-                                    <Text style={styles.modalTitle}>Analiziram račun...</Text>
-                                    <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
-                                </>
-                            ) : isSaving ? (
-                                // Spremanje transakcije
-                                <>
-                                    <ActivityIndicator size="large" color="#007AFF" />
-                                    <Text style={styles.modalTitle}>Spremam transakciju...</Text>
-                                    <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
-                                </>
-                            ) : showSuccess ? (
-                                // Success
-                                <>
-                                    <View style={styles.successIcon}>
-                                        <Ionicons name="checkmark-circle" size={80} color="#34C759" />
-                                    </View>
-                                    <Text style={styles.modalTitle}>Uspješno spremljeno!</Text>
-                                    <Text style={styles.modalSubtitle}>Transakcija je dodana</Text>
-                                </>
-                            ) : receiptData ? (
-                                // Pregled responsa
-                                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                                    <View style={{width: '100%', alignItems: 'center'}}>
-                                        <Text style={styles.modalTitle}>Račun analiziran!</Text>
-                                        <Text style={styles.modalSubtitle}>Provjerite i uredite podatke</Text>
-
-                                        <View style={styles.resultContainer}>
-                                        {/* Iznos */}
-                                        <View style={styles.inputGroup}>
-                                            <Text style={styles.inputLabel}>Iznos (€)</Text>
-                                            <TextInput
-                                                style={styles.input}
-                                                value={editedAmount}
-                                                onChangeText={setEditedAmount}
-                                                keyboardType="decimal-pad"
-                                                placeholder="0.00"
-                                            />
+                    {/* Bottom Modal za rezultate */}
+                    <Modal
+                        visible={isAnalyzing || showResultModal}
+                        transparent={true}
+                        animationType="slide"
+                        onRequestClose={handleCancelReceipt}
+                    >
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.bottomSheet}>
+                                {isAnalyzing ? (
+                                    // Analiza racuna
+                                    <>
+                                        <ActivityIndicator size="large" color="#007AFF" />
+                                        <Text style={styles.modalTitle}>Analiziram račun...</Text>
+                                        <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
+                                    </>
+                                ) : isSaving ? (
+                                    // Spremanje transakcije
+                                    <>
+                                        <ActivityIndicator size="large" color="#007AFF" />
+                                        <Text style={styles.modalTitle}>Spremam transakciju...</Text>
+                                        <Text style={styles.modalSubtitle}>Molimo pričekajte</Text>
+                                    </>
+                                ) : showSuccess ? (
+                                    // Success
+                                    <>
+                                        <View style={styles.successIcon}>
+                                            <Ionicons name="checkmark-circle" size={80} color="#34C759" />
                                         </View>
+                                        <Text style={styles.modalTitle}>Uspješno spremljeno!</Text>
+                                        <Text style={styles.modalSubtitle}>Transakcija je dodana</Text>
+                                    </>
+                                ) : receiptData ? (
+                                    // Pregled responsa
+                                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                        <View style={{width: '100%', alignItems: 'center'}}>
+                                            <Text style={styles.modalTitle}>Račun analiziran!</Text>
+                                            <Text style={styles.modalSubtitle}>Provjerite i uredite podatke</Text>
 
-                                        {/* Kategorija */}
-                                        <View style={styles.inputGroup}>
-                                            <Text style={styles.inputLabel}>Kategorija</Text>
-                                            <View style={styles.pickerContainer}>
-                                                <Picker
-                                                    selectedValue={editedCategoryId}
-                                                    onValueChange={(itemValue) => setEditedCategoryId(itemValue)}
+                                            <View style={styles.resultContainer}>
+                                                {/* Iznos */}
+                                                <View style={styles.inputGroup}>
+                                                    <Text style={styles.inputLabel}>Iznos (€)</Text>
+                                                    <TextInput
+                                                        style={styles.input}
+                                                        value={editedAmount}
+                                                        onChangeText={setEditedAmount}
+                                                        keyboardType="decimal-pad"
+                                                        placeholder="0.00"
+                                                    />
+                                                </View>
 
-                                                    itemStyle={{fontSize: 16, color: '#333'}}
+                                                {/* Kategorija */}
+                                                <View style={styles.inputGroup}>
+                                                    <Text style={styles.inputLabel}>Kategorija</Text>
+                                                    <View style={styles.pickerContainer}>
+                                                        <Picker
+                                                            selectedValue={editedCategoryId}
+                                                            onValueChange={(itemValue) => setEditedCategoryId(itemValue)}
+
+                                                            itemStyle={{fontSize: 16, color: '#333'}}
+                                                        >
+                                                            <Picker.Item label="Odaberi kategoriju..." value={null} />
+                                                            {availableCategories.map((category) => (
+                                                                <Picker.Item
+                                                                    key={category.id}
+                                                                    label={category.categoryName}
+                                                                    value={category.id}
+                                                                />
+                                                            ))}
+                                                        </Picker>
+                                                    </View>
+                                                </View>
+
+                                                {/* Datum */}
+                                                <View style={styles.inputGroup}>
+                                                    <Text style={styles.inputLabel}>Datum</Text>
+                                                    <Pressable onPress={() => setShowDatePicker(true)}>
+                                                        <View style={styles.dateInput}>
+                                                            <Text style={styles.dateText}>{formatDate(editedDate)}</Text>
+                                                            <Ionicons name="calendar-outline" size={20} color="#007AFF" />
+                                                        </View>
+                                                    </Pressable>
+                                                </View>
+
+                                                {/* Date Picker Modal */}
+                                                <DateTimePickerModal
+                                                    isVisible={showDatePicker}
+                                                    mode="date"
+                                                    onConfirm={(date) => {
+                                                        setEditedDate(date);
+                                                        setShowDatePicker(false);
+                                                    }}
+                                                    onCancel={() => setShowDatePicker(false)}
+                                                />
+                                            </View>
+
+                                            <View style={styles.buttonRow}>
+                                                <TouchableOpacity
+                                                    style={styles.cancelButton}
+                                                    onPress={handleCancelReceipt}
                                                 >
-                                                    <Picker.Item label="Odaberi kategoriju..." value={null} />
-                                                    {availableCategories.map((category) => (
-                                                        <Picker.Item
-                                                            key={category.id}
-                                                            label={category.categoryName}
-                                                            value={category.id}
-                                                        />
-                                                    ))}
-                                                </Picker>
+                                                    <Text style={styles.cancelButtonText}>Otkaži</Text>
+                                                </TouchableOpacity>
+
+                                                <TouchableOpacity
+                                                    style={styles.saveButton}
+                                                    onPress={handleSaveReceipt}
+                                                >
+                                                    <Text style={styles.saveButtonText}>Spremi</Text>
+                                                </TouchableOpacity>
                                             </View>
                                         </View>
-
-                                        {/* Datum */}
-                                        <View style={styles.inputGroup}>
-                                            <Text style={styles.inputLabel}>Datum</Text>
-                                            <Pressable onPress={() => setShowDatePicker(true)}>
-                                                <View style={styles.dateInput}>
-                                                    <Text style={styles.dateText}>{formatDate(editedDate)}</Text>
-                                                    <Ionicons name="calendar-outline" size={20} color="#007AFF" />
-                                                </View>
-                                            </Pressable>
-                                        </View>
-
-                                        {/* Date Picker Modal */}
-                                        <DateTimePickerModal
-                                            isVisible={showDatePicker}
-                                            mode="date"
-                                            onConfirm={(date) => {
-                                                setEditedDate(date);
-                                                setShowDatePicker(false);
-                                            }}
-                                            onCancel={() => setShowDatePicker(false)}
-                                        />
-                                    </View>
-
-                                    <View style={styles.buttonRow}>
-                                        <TouchableOpacity
-                                            style={styles.cancelButton}
-                                            onPress={handleCancelReceipt}
-                                        >
-                                            <Text style={styles.cancelButtonText}>Otkaži</Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity
-                                            style={styles.saveButton}
-                                            onPress={handleSaveReceipt}
-                                        >
-                                            <Text style={styles.saveButtonText}>Spremi</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            ) : null}
+                                    </TouchableWithoutFeedback>
+                                ) : null}
+                            </View>
                         </View>
-                    </View>
-                </Modal>
+                    </Modal>
 
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing} >
-                        <Image source={images.thumbnail} style={styles.flipButton}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={takePicture} disabled={isAnalyzing}>
-                        <Image source={images.shutter} style={styles.shutterButton}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing}>
-                        <Image source={images.flipCamera} style={styles.flipButton}/>
-                    </TouchableOpacity>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing} >
+                            <Image source={images.thumbnail} style={styles.flipButton}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={takePicture} disabled={isAnalyzing}>
+                            <Image source={images.shutter} style={styles.shutterButton}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing}>
+                            <Image source={images.flipCamera} style={styles.flipButton}/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 }
