@@ -52,7 +52,8 @@ export const register = async({username, password, email}: RegisterProps ): Prom
         body: JSON.stringify({
             username,
             password,
-            email
+            email,
+
         })
     });
 
@@ -175,4 +176,31 @@ export const getCategories = async(token: string): Promise<Category[]> => {
 
     const data = await response.json();
     return data as Category[];
+}
+
+
+// sa ovime šaljemo podatke o profilu
+export const sendProfileInfo = async(token: string, income: number, notifications: boolean, income_date: number, expenses: {category: number, amount: number }[]): Promise<any> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/profile_setup/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({
+            income,
+            notifications,
+            income_date,
+            expenses
+        }),
+    });
+    if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Greška pri slanju podataka: ${error}`);
+    }
+
+    return await response.json();
+
 }
