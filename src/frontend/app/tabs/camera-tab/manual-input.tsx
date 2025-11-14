@@ -1,10 +1,16 @@
-import {Keyboard, Pressable, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native'
-import React, {useState} from 'react'
+import { Keyboard, Pressable, Text,
+    TextInput, TouchableOpacity, View} from 'react-native'
+import React, {useEffect, useState} from 'react'
 import styles from "../../styles/manuallyTransaction";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import {router} from "expo-router";
+import {router, useLocalSearchParams} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
+import { useTransaction } from "@/hooks/useTransaction";
+import globals from "@/app/styles/globals";
+import { SafeAreaView } from "react-native-safe-area-context";
+import UpperTab from "@/app/tabs/camera-tab/upperTab";
 
+    {/* Format za date varijablu */}
 function format(d?: Date | null) {
     if (!d) return "";
     const dd = String(d.getDate()).padStart(2, "0");
@@ -13,48 +19,93 @@ function format(d?: Date | null) {
     return `${dd}.${mm}.${yy}.`;
 }
 
-
-
 const ManualInput = () => {
-    const [amount, setAmount] = useState("");
-    const [category, setCategory] = useState("")
-    const [type, setType] = useState("expense")
+
+    const [categoryId, setCategoryId] = useState<number | null>(null);
+    const [categoryName, setCategoryName] = useState<string | null>(null);
+    const [amount, setAmount] = useState<string>("");
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState<Date | null>(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const sendToBackend = async() => {
+    const params = useLocalSearchParams<{
+        categoryId?: string | string[];
+        categoryName?: string | string[];
+        amount?: string | string[];
+        date?: string | string[];
+    }>();
 
-        try {
-            await login({username: username, password});
-            router.push("/tabs/home-tab");
-        }
-        catch (error: any) {
-            console.error('login failed: ', error);
-            setErrorMessage(error.message || "Neispravan username ili password");
+    // helper za normalizaciju
+    function toStr(v?: string | string[]) {
+        return Array.isArray(v) ? v[0] : v;   // uzmi prvi ako je array
+    }
+    const onAmountChange = (v: string) => {
+        // dopusti samo znamenke, jednu točku/zarez i max 2 decimale
+        const normalized = v.replace(",", ".");
+        if (/^\d*\.?\d{0,2}$/.test(normalized)) {
+            setAmount(v);
         }
     };
 
+    const idStr = toStr(params.categoryId);
+    const nameStr = toStr(params.categoryName);
+    const amountStr = toStr(params.amount);
+    const dateStr = toStr(params.date);
+
+    useEffect(() => {
+
+        if (typeof amountStr === "string") setAmount(amountStr);
+        if (dateStr) {
+            const d = new Date(dateStr);
+            if (!Number.isNaN(d.getTime())) setDate(d);
+        }
+
+        if (idStr && nameStr) {
+            setCategoryId(Number(idStr));
+            setCategoryName(nameStr);
+        }
+    }, [idStr, nameStr, amountStr, dateStr]);
+
+    const { createTransaction } = useTransaction();
+
+    const sendToBackend = async() => {
+        // Minimalna validacija
+        if (!amount || !date || !categoryId) {
+            setErrorMessage("Iznos, kategorija i datum su obavezni.");
+            return;
+        }
+        const dateStr = date.toISOString().slice(0, 10);
+        const amountNumber = parseFloat(amount.replace(",", "."));
+
+        console.log(`Amount: ${amountNumber}, category: ${categoryId}, date: ${dateStr}`);
+
+        {/* Tu se salju podaci na backend */}
+        try {
+            await createTransaction({amount: amountNumber, category: categoryId, date: dateStr});
+            router.push("/tabs/home-tab");
+        }
+        catch (error: any) {
+            console.error('sending failed: ', error);
+            setErrorMessage(error.message || "Greška prilikom slanja!");
+        }
+    }
+
+    const getCategories = async() => {
+        Keyboard.dismiss();
+        router.push({
+            pathname: "/tabs/camera-tab/categoryList",
+            params: {
+                amount: amount ? amount.toString() : "",
+                date: date ? date.toISOString() : "",
+            },
+        });
+    }
+
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.container}>
-
-            <View style={styles.transactionType}>
-                {/* TROŠAK gumb */}
-                <TouchableOpacity
-                    onPress={() => setType("expense")}
-                    style={type === "expense" ? styles.buttonExpense : styles.buttonGray}
-                >
-                    <Text style={styles.text4}>Trošak</Text>
-                </TouchableOpacity>
-
-                {/* PRIHOD gumb */}
-                <TouchableOpacity
-                    style={type === "income" ? styles.buttonIncome : styles.buttonGray}
-                    onPress={() => setType("income")}
-                >
-                    <Text style={styles.text4}>Prihod</Text>
-                </TouchableOpacity>
-            </View>
+        <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+        <SafeAreaView style={[styles.container]} >
+            {/* Ovo je tab na vrhu ekrana */}
+            <UpperTab/>
 
             {/* Iznos */}
             <View style={styles.inputContainer}>
@@ -64,15 +115,14 @@ const ManualInput = () => {
                 <View style={styles.amountWrap}>
                     <TextInput
                         value={amount}
-                        onChangeText={setAmount}
-                        keyboardType="number-pad"
-                        inputMode="numeric"
+                        onChangeText={onAmountChange}
+                        keyboardType="numeric"
                         maxLength={10}
-                        style={[type === "expense" ? {color: "red"} : {color: "green"}, styles.amount]}
+                        style={styles.amount}
                         placeholder="0"
                         placeholderTextColor="grey"
                     />
-                    <Text style={[type === "expense" ? {color: "red"} : {color: "green"}, {fontSize: 25}]}> €</Text>
+                    <Text style={{color: "red", fontSize: 25}}> €</Text>
                 </View>
             </View>
 
@@ -80,18 +130,14 @@ const ManualInput = () => {
             <View style={styles.inputContainer}>
                 <Text style={styles.text}>Kategorija</Text>
                 <View style={styles.amountWrap}>
-                    <TextInput
-                        value={category}
-                        keyboardType="number-pad"
-                        inputMode="numeric"
-                        maxLength={10}
-                    />
-                    <Pressable onPress={() => router.push("/tabs/camera-tab/categoryList")} style={styles.chooseCategory}>
-                        <TextInput value={!category ? "Odaberi" : category} readOnly style={styles.text2}></TextInput>
+
+                    {/* Ovo nas salje na categoyrList stranicu da se odabere kategorija */}
+                    <Pressable onPress={() => getCategories()}
+                               style={styles.chooseCategory}>
+                        <Text style={styles.text2}>{!categoryName ? "Odaberi" : categoryName}</Text>
                         <Ionicons name="chevron-forward" size={20}/>
                     </Pressable>
                 </View>
-
             </View>
 
             {/* Datum */}
@@ -103,7 +149,7 @@ const ManualInput = () => {
                     <TextInput
                         editable={false}
                         pointerEvents="none"
-                        value={format(date) || "Odaberi datum"}
+                        value={format(date) || "Odaberi"}
                         style={styles.text2}
                     />
                 </Pressable>
@@ -117,6 +163,12 @@ const ManualInput = () => {
                 />
             </View>
 
+            {errorMessage && (
+                <View style ={globals.errorContainer}>
+                    <Text style={globals.errorText}>{errorMessage}</Text>
+                </View>
+            )}
+
             {/* Spremi gumb */}
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
@@ -126,8 +178,8 @@ const ManualInput = () => {
                     <Text style={styles.text3}>SPREMI</Text>
                 </TouchableOpacity>
             </View>
-        </View>
-        </TouchableWithoutFeedback>
+        </SafeAreaView>
+        </Pressable>
     )
 }
 export default ManualInput;

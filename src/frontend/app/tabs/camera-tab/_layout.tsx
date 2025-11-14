@@ -1,13 +1,17 @@
 import React from 'react'
 import {Stack} from "expo-router";
+import {Platform} from "react-native";
 
 const _Layout = () => {
     return (
-        <Stack>
-
+        <Stack
+            screenOptions={{
+                keyboardHandlingEnabled: Platform.OS === "ios" ? false : undefined,
+            }}
+        >
             {/* ovo otvara kameru */}
             <Stack.Screen
-                name="index"
+                name="camera"
                 options={{ headerShown: false }}
             />
             
@@ -21,8 +25,9 @@ const _Layout = () => {
             <Stack.Screen
                 name="categoryList"
                 options={{
+                    headerShown: true,
                     title: "Kategorije",
-                    headerBackTitleVisible: false,
+                    headerBackTitle: "Unesi",
                 }}
             />
         </Stack>

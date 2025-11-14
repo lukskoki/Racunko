@@ -207,14 +207,13 @@ export default StyleSheet.create({
         width:'70%',
         height:'100%',
         flexDirection:'row',
-        justifyContent:'space-between',
+        justifyContent:'center',
         alignItems: 'center',
     },
     componentName:{
         fontSize:17,
         color:'black',
     },
-
     closeButtonBox:{
         width:'15%',
         height:'40%',

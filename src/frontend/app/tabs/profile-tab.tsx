@@ -6,8 +6,18 @@ import {Image} from "expo-image";
 import {assertTSTypeElement} from "@babel/types";
 import {images} from "@/app/assets";
 import {router} from "expo-router";
+import { useAuth } from '@/hooks/useAuth';
 
 const Profil = () => {
+    const { logout } = useAuth();
+
+    const handleLogout = () => {
+        // Ocisti token i user data
+        logout();
+    
+        router.replace("/");
+    };
+
     return (
         <SafeAreaView style={styles.display}>
             <View style={styles.profileHeaderBox}>
@@ -18,7 +28,7 @@ const Profil = () => {
                 <View style={styles.line}></View>
             </View>
             <View style={styles.logOutBox} >
-                <Pressable onPress={() => router.push("/")} style={styles.logOutButton}>
+                <Pressable onPress={handleLogout} style={styles.logOutButton}>
                     <Text style={styles.logOutText}>Log Out</Text>
                 </Pressable>
             </View>
