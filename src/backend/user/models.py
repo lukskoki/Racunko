@@ -21,9 +21,12 @@ class Profile(models.Model):
     income = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     allowance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     notifications = models.BooleanField(default=False)  #dodano za profile create page 1
-    income_date = models.CharField(blank=True, null=True, max_length=5, validators=[RegexValidator(r'^\d{2}-\d{2}$', 'Date must be formatted as DD-MM format')])   #stavio charfield s DD-MM formatom i validatorom
-     #dodano  za profile create page 1, stavljam integer za sad ako gledamo 1., 2. itd. u mjesecu. Ne tocan datum
-
+    income_date = models.CharField(blank=True, null=True, max_length=5)
+    
+    
+    #stari: income_date = models.CharField(blank=True, null=True, max_length=5, validators=[RegexValidator(r'^\d{2}-\d{2}$', 'Date must be formatted as DD-MM format')])   #stavio charfield s DD-MM formatom i validatorom
+    #mjenjam income_date da bude CharField, posto se s frontenda salje samo dan u mjesecu(tj. datum)
+    
 
     def __str__(self):
         return f"Profile({self.user.username})"
