@@ -114,9 +114,14 @@ export default StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3,
         elevation: 4,
+        display: 'flex',
+        justifyContent: "center",
     },
     buttonDisabled: {
         backgroundColor: '#93B7F1',
+        opacity: 0.6,
+    },
+    buttonDisabledGoogle: {
         opacity: 0.6,
     },
     text: {

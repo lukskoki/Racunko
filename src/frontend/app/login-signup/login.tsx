@@ -137,15 +137,19 @@ const Login = () => {
 
                         {/* Gumb za login */}
                         <TouchableOpacity
-                            style={[style.button, !isFormValid && style.buttonDisabled]}
+                            style={[style.button, (!isFormValid) && style.buttonDisabled, (isFormValid && isLoadingLogin) && style.buttonDisabled]}
                             onPress={handleLogin}
                             disabled={!isFormValid}
                             activeOpacity={0.7}
                         >
-                            {isLoadingLogin ? (
-                                <ActivityIndicator size="small" color="white" />
-                            ) : (
-                                <Text style={style.text}>Prijavi se</Text>
+                            <Text style={style.text}>Prijavi se</Text>
+
+                            {isLoadingLogin && (
+                                <ActivityIndicator
+                                    size="small"
+                                    color="black"
+                                    style={{ position: "absolute" }}
+                                />
                             )}
                         </TouchableOpacity>
 
@@ -157,17 +161,19 @@ const Login = () => {
 
                         {/* Google login */}
                         <TouchableOpacity
-                            style={style.googleButton}
+                            style={[style.googleButton, isLoadingGoogle && style.buttonDisabledGoogle]}
                             onPress={handleLoginGoogle}
                             activeOpacity={0.7}
                         >
-                            {isLoadingGoogle ? (
-                                <ActivityIndicator size="small"/>
-                            ) : (
-                                <>
-                                    <Image source={images.google} style={style.googleIcon}/>
-                                    <Text style={style.googleText}>Continue with Google</Text>
-                                </>
+                            <Image source={images.google} style={style.googleIcon}/>
+                            <Text style={style.googleText}>Continue with Google</Text>
+
+                            {isLoadingGoogle && (
+                                <ActivityIndicator
+                                    size="small"
+                                    color="black"
+                                    style={{ position: "absolute" }}
+                                />
                             )}
                         </TouchableOpacity>
                     </View>
