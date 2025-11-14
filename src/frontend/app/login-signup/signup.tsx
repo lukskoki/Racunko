@@ -36,9 +36,13 @@ const Signup = () => {
         const handleSignUpGoogle = async() => {
             // Vratit ce isti response kao i obican login
             try {
-                await loginGoogle();
-                // Navigiraj samo ako je register uspjesan
-                router.push("/login-signup/profileSetup");
+                const loggedInUser = await loginGoogle();
+                // Provjeri je li profile setup zavrsen
+                if (loggedInUser.profile_completed) {
+                    router.push("/tabs/home-tab");
+                } else {
+                    router.push("/login-signup/profileSetup");
+                }
             }
             catch (error: any) {
                 console.error('Google login failed: ', error);
@@ -46,7 +50,7 @@ const Signup = () => {
                 if (error.message !== 'Prijava otkazana') {
                     setErrorMessage(error.message || "Google prijava neuspješna");
                 }
-            
+
             }
         }
 

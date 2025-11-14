@@ -27,7 +27,7 @@ interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim faj
     token: string | null;
     login: (props: LoginProps) => Promise<User>;
     register: (props: RegisterProps) => Promise<User>;
-    loginGoogle: () => Promise<void>;
+    loginGoogle: () => Promise<User>;
     logout: () => void;
 }
 
@@ -96,7 +96,10 @@ export function AuthProvider({ children } : { children: ReactNode }) {
             setToken(data.token);
             setUser(data.user);
 
+            console.log("token: ", data.token);
+
             console.log('Google login successful!');
+            return data.user; // Vrati user objekt
         } catch (error: any) {
             console.error('Google code exchange failed:', error);
             throw error;
@@ -140,7 +143,7 @@ export function AuthProvider({ children } : { children: ReactNode }) {
 
     } 
     
-    async function loginGoogle() {
+    async function loginGoogle(): Promise<User> {
 
         try{
             if (!request) {
@@ -151,7 +154,6 @@ export function AuthProvider({ children } : { children: ReactNode }) {
             setGoogleAuthError(null);
 
             // Otvara browser i ide na zadani URL
-            // Ne vraca nista, nego samo updatea response state
             const result = await promptAsync();
 
             // Ako je user otkazao ili doslo je do errora, bacamo error
@@ -162,6 +164,17 @@ export function AuthProvider({ children } : { children: ReactNode }) {
             if (result.type === 'error') {
                 throw new Error(result.error?.message || 'Google OAuth greška');
             }
+
+            // Ako je success, dohvati code i posalji na backend
+            if (result.type === 'success') {
+                const { code } = result.params;
+                if (code) {
+                    const loggedInUser = await handleGoogleCode(code);
+                    return loggedInUser;
+                }
+            }
+
+            throw new Error('Google login nije vratio code');
 
         } catch(e: any) {
             console.log('Google login error:', e);
