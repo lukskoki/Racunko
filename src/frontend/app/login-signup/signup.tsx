@@ -18,7 +18,7 @@ const Signup = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const { register } = useAuth();
+    const { register, loginGoogle } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za register
     const handleSignup = async() => {
         
@@ -33,6 +33,22 @@ const Signup = () => {
         } 
         
     };
+        const handleSignUpGoogle = async() => {
+            // Vratit ce isti response kao i obican login
+            try {
+                await loginGoogle();
+                // Navigiraj samo ako je register uspjesan
+                router.push("/login-signup/profileSetup");
+            }
+            catch (error: any) {
+                console.error('Google login failed: ', error);
+                // Prikazi error poruku samo ako nije user otkazao
+                if (error.message !== 'Prijava otkazana') {
+                    setErrorMessage(error.message || "Google prijava neuspješna");
+                }
+            
+            }
+        }
 
     // S ovim provjeravamo da inputi nisu prazni - ako je prazno onda je gumb zasivljen
     const isFormValid = username.trim() !== '' && email.trim() !== '' && password.trim() !== '';
@@ -133,7 +149,7 @@ const Signup = () => {
                     {/* Google sign up */}
                     <TouchableOpacity
                         style={style.googleButton}
-                        onPress={() => router.push("/tabs/home-tab")}
+                        onPress={handleSignUpGoogle}
                         activeOpacity={0.7}
                     >
                         <Image source={images.google} style={style.googleIcon}/>

@@ -28,6 +28,7 @@ interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim faj
     login: (props: LoginProps) => Promise<void>;
     register: (props: RegisterProps) => Promise<void>;
     loginGoogle: () => Promise<void>;
+    logout: () => void;
 }
 
 const config: AuthRequestConfig = {
@@ -53,9 +54,12 @@ export function AuthProvider({ children } : { children: ReactNode }) {
     // useAuthRequst handle-a oauth flow, response i request su states koji se mjenjaju kroz proces
     const [request, response, promptAsync] = useAuthRequest(config, discovery);
 
+    // State za tracking Google auth statusa
+    const [googleAuthError, setGoogleAuthError] = useState<string | null>(null);
+
     // Uhvati response kad se vrati iz Google OAuth-a
     useEffect(() => {
-     
+
         if (response?.type === 'success') {
             const { code } = response.params;
 
@@ -65,6 +69,10 @@ export function AuthProvider({ children } : { children: ReactNode }) {
             }
         } else if (response?.type === 'error') {
             console.error('Google OAuth error:', response.error);
+            setGoogleAuthError(response.error?.message || 'Google OAuth greška');
+        } else if (response?.type === 'dismiss' || response?.type === 'cancel') {
+            console.log('User cancelled Google sign in');
+            setGoogleAuthError('Prijava otkazana');
         }
     }, [response]); // Kad se response promjeni, onda prolazimo kroz funkciju
 
@@ -134,22 +142,45 @@ export function AuthProvider({ children } : { children: ReactNode }) {
 
         try{
             if (!request) {
-                console.log("no request");
+                throw new Error("OAuth request nije spreman");
             }
+
+            // Resetiraj prethodni error
+            setGoogleAuthError(null);
 
             // Otvara browser i ide na zadani URL
             // Ne vraca nista, nego samo updatea response state
-            await promptAsync();
+            const result = await promptAsync();
 
-            
-        } catch(e) {console.log(e);}
+            // Ako je user otkazao ili doslo je do errora, bacamo error
+            if (result.type === 'cancel' || result.type === 'dismiss') {
+                throw new Error('Prijava otkazana');
+            }
+
+            if (result.type === 'error') {
+                throw new Error(result.error?.message || 'Google OAuth greška');
+            }
+
+        } catch(e: any) {
+            console.log('Google login error:', e);
+            throw e; // Propagiraj error dalje
+        }
+    }
+
+    function logout() {
+        // Clear-aj user i token state
+        setUser(undefined);
+        setToken(null);
+        setGoogleAuthError(null);
+
+        console.log("User logged out");
     }
 
     return (
         // S ovim omotamo ostale sve ostale komponente npr. index.tsx, sve omotane onda mogu koristit AuthContext i pristupit tokenu, useru itd.
         // children oznacava sve sto je unutar AuthProvider
-        <AuthContext.Provider value={{login, register,loginGoogle, token, user}}>
-            {children} 
+        <AuthContext.Provider value={{login, register, loginGoogle, logout, token, user}}>
+            {children}
         </AuthContext.Provider>
     )
 }

@@ -35,11 +35,16 @@ const Login = () => {
         // Vratit ce isti response kao i obican login
         try {
             await loginGoogle();
+            // Navigiraj samo ako je login uspjesan
             router.push("/tabs/home-tab");
         }
         catch (error: any) {
-            console.error('login failed: ', error);
-            setErrorMessage(error.message || "Neispravan username ili password");
+            console.error('Google login failed: ', error);
+            // Prikazi error poruku samo ako nije user otkazao
+            if (error.message !== 'Prijava otkazana') {
+                setErrorMessage(error.message || "Google prijava neuspješna");
+            }
+        
         }
     }
 
