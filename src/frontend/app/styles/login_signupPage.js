@@ -100,7 +100,7 @@ export default StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-evenly',
         alignItems:'center',
-        gap: 40,
+        gap: 30,
     },
     button: {
         paddingHorizontal: 20,
@@ -114,14 +114,26 @@ export default StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3,
         elevation: 4,
+        display: 'flex',
+        justifyContent: "center",
     },
     buttonDisabled: {
         backgroundColor: '#93B7F1',
         opacity: 0.6,
     },
+    buttonDisabledGoogle: {
+        opacity: 0.6,
+    },
     text: {
         color:'white',
         fontSize:20,
+    },
+    passwordAndErrorContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        width: '100%',
+        alignItems:'center',
     },
     separator: {
         display: 'flex',

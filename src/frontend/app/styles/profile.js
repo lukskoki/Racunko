@@ -49,15 +49,15 @@ export default StyleSheet.create({
     logOutText:{
         color:'white',
         fontWeight:800,
-        fontSize:35,
+        fontSize:30,
     },
     logOutButton:{
-        width:'60%',
-        height:'70%',
+        paddingVertical: 20,
+        paddingHorizontal: 30,
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:'#2563EB',
-        borderRadius:50,
+        borderRadius:30,
 
     }
 })

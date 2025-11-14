@@ -9,6 +9,7 @@ export default StyleSheet.create({
         padding: 12,
         borderLeftWidth: 4,
         borderLeftColor: '#EF4444',
+        marginBottom: 8,
     },
     errorText: {
         color: '#991B1B',
@@ -16,4 +17,12 @@ export default StyleSheet.create({
         fontWeight: '500',
         textAlign: 'center',
     },
+    temporaryText: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+    }
 });

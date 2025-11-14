@@ -1,4 +1,4 @@
-import { Pressable, Text, TextInput, View, Alert, TouchableOpacity } from 'react-native'
+import {Pressable, Text, TextInput, View, Alert, TouchableOpacity, ActivityIndicator} from 'react-native'
 import React, {useState} from 'react'
 import stylesLandingPage from "@/app/styles/landingPage";
 import style from "@/app/styles/login_signupPage";
@@ -16,12 +16,15 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoadingLogin, setLoadingLogin] = useState(false);
+    const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
     const { login, loginGoogle } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za login
     const handleLogin = async() => {
 
         try {
+            setLoadingLogin(true);
             const loggedInUser = await login({username: username, password});
             // Provjeri je li profile setup zavrsen
             if (loggedInUser.profile_completed) {
@@ -29,16 +32,20 @@ const Login = () => {
             } else {
                 router.push("/login-signup/profileSetup");
             }
+
         }
         catch (error: any) {
             console.error('login failed: ', error);
             setErrorMessage(error.message || "Neispravan username ili password");
+        } finally {
+            setLoadingLogin(false);
         }
     };
 
     const handleLoginGoogle = async() => {
         // Vratit ce isti response kao i obican login
         try {
+            setIsLoadingGoogle(true);
             const loggedInUser = await loginGoogle();
             // Provjeri je li profile setup zavrsen
             if (loggedInUser.profile_completed) {
@@ -53,7 +60,9 @@ const Login = () => {
             if (error.message !== 'Prijava otkazana') {
                 setErrorMessage(error.message || "Google prijava neuspješna");
             }
-
+        }
+        finally {
+            setIsLoadingGoogle(false);
         }
     }
 
@@ -113,26 +122,35 @@ const Login = () => {
                                     color="#666"/>
                             </Pressable>
                         </View>
-                        <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
-                        {errorMessage && (
-                            <View style ={globals.errorContainer}>
-                                <Text style={globals.errorText}>{errorMessage}</Text>
-                            </View>
-                        )}
+                        <View style={style.passwordAndErrorContainer}>
+                            <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
+                            {errorMessage && (
+                                <View style ={globals.errorContainer}>
+                                    <Text style={globals.errorText}>{errorMessage}</Text>
+                                </View>
+                            )}
+                        </View>
                     </View>
-
 
 
                     <View style={style.buttonsContainer}>
 
                         {/* Gumb za login */}
                         <TouchableOpacity
-                            style={[style.button, !isFormValid && style.buttonDisabled]}
+                            style={[style.button, (!isFormValid) && style.buttonDisabled, (isFormValid && isLoadingLogin) && style.buttonDisabled]}
                             onPress={handleLogin}
                             disabled={!isFormValid}
                             activeOpacity={0.7}
                         >
                             <Text style={style.text}>Prijavi se</Text>
+
+                            {isLoadingLogin && (
+                                <ActivityIndicator
+                                    size="small"
+                                    color="black"
+                                    style={{ position: "absolute" }}
+                                />
+                            )}
                         </TouchableOpacity>
 
                         <View style={style.separator}>
@@ -143,12 +161,20 @@ const Login = () => {
 
                         {/* Google login */}
                         <TouchableOpacity
-                            style={style.googleButton}
+                            style={[style.googleButton]}
                             onPress={handleLoginGoogle}
                             activeOpacity={0.7}
                         >
                             <Image source={images.google} style={style.googleIcon}/>
                             <Text style={style.googleText}>Continue with Google</Text>
+
+                            {isLoadingGoogle && (
+                                <ActivityIndicator
+                                    size="small"
+                                    color="black"
+                                    style={{ position: "absolute" }}
+                                />
+                            )}
                         </TouchableOpacity>
                     </View>
                 </View>

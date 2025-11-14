@@ -18,12 +18,12 @@ const Signup = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const { register, loginGoogle } = useAuth();
+    const { loginGoogle, register } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za register
     const handleSignup = async() => {
         
         try {
-
+            // await register({username: username, password, email});
             router.push("/login-signup/profileSetup");
         }
         catch (error: any) {
@@ -137,7 +137,7 @@ const Signup = () => {
                         {/* Gumb za registraciju */}
                         <TouchableOpacity
                             style={[style.button, !isFormValid && style.buttonDisabled]}
-                            onPress={handleSignup}
+                            onPress={handleSignUpGoogle}
                             disabled={!isFormValid}
                             activeOpacity={0.7}
                         >
