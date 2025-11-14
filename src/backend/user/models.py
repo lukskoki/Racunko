@@ -22,6 +22,7 @@ class Profile(models.Model):
     allowance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     notifications = models.BooleanField(default=False)  #dodano za profile create page 1
     income_date = models.CharField(blank=True, null=True, max_length=5)
+    profile_completed = models.BooleanField(default=False)  # True ako je user zavrsio profile setup
     
     
     #stari: income_date = models.CharField(blank=True, null=True, max_length=5, validators=[RegexValidator(r'^\d{2}-\d{2}$', 'Date must be formatted as DD-MM format')])   #stavio charfield s DD-MM formatom i validatorom

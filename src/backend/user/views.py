@@ -182,8 +182,11 @@ def profile_setup(request):
     profile_serializer = ProfileSerializer(profile, data = profile_data, partial=True)
 
     if profile_serializer.is_valid():
-        profile_serializer.save()     #updajtamo profil
-    else: 
+        profile_instance = profile_serializer.save()     #updajtamo profil
+        # Oznaci da je profile setup zavrsen
+        profile_instance.profile_completed = True
+        profile_instance.save()
+    else:
         return Response(profile_serializer.errors, status=400)
 
     created_expenses = []  #ovdje stavljamo sve koje su uspjesno napravljene
