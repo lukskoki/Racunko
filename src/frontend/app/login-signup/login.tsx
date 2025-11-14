@@ -22,8 +22,13 @@ const Login = () => {
     const handleLogin = async() => {
 
         try {
-            await login({username: username, password});
-            router.push("/tabs/home-tab");
+            const loggedInUser = await login({username: username, password});
+            // Provjeri je li profile setup zavrsen
+            if (loggedInUser.profile_completed) {
+                router.push("/tabs/home-tab");
+            } else {
+                router.push("/login-signup/profileSetup");
+            }
         }
         catch (error: any) {
             console.error('login failed: ', error);
