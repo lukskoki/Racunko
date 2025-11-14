@@ -9,27 +9,12 @@ const _Layout = () => {
                 keyboardHandlingEnabled: Platform.OS === "ios" ? false : undefined,
             }}
         >
-            {/* ovo otvara kameru */}
+            {/* Glavni camera tab s tab switchingom */}
             <Stack.Screen
-                name="camera"
-                options={{ headerShown: false }}
-            />
-            
-            {/* ovo otvara rucni unos racuna */}
-            <Stack.Screen
-                name="manual-input"
+                name="index"
                 options={{ headerShown: false }}
             />
 
-            {/* ovo je dodatni ekran koji se otvara kada se stisne desna strelica za kategorije */}
-            <Stack.Screen
-                name="categoryList"
-                options={{
-                    headerShown: true,
-                    title: "Kategorije",
-                    headerBackTitle: "Unesi",
-                }}
-            />
         </Stack>
     )
 }
