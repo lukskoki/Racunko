@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, ReactNode } from "react";
 
-export type ExpenseInput = { id: number; amount: number };
+export type ExpenseInput = { category: number; amount: number };
 
 type ProfileSetupState = {
     income: number | null;

@@ -46,7 +46,7 @@ const ExpenseSetup = () => {
             );
         };
         const expenses: ExpenseInput[] = isSelected.map(id =>({
-            id: id,
+            category: id,
             amount: Number(amount[String(id)]),
         }))
 

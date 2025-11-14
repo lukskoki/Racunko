@@ -180,7 +180,7 @@ export const getCategories = async(token: string): Promise<Category[]> => {
 
 
 // sa ovime šaljemo podatke o profilu
-export const sendProfileInfo = async(token: string, income: number, notifications: boolean, income_date: number, expenses: {id: number, amount: number }[]): Promise<any> => {
+export const sendProfileInfo = async(token: string, income: number, notifications: boolean, income_date: number, expenses: {category: number, amount: number }[]): Promise<any> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
 
     const response = await fetch(`${url}/api/auth/profile_setup/`, {
