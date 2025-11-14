@@ -1,5 +1,4 @@
-import { Keyboard, Pressable, Text,
-    TextInput, TouchableOpacity, View} from 'react-native'
+import { Keyboard, Pressable, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import styles from "../../styles/manuallyTransaction";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -7,8 +6,6 @@ import {router, useLocalSearchParams} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
 import { useTransaction } from "@/hooks/useTransaction";
 import globals from "@/app/styles/globals";
-import { SafeAreaView } from "react-native-safe-area-context";
-import UpperTab from "@/app/tabs/camera-tab/upperTab";
 
     {/* Format za date varijablu */}
 function format(d?: Date | null) {
@@ -19,7 +16,7 @@ function format(d?: Date | null) {
     return `${dd}.${mm}.${yy}.`;
 }
 
-const ManualInput = () => {
+const ManualInputView = () => {
 
     const [categoryId, setCategoryId] = useState<number | null>(null);
     const [categoryName, setCategoryName] = useState<string | null>(null);
@@ -103,10 +100,7 @@ const ManualInput = () => {
 
     return (
         <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
-        <SafeAreaView style={[styles.container]} >
-            {/* Ovo je tab na vrhu ekrana */}
-            <UpperTab/>
-
+        <View style={[styles.container]} >
             {/* Iznos */}
             <View style={styles.inputContainer}>
 
@@ -144,7 +138,7 @@ const ManualInput = () => {
             <View style={styles.inputContainer}>
                 <Text style={styles.text}>Datum</Text>
 
-                {/* “Input” koji otvara modal */}
+                {/* "Input" koji otvara modal */}
                 <Pressable onPress={() => setOpen(true)}>
                     <TextInput
                         editable={false}
@@ -178,8 +172,8 @@ const ManualInput = () => {
                     <Text style={styles.text3}>SPREMI</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
         </Pressable>
     )
 }
-export default ManualInput;
+export default ManualInputView;
