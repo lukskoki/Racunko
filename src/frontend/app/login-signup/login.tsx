@@ -20,7 +20,7 @@ const Login = () => {
     const { login, loginGoogle } = useAuth();
     // Ovdje handleamo input od usera i saljemo ga dalje u api request za login
     const handleLogin = async() => {
-        
+
         try {
             await login({username: username, password});
             router.push("/tabs/home-tab");
@@ -53,96 +53,99 @@ const Login = () => {
     const isFormValid = username.trim() !== '' && password.trim() !== '';
 
     return (
-        <View style={stylesLandingPage.display}>
+        <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+            <View style={stylesLandingPage.display}>
 
-            <View style={stylesLandingPage.container}>
-                <Text style={stylesLandingPage.mainHeader}>Računko</Text>
-            </View>
-
-            <View style={style.loginPage}>
-                <View style={style.titleBox}>
-                    <Text style={style.title}>Dobrodošli Nazad</Text>
-                    <Text style={style.secondaryTitle}>Upišite svoje podatke</Text>
+                <View style={stylesLandingPage.container}>
+                    <Text style={stylesLandingPage.mainHeader}>Računko</Text>
                 </View>
 
-                <View style={style.textInputBox}>      
-                    {/* Username */}
-                    <View style={style.textInputBorder}>
-                        <Text style={style.thirdTitle}>Username</Text>
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                            <TextInput
-                                style={style.input}
-                                textContentType="username"
-                                placeholder="pero123"
-                                placeholderTextColor="#888"
-                                autoCapitalize="none"
-                                value={username}
-                                onChangeText={setUsername}
-                                keyboardType="default"
-                            />
-                        </TouchableWithoutFeedback>
+                <View style={style.loginPage}>
+                    <View style={style.titleBox}>
+                        <Text style={style.title}>Dobrodošli Nazad</Text>
+                        <Text style={style.secondaryTitle}>Upišite svoje podatke</Text>
                     </View>
 
-                    {/* Sifra */}
-                    <View style={style.textInputBorderPassword}>
-                        <View style={style.passwordBox}>
-                            <Text style={style.thirdTitle}>Šifra</Text>
-                            <TextInput
-                                style={style.inputPassword}
-                                placeholder="sifra123"
-                                placeholderTextColor="#888"
-                                secureTextEntry={!passwordVisible}
-                                value={password}
-                                onChangeText={setPassword}
-                            />
+                    <View style={style.textInputBox}>
+                        {/* Username */}
+                        <View style={style.textInputBorder}>
+                            <Text style={style.thirdTitle}>Username</Text>
+                            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                                <TextInput
+                                    style={style.input}
+                                    textContentType="username"
+                                    placeholder="pero123"
+                                    placeholderTextColor="#888"
+                                    autoCapitalize="none"
+                                    value={username}
+                                    onChangeText={setUsername}
+                                    keyboardType="default"
+                                />
+                            </TouchableWithoutFeedback>
                         </View>
-                        <Pressable style={style.eyeBtn} onPress={() => setPasswordVisible(!passwordVisible)} >
-                            <Ionicons
-                                name={passwordVisible ? "eye" : "eye-off"}
-                                size={24}
-                                color="#666"/>
-                        </Pressable>
-                    </View>
-                    <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
-                    {errorMessage && (
-                        <View style ={globals.errorContainer}>
-                            <Text style={globals.errorText}>{errorMessage}</Text>
+
+                        {/* Sifra */}
+                        <View style={style.textInputBorderPassword}>
+                            <View style={style.passwordBox}>
+                                <Text style={style.thirdTitle}>Šifra</Text>
+                                <TextInput
+                                    style={style.inputPassword}
+                                    placeholder="sifra123"
+                                    placeholderTextColor="#888"
+                                    secureTextEntry={!passwordVisible}
+                                    value={password}
+                                    onChangeText={setPassword}
+                                />
+                            </View>
+                            <Pressable style={style.eyeBtn} onPress={() => setPasswordVisible(!passwordVisible)} >
+                                <Ionicons
+                                    name={passwordVisible ? "eye" : "eye-off"}
+                                    size={24}
+                                    color="#666"/>
+                            </Pressable>
                         </View>
-                    )}
-                </View>
-
-
-                
-                <View style={style.buttonsContainer}>
-
-                    {/* Gumb za login */}
-                    <TouchableOpacity
-                        style={[style.button, !isFormValid && style.buttonDisabled]}
-                        onPress={handleLogin}
-                        disabled={!isFormValid}
-                        activeOpacity={0.7}
-                    >
-                        <Text style={style.text}>Prijavi se</Text>
-                    </TouchableOpacity>
-
-                    <View style={style.separator}>
-                        <View style={style.line}></View>
-                        <Text style={style.secondaryTitle}>Ili se prijavite sa</Text>
-                        <View style={style.line}></View>
+                        <Text style={style.secondaryTitle}>Zaboravili ste šifru?</Text>
+                        {errorMessage && (
+                            <View style ={globals.errorContainer}>
+                                <Text style={globals.errorText}>{errorMessage}</Text>
+                            </View>
+                        )}
                     </View>
 
-                    {/* Google login */}
-                    <TouchableOpacity
-                        style={style.googleButton}
-                        onPress={handleLoginGoogle}
-                        activeOpacity={0.7}
-                    >
-                        <Image source={images.google} style={style.googleIcon}/>
-                        <Text style={style.googleText}>Continue with Google</Text>
-                    </TouchableOpacity>
+
+
+                    <View style={style.buttonsContainer}>
+
+                        {/* Gumb za login */}
+                        <TouchableOpacity
+                            style={[style.button, !isFormValid && style.buttonDisabled]}
+                            onPress={handleLogin}
+                            disabled={!isFormValid}
+                            activeOpacity={0.7}
+                        >
+                            <Text style={style.text}>Prijavi se</Text>
+                        </TouchableOpacity>
+
+                        <View style={style.separator}>
+                            <View style={style.line}></View>
+                            <Text style={style.secondaryTitle}>Ili se prijavite sa</Text>
+                            <View style={style.line}></View>
+                        </View>
+
+                        {/* Google login */}
+                        <TouchableOpacity
+                            style={style.googleButton}
+                            onPress={handleLoginGoogle}
+                            activeOpacity={0.7}
+                        >
+                            <Image source={images.google} style={style.googleIcon}/>
+                            <Text style={style.googleText}>Continue with Google</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
+        </Pressable>
+
     )
 }
 export default Login
