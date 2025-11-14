@@ -37,13 +37,7 @@ def register(request):
 
         return Response({
             'token': token.key, # Ovo cemo onda spremit u frontendu i koristit za buduce requests
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-            }
+            'user': UserSerializer(user).data  # Koristi serializer da vrati sve ukljucujuci profile_completed
         }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -118,13 +112,7 @@ def google_auth(request):
     # Vrati isti format kao i obican login
     return Response({
         'token': token.key,
-        'user': {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
+        'user': UserSerializer(user).data  # Koristi serializer da vrati sve ukljucujuci profile_completed
     }, status=status.HTTP_200_OK)
 
 
@@ -155,13 +143,7 @@ def login(request):
 
     return Response({
         'token': token.key, # Ovo spremimo na frontendu
-        'user': {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
+        'user': UserSerializer(user).data  # Koristi serializer da vrati sve ukljucujuci profile_completed
     }, status=status.HTTP_200_OK)
 
 
