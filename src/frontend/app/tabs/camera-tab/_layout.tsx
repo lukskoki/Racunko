@@ -15,15 +15,6 @@ const _Layout = () => {
                 options={{ headerShown: false }}
             />
 
-            {/* Dodatni ekran koji se otvara kada se stisne desna strelica za kategorije */}
-            <Stack.Screen
-                name="categoryList"
-                options={{
-                    headerShown: true,
-                    title: "Kategorije",
-                    headerBackTitle: "Unesi",
-                }}
-            />
         </Stack>
     )
 }
