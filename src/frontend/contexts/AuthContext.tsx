@@ -25,8 +25,8 @@ export interface RegisterProps { // Format koji register funkcija prima
 interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim fajlovima
     user: User | undefined;
     token: string | null;
-    login: (props: LoginProps) => Promise<void>;
-    register: (props: RegisterProps) => Promise<void>;
+    login: (props: LoginProps) => Promise<User>;
+    register: (props: RegisterProps) => Promise<User>;
     loginGoogle: () => Promise<void>;
     logout: () => void;
 }
@@ -103,39 +103,41 @@ export function AuthProvider({ children } : { children: ReactNode }) {
         }
     }
 
-    async function login({username, password}: LoginProps) {
+    async function login({username, password}: LoginProps): Promise<User> {
 
         try {
             const response = await apilogin({username, password}); // Ovo je funkcija iz api.ts
-            
+
             setToken(response.token);
             setUser(response.user);
 
             console.log("Login uspio");
-        } 
+            return response.user; // Vrati user objekt
+        }
         catch(error: any) {
             console.error("Login failed: ", error);
             throw new Error(error.message || 'Neuspjesna prijava');
         }
-        
+
     }   
 
 
-    async function register({username, password, email}: RegisterProps) {
+    async function register({username, password, email}: RegisterProps): Promise<User> {
 
         try {
             const response = await apiregister({username, password, email}); // Ovo je funkcija iz api.ts
-            
+
             setToken(response.token);
             setUser(response.user);
 
             console.log("Register uspio");
-        } 
+            return response.user; // Vrati user objekt
+        }
         catch(error: any) {
             console.error("Register failed: ", error);
             throw new Error(error.message || 'Neuspjesna registracija');
         }
-        
+
     } 
     
     async function loginGoogle() {

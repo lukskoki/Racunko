@@ -5,12 +5,21 @@ from .models import Group, Profile
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_completed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']  # Dodao id i ime, prezime
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name', 'profile_completed']
         extra_kwargs = {
             'password': {'write_only': True}   # ne vraca lozinku u responsu radi sigurnosti
         }
+
+    def get_profile_completed(self, obj):
+        # Vrati profile_completed iz povezanog Profile objekta
+        try:
+            return obj.profile.profile_completed
+        except Profile.DoesNotExist:
+            return False
 
     def create(self, validated_data):
         # Koristimo create_user od djangovog User modela jer vec ima dosta funkcionalnosti
