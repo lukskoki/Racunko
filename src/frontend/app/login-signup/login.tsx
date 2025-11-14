@@ -161,7 +161,7 @@ const Login = () => {
 
                         {/* Google login */}
                         <TouchableOpacity
-                            style={[style.googleButton, isLoadingGoogle && style.buttonDisabledGoogle]}
+                            style={[style.googleButton]}
                             onPress={handleLoginGoogle}
                             activeOpacity={0.7}
                         >

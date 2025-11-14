@@ -35,7 +35,7 @@ export default function CategoryList({
     function handlePick(cat: Category) {
         onSelect?.(cat.id);
         router.replace({
-            pathname: "/tabs/camera-tab/manual-input",
+            pathname: "/tabs/camera-tab/ManualInputView",
             params: {
                 categoryId: Number(cat.id),
                 categoryName: cat.categoryName,
