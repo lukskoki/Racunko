@@ -207,7 +207,7 @@ export default StyleSheet.create({
         width:'70%',
         height:'100%',
         flexDirection:'row',
-        justifyContent:'center',
+        justifyContent:'space-between',
         alignItems: 'center',
     },
     componentName:{
@@ -292,5 +292,18 @@ export default StyleSheet.create({
         width:'100%',
         height:'100%',
         borderRadius:25,
-    }
+    },
+    submit:{
+        width:'30%',
+        height:40,
+        borderRadius:25,
+        backgroundColor:'#2563EB',
+        justifyContent:'center',
+        alignItems: 'center',
+
+    },
+    submitText:{
+        fontSize:17,
+        color:'white',
+    },
 })

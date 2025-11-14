@@ -6,7 +6,7 @@ export const useCategories = () => {
     const [error, setError] = useState<string | null>(null);
     const { token } = useAuth();
 
-    const listCategories = async () => {
+    const listCategories = async ():Promise<Category[]> => {
         if (!token) {
             throw new Error('Morate biti prijavljeni');
         }

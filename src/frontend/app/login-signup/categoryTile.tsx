@@ -6,20 +6,23 @@ import Checkbox from "expo-checkbox";
 
 
 type Props = {
-    id: string,
+    id: number,
     title: string,
-    image: ImageSourcePropType,
+
     onPress?: () => void;
-    onToggle: (id: string) => void;
+    onToggle: (id: number) => void;
     checked: boolean;
 };
 
-export default function CategoryTile({ id, title, image, onToggle, onPress, checked}: Props) {
+export default function CategoryTile({ id, title, onToggle, onPress, checked}: Props) {
 
     return (
         <View style={styles.modalBoxComponent}>
             <View style={styles.componentPictureBox}>
-                <Image source={image} style={styles.componentPicture}/>
+                {/*
+                    <Image source={image} style={styles.componentPicture}/>
+                */}
+
             </View>
             <View style={styles.componentBox}>
                 <Text style={styles.componentName}> {title} </Text>

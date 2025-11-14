@@ -5,16 +5,24 @@ import {Pressable, Switch, Text, TextInput, View} from "react-native";
 import {Image} from "expo-image";
 import { Picker } from "@react-native-picker/picker";
 import {router} from "expo-router";
-
+import {useProfileContext} from "@/contexts/ProfileSetupContext";
 
 const  ProfileSetup = () => {
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState<string>("");
     const data =  Array.from({ length: 28 }, (_, i) => i + 1);
-    const [isEnabled, setIsEnabled] = useState(false);
-    const [selectedNumber, setSelectedNumber] = useState(1);
+    const [isEnabled, setIsEnabled] = useState(false);              // isEnabled je ako su dozvoljene obaviejsti
+    const [selectedNumber, setSelectedNumber] = useState(1);        // Izbrani broj za dan isplate
     const [showPicker, setShowPicker] = useState(false);
+    const {setBasics} = useProfileContext();
 
-
+    const handleNext = () => {
+        setBasics({
+            income: Number(amount),              // broj
+            notifications: isEnabled,    // boolean
+            income_date: selectedNumber, // broj
+        });
+        router.push("/login-signup/expenseSetup");
+    };
     return(
            <View style={styles.display}>
 
@@ -132,7 +140,7 @@ const  ProfileSetup = () => {
 
 
                    <View  style={styles.continueButton}>
-                       <Pressable style={styles.continueButtonBox} onPress={() => router.push("/login-signup/expenseSetup")}>
+                       <Pressable style={styles.continueButtonBox} onPress={handleNext}>
                            <Text style={styles.continue}> Nastavi </Text>
                        </Pressable>
 

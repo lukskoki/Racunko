@@ -23,7 +23,7 @@ const Signup = () => {
     const handleSignup = async() => {
         
         try {
-            // await register({username: username, password, email});
+            await register({username: username, password, email});
             router.push("/login-signup/profileSetup");
         }
         catch (error: any) {
