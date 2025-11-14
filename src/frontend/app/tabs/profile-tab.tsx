@@ -1,9 +1,8 @@
-import {Pressable, StyleSheet, Text, View} from 'react-native'
+import {Pressable, Text, View} from 'react-native'
 import React from 'react'
 import {SafeAreaView} from "react-native-safe-area-context";
 import styles from "../styles/profile";
 import {Image} from "expo-image";
-import {assertTSTypeElement} from "@babel/types";
 import {images} from "@/app/assets";
 import {router} from "expo-router";
 import { useAuth } from '@/hooks/useAuth';

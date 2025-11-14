@@ -11,4 +11,3 @@ const Pocetna = () => {
     )
 }
 export default Pocetna
-const styles = StyleSheet.create({})

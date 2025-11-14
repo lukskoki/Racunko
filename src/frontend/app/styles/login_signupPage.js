@@ -100,7 +100,7 @@ export default StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-evenly',
         alignItems:'center',
-        gap: 40,
+        gap: 30,
     },
     button: {
         paddingHorizontal: 20,
@@ -122,6 +122,13 @@ export default StyleSheet.create({
     text: {
         color:'white',
         fontSize:20,
+    },
+    passwordAndErrorContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        width: '100%',
+        alignItems:'center',
     },
     separator: {
         display: 'flex',

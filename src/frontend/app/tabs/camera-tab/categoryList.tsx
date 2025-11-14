@@ -5,8 +5,6 @@ import type { Category } from "@/services/api";
 import { useLocalSearchParams, useRouter} from "expo-router";
 import {SafeAreaView} from "react-native-safe-area-context";
 import styles from "@/app/styles/expenseSetup";
-import {Image} from "expo-image";
-import {images} from "@/app/assets";
 
 export default function CategoryList({
                                          onSelect,
@@ -57,6 +55,8 @@ export default function CategoryList({
                         onPress={() => handlePick(item)}
                         style={styles.modalBoxComponent}
                     >
+                        {/*Slike cemo kasnije dodat kada ih primamo s backenda*/}
+
                         {/*<View style={styles.componentPictureBox}>*/}
                         {/*    <Image source={images.hrana} style={styles.componentPicture}/>*/}
                         {/*</View>*/}
