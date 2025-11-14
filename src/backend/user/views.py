@@ -225,16 +225,11 @@ def authorize(request):
     if internal_client != "google":
         return Response({"error": "Invalid client"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Odredi platform (mobile ili web) na temelju redirect_uri
-    app_scheme = getattr(settings, 'APP_SCHEME')
     base_url = getattr(settings, 'BASE_URL')
 
-    if redirect_uri == app_scheme:
-        platform = "mobile"
-    elif redirect_uri == base_url:
-        platform = "web"
-    else:
-        return Response({"error": "Invalid redirect_uri"}, status=status.HTTP_400_BAD_REQUEST)
+
+    platform = "mobile"
+
 
     # Dodaj platform u state (za callback)
     state = f"{platform}|{state_param}"
