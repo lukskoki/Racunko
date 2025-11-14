@@ -1,13 +1,12 @@
 import {StyleSheet, Text, View} from 'react-native'
 import React from 'react'
-import {Image} from "expo-image";
-import {images} from "@/app/assets";
+import style from "../styles/globals";
+
 
 const Pocetna = () => {
     return (
-        <View>
-            <Text>Pocetna</Text>
-            <Image source={images.home} />
+        <View style={style.temporaryText}>
+            <Text>Napravit dizajn za main page po figmi</Text>
         </View>
     )
 }

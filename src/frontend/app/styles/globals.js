@@ -16,4 +16,12 @@ export default StyleSheet.create({
         fontWeight: '500',
         textAlign: 'center',
     },
+    temporaryText: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+    }
 });
