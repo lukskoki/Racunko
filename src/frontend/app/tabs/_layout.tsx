@@ -8,8 +8,20 @@ export default function TabLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-                tabBarStyle: {borderWidth: 2, borderTopRightRadius: 15, borderTopLeftRadius: 15, height: 85,  width: '100%', shadowColor: "#3e3d3d", shadowOpacity: 0.7,
-                    shadowOffset:{width:0, height:-4},shadowRadius:2, elevation:15},
+                tabBarStyle: {
+                    borderTopWidth: 1,
+                    borderTopColor: '#E2E8F0',
+                    borderTopRightRadius: 15,
+                    borderTopLeftRadius: 15,
+                    height: 85,
+                    width: '100%',
+                    backgroundColor: '#FFFFFF',
+                    shadowColor: "#000",
+                    shadowOpacity: 0.08,
+                    shadowOffset: {width: 0, height: -2},
+                    shadowRadius: 8,
+                    elevation: 4,
+                },
                 tabBarLabelStyle: {fontSize: 11, fontWeight: "thin"},
                 tabBarItemStyle: {justifyContent: "center", alignItems: "center", paddingTop: 10},
             }}>
