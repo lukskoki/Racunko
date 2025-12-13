@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from transaction.serializers import ExpenseSerializer
-from .serializers import UserSerializer, ProfileSerializer
+from .serializers import *
 from .models import Profile
 from django.contrib.auth import authenticate, get_user_model
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
@@ -15,6 +15,7 @@ from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
 from urllib.parse import urlencode
 from django.http import HttpResponse
+import random
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Dopusti bilo kome da se registrira
 def register(request):
@@ -291,3 +292,59 @@ def google_callback(request):
     )
     response['Location'] = redirect_url
     return response
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_group(request):
+    
+    profile = request.user.profile
+    if profile.group is None:
+        #napravimo groupCode
+        groupCode = 10
+        while groupCode == 10:
+            code = str(random.randint(100000, 999999))
+            if not Group.objects.filter(groupCode=code).exists():
+                groupCode = code
+        group_data = {
+            'groupName' : request.data.get('groupName'), 
+            'groupCode' : groupCode,
+        }   
+    
+    
+        group_serializer = GroupSerializer(data = group_data)
+        if group_serializer.is_valid():
+            group = group_serializer.save()
+            profile.group = group
+            profile.role = 'GroupLeader'     #role usera koji je napravio je GroupLeader posto jedna grupa = jedan user
+            profile.save()
+            return Response(GroupSerializer(group).data, status=201)
+        else :
+            return Response(group_serializer.errors, status=400)
+    else:
+        return Response("User already in group", status=400)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_group(request):
+    profile = request.user.profile
+    if profile.group is None:
+        
+        try:
+            groupCode = request.data.get('groupCode')
+            group = Group.objects.get(groupCode=groupCode)
+            profile.group = group
+            profile.role = 'GroupMember'
+            profile.save()
+            return Response(ProfileSerializer(profile).data, status=201)
+        except Group.DoesNotExist:
+            return Response("Group code is invalid, group doesn't exist", status=400)
+        
+
+    else:
+        return Response("User already in group", status=400)
+
+
+
+
+

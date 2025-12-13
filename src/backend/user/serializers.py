@@ -39,6 +39,9 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
+    def create(self, validated_data):
+        
+        return super().create(validated_data)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
