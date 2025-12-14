@@ -153,6 +153,10 @@ def login(request):
 @permission_classes([IsAuthenticated])  # samo ulogirani korisnici
 def profile_setup(request):
     profile = request.user.profile  #dohvacamoo profil koji je povezan s ulogiranim userom
+    
+    if profile.profile_completed is True: #gledamo da profile_setup nije vec napravljen
+        return Response("profile setup is already completed", status=400)
+    
     expenses_data = request.data.get('expenses', [])    #dohvacamo polje expense-a (Kredit, Auto...)
     
     profile_data = {
