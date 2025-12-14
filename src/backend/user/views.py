@@ -344,7 +344,34 @@ def join_group(request):
     else:
         return Response("User already in group", status=400)
 
-
-
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def leave_group(request):
+    profile = request.user.profile
+    if profile.group is not None:
+        group = profile.group
+        #micemo profil iz grupe
+        profile.group = None
+        profile.role = 'User'
+        profile.save()
+        #gledamo je li ima jos membera u grupi
+        if not group.members.exists():
+            group.delete()
+            return Response("Left group successfully, the group has been deleted", status=200)
+        else:
+            #stavljamo da je prvi koji je usao u grupu Leader, ovo je u slucaju da Leader izade
+            first_member = group.members.order_by("user__date_joined").first()
+            first_member.role = 'GroupLeader'
+            first_member.save()
+            return Response(
+            {
+                "message": "Left group successfully",
+                "group": GroupSerializer(group).data
+            },
+                status=200
+            )
+        
+    else:
+        return Response("User is not in a group", status=400)
 
 

@@ -10,5 +10,5 @@ urlpatterns = [
     path('profile_setup/', views.profile_setup, name='profile_setup'),
     path('create_group/', views.create_group, name='create_group'),
     path('join_group/', views.join_group, name='join_group'),
-    
+    path('leave_group/', views.leave_group, name='leave_group'),
 ]
