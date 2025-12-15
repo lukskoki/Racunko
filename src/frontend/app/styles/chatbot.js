@@ -64,6 +64,42 @@ export default StyleSheet.create({
         flexGrow: 1,
         paddingVertical: 8,
     },
+    historyListContainer: {
+        paddingVertical: 8,
+    },
+    historyItem: {
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        marginBottom: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        shadowColor: '#000000',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.08,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    historyTextContainer: {
+        flex: 1,
+        marginRight: 8,
+    },
+    historyTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#111827',
+        marginBottom: 4,
+    },
+    historySubtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+    },
+    historyTime: {
+        fontSize: 12,
+        color: '#9CA3AF',
+    },
     messageWrapper: {
         marginVertical: 4,
         paddingHorizontal: 8,
