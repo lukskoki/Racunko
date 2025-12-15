@@ -305,9 +305,9 @@ def create_group(request):
     profile = request.user.profile
     if profile.group is None:
         #napravimo groupCode
-        groupCode = 10
+        groupCode = 10 #dummy value
         while groupCode == 10:
-            code = str(random.randint(100000, 999999))
+            code = str(random.randint(10000, 99999)) #peteroznamenkasti broj
             if not Group.objects.filter(groupCode=code).exists():
                 groupCode = code
         group_data = {
@@ -377,5 +377,47 @@ def leave_group(request):
         
     else:
         return Response("User is not in a group", status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_group(request):
+    profile = request.user.profile
+    if profile.group is None:
+        return Response("profile is not in group", status=400)
+    group = profile.group
+    serializer = GroupSerializer(group)
+    return Response(serializer.data, status=200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_groups(request):
+    groups = Group.objects.all()
+    serializer = GroupSerializer(groups, many=True)
+    return Response(serializer.data, status=200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_members(request):
+    profile = request.user.profile
+    if profile.group is None:
+        return Response("User is not in a group", status=400)
+    group = profile.group
+    members = group.members.all()
+    serializer = ProfileSerializer(members, many=True)
+    return Response(serializer.data, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_group_budget(request):
+    profile = request.user.profile
+    if profile.group is None:
+        return Response("User is not in a group", status=400)
+    if not profile.role == 'GroupLeader':
+        return Response("User is not the GroupLeader", status=400)
+    
+    group = profile.group
+    group.budget = request.data.get('budget')
+    group.save()
+    return Response(GroupSerializer(group).data, status=200)
 
 
