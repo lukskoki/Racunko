@@ -16,6 +16,8 @@ from google.auth.transport import requests as google_requests
 from urllib.parse import urlencode
 from django.http import HttpResponse
 import random
+from django.shortcuts import get_object_or_404
+
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Dopusti bilo kome da se registrira
 def register(request):
@@ -420,4 +422,22 @@ def change_group_budget(request):
     group.save()
     return Response(GroupSerializer(group).data, status=200)
 
-
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_user_allowance(request):
+    profile_leader = request.user.profile
+    if not profile_leader.role == 'GroupLeader' :
+        return Response("User is not the Leader", status=400)
+    user_id = request.data.get("userId")
+    allowance = request.data.get("allowance")
+    if user_id is None or allowance is None:
+        return Response("userId and allowance are required",status=400)
+    profile_member = get_object_or_404(
+        Profile,
+        user__id=user_id,
+        group=profile_leader.group
+    )
+    
+    profile_member.allowance = allowance
+    profile_member.save()
+    return Response(ProfileSerializer(profile_member).data, status=200)
