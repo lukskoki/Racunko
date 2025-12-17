@@ -143,7 +143,18 @@ export default StyleSheet.create({
     userBubble: {
         backgroundColor: '#3B82F6',
         alignSelf: 'flex-end',
+        borderRadius: 16,
         borderBottomRightRadius: 4,
+        padding: 12,
+        maxWidth: '80%',
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3,
     },
     botBubble: {
         backgroundColor: '#FFFFFF',
@@ -165,6 +176,7 @@ export default StyleSheet.create({
     },
     userMessageText: {
         color: '#FFFFFF',
+        fontSize: 15
     },
     botMessageText: {
         color: '#1F2937',

@@ -1,6 +1,7 @@
 import {ActivityIndicator, FlatList, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
 import React, {useMemo, useState} from 'react';
 import {MaterialIcons} from '@expo/vector-icons';
+import Markdown from 'react-native-markdown-display';
 import styles from '../styles/chatbot';
 import {Message, useChatConversation} from '../../hooks/useChatConversation';
 import {ConversationMeta, useChatHistory} from '../../hooks/useChatHistory';
@@ -28,17 +29,24 @@ const ChatbotTab = () => {
 
     const mergedMessages = useMemo(() => [...messages, ...localMessages], [messages, localMessages]);
 
-    // Stvaranje chat bubble-a
+    // Renderiranje poruke
     const renderMessage = ({item}: {item: Message}) => (
-        <View style={[styles.messageBubble, item.isUser ? styles.userBubble : styles.botBubble]}>
-            <Text
-                style={[
-                    styles.messageText,
-                    item.isUser ? styles.userMessageText : styles.botMessageText,
-                ]}>
-                {item.text}
-            </Text>
-            <Text style={styles.messageTime}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
+        <View style={styles.messageWrapper}>
+            {item.isUser ? (
+                <View style={styles.userBubble}>
+                    <Text style={styles.userMessageText}>{item.text}</Text>
+                    <Text style={[styles.messageTime, {color: 'rgba(255,255,255,0.8)'}]}>
+                        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                </View>
+            ) : (
+                <View>
+                    <Markdown style={{body: {fontSize: 17}}}>{item.text}</Markdown>
+                    <Text style={styles.messageTime}>
+                        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                </View>
+            )}
         </View>
     );
 
