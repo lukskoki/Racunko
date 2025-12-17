@@ -2,9 +2,14 @@ from openai import OpenAI
 from django.conf import settings
 import json
 import os
+from openai import OpenAIError
 
 api_key = os.getenv('OPENAI_API_KEY')  # Treba stavi api key u .env
 
+if not api_key:
+    raise ValueError(
+        "Nedostaje OPENAI_API_KEY u .env file-u."
+        )
 client = OpenAI(api_key=api_key)  # Inicijaliziramo OpenAI model
 
 _SYSTEM_MESSAGE = {
@@ -24,29 +29,36 @@ def ai_chat(message_or_messages):
     else:
         messages = [{"role": "user", "content": message_or_messages}]
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[_SYSTEM_MESSAGE, *messages],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "message",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "message": {
-                            "type": "string",
-                            "description": "A response to a question or statement",
-                        }
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[_SYSTEM_MESSAGE, *messages],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "message",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "description": "A response to a question or statement",
+                            }
+                        },
+                        "required": ["message"],
+                        "additionalProperties": False,
                     },
-                    "required": ["message"],
-                    "additionalProperties": False,
                 },
             },
-        },
-        temperature=0.1,
-    )
+            temperature=0.1,
+            timeout=30.0,
+        )
+    except OpenAIError as e:
+        raise RuntimeError(f"OpenAI API poziv nije uspio: {str(e)}") from e
 
-    result = json.loads(response.choices[0].message.content)
+    try:
+        result = json.loads(response.choices[0].message.content)
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        raise RuntimeError(f"Neuspjelo parsanje openAI odgovora: {str(e)}") from e
     return result
