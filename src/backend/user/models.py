@@ -46,6 +46,7 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name="messages")
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    isUser = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["created_at", "id"]

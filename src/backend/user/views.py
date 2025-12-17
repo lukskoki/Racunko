@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from transaction.serializers import ExpenseSerializer
 from .serializers import *
-from .models import Profile
+from .models import Profile, Conversation, Message
 from django.contrib.auth import authenticate, get_user_model
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 import requests as http
@@ -425,12 +425,30 @@ def change_group_budget(request):
 @permission_classes([IsAuthenticated])
 def chatbot(request):
     user_message = request.data.get("message")
+    conversation_id = request.data.get("conversation_id")
+    title = request.data.get("title")
     if not user_message:
         return Response({"error": "Missing 'message' in body"}, status=400)
 
     try:
-        ai_result = ai_chat(user_message)  #{'message': '...'}
-        return Response({"message": ai_result.get("message", "")}, status=200)
+        if conversation_id:
+            try:
+                conversation = Conversation.objects.get(id=conversation_id, user=request.user)
+            except Conversation.DoesNotExist:
+                return Response({"error": "Conversation not found"}, status=404)
+        else:
+            conversation_title = (title or "").strip() or user_message.strip()[:80]
+            conversation = Conversation.objects.create(user=request.user, title=conversation_title)
+
+        Message.objects.create(conversation=conversation, message=user_message, isUser=True)
+
+        history_qs = Message.objects.filter(conversation=conversation).order_by("created_at", "id")
+        history = [{"role": ("user" if m.isUser else "assistant"), "content": m.message} for m in history_qs]
+
+        ai_result = ai_chat(history)  #{'message': '...'}
+        assistant_message = ai_result.get("message", "")
+        Message.objects.create(conversation=conversation, message=assistant_message, isUser=False)
+
+        return Response({"conversation_id": conversation.id, "message": assistant_message}, status=200)
     except Exception as e:
         return Response({"error": f"AI error: {e}"}, status=500)
-
