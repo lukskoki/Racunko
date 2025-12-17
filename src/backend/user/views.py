@@ -16,6 +16,7 @@ from google.auth.transport import requests as google_requests
 from urllib.parse import urlencode
 from django.http import HttpResponse
 import random
+from .utils.ai_chat_client import ai_chat
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Dopusti bilo kome da se registrira
 def register(request):
@@ -420,4 +421,16 @@ def change_group_budget(request):
     group.save()
     return Response(GroupSerializer(group).data, status=200)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def chatbot(request):
+    user_message = request.data.get("message")
+    if not user_message:
+        return Response({"error": "Missing 'message' in body"}, status=400)
+
+    try:
+        ai_result = ai_chat(user_message)  #{'message': '...'}
+        return Response({"message": ai_result.get("message", "")}, status=200)
+    except Exception as e:
+        return Response({"error": f"AI error: {e}"}, status=500)
 
