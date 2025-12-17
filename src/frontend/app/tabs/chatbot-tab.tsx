@@ -86,7 +86,7 @@ const ChatbotTab = () => {
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={100}>
-                
+                    
                     <View style={styles.chatContainer}>
                         {showHistory ? (
                             historyItems.length === 0 ? (
@@ -146,8 +146,6 @@ const ChatbotTab = () => {
                             </>
                         )}
                     </View>
-                
-
                 {!showHistory && (
                     <View style={styles.inputContainer}>
                         <TextInput
