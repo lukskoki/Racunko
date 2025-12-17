@@ -44,7 +44,8 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
+    userId = serializers.IntegerField(source="user.id", read_only=True)  #dodao da frontend dobiva userId-ove
+    user = serializers.StringRelatedField(read_only=True) #cita username
     group = serializers.StringRelatedField(read_only=True)   # pri responsu vraca __str__ od Group tj. groupName
     class Meta:
         model = Profile
