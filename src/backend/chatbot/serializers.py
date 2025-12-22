@@ -23,9 +23,9 @@ class ConversationMessageDetails(serializers.ModelSerializer):
         fields = ["id", "title", "lastMessage", "lastMessageAt"]
 
     def get_lastMessage(self, object):
-        last = object.messages.order_by("created_at", "id").first()
+        last = object.messages.order_by("created_at", "id").last()
         return last.message if last else ""
     
     def get_lastMessageAt(self, object):
-        last = object.messages.order_by("created_at", "id").first()
+        last = object.messages.order_by("created_at", "id").last()
         return last.created_at if last else None

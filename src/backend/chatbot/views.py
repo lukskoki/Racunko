@@ -61,10 +61,14 @@ def getConversations(request):
     data = ConversationMessageDetails(conversations, many=True).data
     return Response(data)
 
-@api_view(['POST'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getMessages(request, conversation_id):
-    conversation = Conversation.objects.get(id = conversation_id, user = request.user)
+    try:
+        conversation = Conversation.objects.get(id = conversation_id, user = request.user)
+    except Conversation.DoesNotExist:
+        return Response({"error": "Conversation doesn't exist"}, status=404)
+    
     messages = Message.objects.filter(conversation = conversation).order_by("created_at", "id")
     data = MessageSerializer(messages, many=True).data
     return Response(data)
