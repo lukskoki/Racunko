@@ -16,6 +16,4 @@ urlpatterns = [
     path('get_members/', views.get_members, name='get_members'),
     path('change_group_budget/', views.change_group_budget, name='change_group_budget'),
     path('change_user_allowance/', views.change_user_allowance, name='change_user_allowance'),
-    
-    path('chatbot/', views.chatbot, name='chatbot'),
 ]
