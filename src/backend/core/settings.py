@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',  # Django REST framework
     'rest_framework.authtoken',  # Token autentikacija
     'user',
+    'chatbot',
     'transaction',
     'oauth2_provider',
     'django.contrib.sites',
