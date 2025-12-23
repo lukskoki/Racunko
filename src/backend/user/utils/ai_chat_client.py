@@ -12,27 +12,28 @@ if not api_key:
         )
 client = OpenAI(api_key=api_key)  # Inicijaliziramo OpenAI model
 
-_SYSTEM_MESSAGE = {
+SYSTEM_MESSAGE = {
     "role": "system",
-    "content": "Return a JSON object that matches the provided JSON schema. Field 'message' must be a string.",
+    "content": "The response must be in Croatian.",
 }
 
-def ai_chat(message_or_messages):
+def ai_chat(message_or_messages, transactions):
     """
     Pozove OpenAI i vrati dict {"message": "..."} prema json_schema formatu.
 
     - Ako je argument string: tretira se kao jedna user poruka.
     - Ako je argument lista: tretira se kao OpenAI `messages` history (dictovi s role/content).
     """
+
     if isinstance(message_or_messages, list):
         messages = message_or_messages
     else:
-        messages = [{"role": "user", "content": message_or_messages}]
+        messages = [{"role": "user", "content": message_or_messages, }]
 
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[_SYSTEM_MESSAGE, *messages],
+            messages=[SYSTEM_MESSAGE, *messages, *transactions], 
             response_format={
                 "type": "json_schema",
                 "json_schema": {
