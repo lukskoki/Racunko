@@ -239,7 +239,7 @@ export interface ChatMessage {
 export const sendChatMessage = async(token: string, request: ChatbotRequest): Promise<ChatbotResponse> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
 
-    const response = await fetch(`${url}/api/conversation/chatbot/`, {
+    const response = await fetch(`${url}/api/chatbot/message/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -265,7 +265,7 @@ export const sendChatMessage = async(token: string, request: ChatbotRequest): Pr
 export const fetchConversations = async(token: string): Promise<ChatConversation[]> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
 
-    const response = await fetch(`${url}/api/conversation/conversations/`, {
+    const response = await fetch(`${url}/api/chatbot/conversations/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ export const fetchConversations = async(token: string): Promise<ChatConversation
 export const fetchChatHistory = async(token: string, conversationId: number): Promise<ChatMessage[]> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
 
-    const response = await fetch(`${url}/api/conversation/conversations/${conversationId}`, {
+    const response = await fetch(`${url}/api/chatbot/conversations/${conversationId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
