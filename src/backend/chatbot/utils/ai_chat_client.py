@@ -14,7 +14,7 @@ client = OpenAI(api_key=api_key)  # Inicijaliziramo OpenAI model
 
 SYSTEM_MESSAGE = {
     "role": "system",
-    "content": "The response must be in Croatian.",
+    "content": "The response must be in Croatian and use Markdown format.",
 }
 
 def ai_chat(message_or_messages, transactions):

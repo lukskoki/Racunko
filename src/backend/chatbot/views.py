@@ -4,8 +4,7 @@ from django.db import transaction
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from user.utils.ai_chat_client import ai_chat
+from .utils.ai_chat_client import ai_chat
 from .models import Conversation, Message
 from transaction.models import Transaction
 from transaction.serializers import TransactionSerializer
