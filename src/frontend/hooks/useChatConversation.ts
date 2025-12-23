@@ -158,6 +158,9 @@ Trenutno štedite samo 8%. Povećajte na **15-20%**!`,
 
 
 // Hook za dohvacanje razgovora po ID-u
+// NAPOMENA: Trenutno koristi mock podatke. Kada backend bude imao endpoint
+// za dohvaćanje razgovora (npr. GET /api/auth/conversation/:id), ovaj hook
+// treba nadograditi s pravim API pozivom.
 export const useChatConversation = (conversationId: string | null) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -172,10 +175,31 @@ export const useChatConversation = (conversationId: string | null) => {
             return;
         }
 
-        // Tu ce ic api poziv
+        // MOCK DATA - zamijeniti s API pozivom kada backend endpoint bude spreman
+        // Primjer budućeg koda:
+        /*
+        const fetchConversation = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const token = await getToken(); // Dohvati token iz AuthContext ili AsyncStorage
+                const response = await fetch(`${BASE_URL}/api/auth/conversation/${conversationId}`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+                const data = await response.json();
+                setMessages(data.messages);
+            } catch (err) {
+                setError('Greška pri dohvaćanju razgovora');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchConversation();
+        */
+
         const conversation = conversations[conversationId];
-        setMessages(conversation);
-        
+        setMessages(conversation || []);
+
     }, [conversationId]);
 
     return { messages, loading, error };

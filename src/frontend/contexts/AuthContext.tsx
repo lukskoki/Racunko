@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode, useEffect } from "react";
+import React, { createContext, useState, ReactNode, useEffect, useContext } from "react";
 import { login as apilogin, register as apiregister} from '@/services/api';
 import type { User } from '@/services/api';
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
@@ -198,4 +198,13 @@ export function AuthProvider({ children } : { children: ReactNode }) {
             {children}
         </AuthContext.Provider>
     )
+}
+
+// Hook za korištenje AuthContext-a
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth mora biti korišten unutar AuthProvider-a');
+    }
+    return context;
 }

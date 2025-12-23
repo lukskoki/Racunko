@@ -204,3 +204,42 @@ export const sendProfileInfo = async(token: string, income: number, notification
     return await response.json();
 
 }
+
+// Chatbot interface
+export interface ChatbotRequest {
+    message: string;
+    conversation_id?: number;
+    title?: string;
+}
+
+export interface ChatbotResponse {
+    conversation_id: number;
+    message: string;
+}
+
+// Funkcija za slanje poruke chatbotu
+export const sendChatMessage = async(token: string, request: ChatbotRequest): Promise<ChatbotResponse> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/chatbot/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({
+            message: request.message,
+            conversation_id: request.conversation_id,
+            title: request.title,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Chatbot request failed');
+    }
+
+    const data = await response.json();
+    return data as ChatbotResponse;
+}
+

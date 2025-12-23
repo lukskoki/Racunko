@@ -5,26 +5,72 @@ import Markdown from 'react-native-markdown-display';
 import styles from '../styles/chatbot';
 import {Message, useChatConversation} from '../../hooks/useChatConversation';
 import {ConversationMeta, useChatHistory} from '../../hooks/useChatHistory';
+import {sendChatMessage} from '../../services/api';
+import {useAuth} from '../../contexts/AuthContext';
 
 const ChatbotTab = () => {
     const [message, setMessage] = useState('');
-    const [conversationId, setConversationId] = useState<string | null>('1');
-    const {messages, loading, error} = useChatConversation(conversationId);
+    const [conversationId, setConversationId] = useState<number | null>(null);
+    const {messages, loading, error} = useChatConversation(conversationId ? String(conversationId) : null);
     const {items: historyItems} = useChatHistory();
     const [localMessages, setLocalMessages] = useState<Message[]>([]);
     const [showHistory, setShowHistory] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+    const {token} = useAuth();
 
-    const handleSend = () => {
-        if (!message.trim()) {
+    const handleSend = async () => {
+        if (!message.trim() || !token || isSending) {
             return;
         }
 
-        setLocalMessages(prev => [
-            ...prev,
-            {id: `local-${Date.now()}`, text: message, isUser: true, timestamp: new Date()},
-        ]);
+        const userMessage = message.trim();
         setMessage('');
-        // Ovdje ce biti logika za slanje poruke backendu
+
+        // Dodaj user poruku odmah u UI
+        const tempUserMessage: Message = {
+            id: `local-${Date.now()}`,
+            text: userMessage,
+            isUser: true,
+            timestamp: new Date(),
+        };
+        setLocalMessages(prev => [...prev, tempUserMessage]);
+
+        setIsSending(true);
+
+        try {
+            // Pošalji poruku na backend
+            const response = await sendChatMessage(token, {
+                message: userMessage,
+                conversation_id: conversationId ?? undefined,
+                title: conversationId ? undefined : userMessage.substring(0, 50),
+            });
+
+            // Postavi conversation_id ako je novi razgovor
+            if (!conversationId) {
+                setConversationId(response.conversation_id);
+            }
+
+            // Dodaj AI odgovor u UI
+            const aiMessage: Message = {
+                id: `ai-${Date.now()}`,
+                text: response.message,
+                isUser: false,
+                timestamp: new Date(),
+            };
+            setLocalMessages(prev => [...prev, aiMessage]);
+        } catch (err) {
+            console.error('Error sending message:', err);
+            // Dodaj error poruku
+            const errorMessage: Message = {
+                id: `error-${Date.now()}`,
+                text: '❌ Greška pri slanju poruke. Molimo pokušajte ponovno.',
+                isUser: false,
+                timestamp: new Date(),
+            };
+            setLocalMessages(prev => [...prev, errorMessage]);
+        } finally {
+            setIsSending(false);
+        }
     };
 
     const mergedMessages = useMemo(() => [...messages, ...localMessages], [messages, localMessages]);
@@ -69,7 +115,15 @@ const ChatbotTab = () => {
 
     // Kad se selektira razgovor onda treba resetirat messages i postavit conversation ID
     const handleSelectConversation = (id: string) => {
-        setConversationId(id);
+        setConversationId(Number(id));
+        setLocalMessages([]);
+        setMessage('');
+        setShowHistory(false);
+    };
+
+    // Handler za kreiranje novog razgovora
+    const handleNewConversation = () => {
+        setConversationId(null);
         setLocalMessages([]);
         setMessage('');
         setShowHistory(false);
@@ -85,7 +139,7 @@ const ChatbotTab = () => {
                     <TouchableOpacity style={styles.headerIconButton} onPress={() => {setShowHistory(true)}}>
                         <MaterialIcons name="history" size={24} color="#111827" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.headerIconButton}>
+                    <TouchableOpacity style={styles.headerIconButton} onPress={handleNewConversation}>
                         <MaterialIcons name="add" size={24} color="#111827" />
                     </TouchableOpacity>
                 </View>
@@ -164,9 +218,18 @@ const ChatbotTab = () => {
                             onChangeText={setMessage}
                             onSubmitEditing={handleSend}
                             multiline
+                            editable={!isSending}
                         />
-                        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-                            <MaterialIcons name="send" size={24} color="#FFFFFF" />
+                        <TouchableOpacity
+                            style={[styles.sendButton, isSending && {opacity: 0.5}]}
+                            onPress={handleSend}
+                            disabled={isSending}
+                        >
+                            {isSending ? (
+                                <ActivityIndicator size="small" color="#FFFFFF" />
+                            ) : (
+                                <MaterialIcons name="send" size={24} color="#FFFFFF" />
+                            )}
                         </TouchableOpacity>
                     </View>
                 )}
