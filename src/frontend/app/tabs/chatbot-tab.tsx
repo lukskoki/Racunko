@@ -1,5 +1,5 @@
-import {ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native';
-import React, {useMemo, useState} from 'react';
+import {ActivityIndicator, Animated, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, {useMemo, useState, useEffect, useRef} from 'react';
 import {MaterialIcons} from '@expo/vector-icons';
 import Markdown from 'react-native-markdown-display';
 import styles from '../styles/chatbot';
@@ -7,6 +7,7 @@ import {useConversations} from '../../hooks/useConversations';
 import {useChatHistory} from '../../hooks/useChatHistory';
 import {sendChatMessage, type ChatConversation, type ChatMessage} from '../../services/api';
 import {useAuth} from '../../contexts/AuthContext';
+import {ThinkingDots} from "../components/ThinkingDots";
 
 const ChatbotTab = () => {
     const [message, setMessage] = useState('');
@@ -194,7 +195,7 @@ const ChatbotTab = () => {
             <KeyboardAvoidingView
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={100}>
+                keyboardVerticalOffset={10}>
                     
                     <View style={styles.chatContainer}>
                         {showHistory ? (
@@ -237,7 +238,7 @@ const ChatbotTab = () => {
                                     </View>
                                 )}
 
-                                {!isLoadingHistory && !historyError && mergedMessages.length === 0 ? (
+                                {!isLoadingHistory && !historyError && mergedMessages.length === 0 && !isSending ? (
                                     <View style={styles.placeholderContainer}>
                                         <MaterialIcons name="chat-bubble-outline" size={64} color="#9CA3AF" />
                                         <Text style={styles.placeholderText}>
@@ -255,6 +256,7 @@ const ChatbotTab = () => {
                                         contentContainerStyle={styles.messagesContainer}
                                         renderItem={renderMessage}
                                         showsVerticalScrollIndicator={false}
+                                        ListFooterComponent={isSending ? <ThinkingDots /> : null}
                                     />
                                 )}
                             </>
