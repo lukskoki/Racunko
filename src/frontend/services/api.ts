@@ -204,3 +204,103 @@ export const sendProfileInfo = async(token: string, income: number, notification
     return await response.json();
 
 }
+
+// Chatbot interface
+export interface ChatbotRequest {
+    message: string;
+    conversation_id?: number;
+    title?: string;
+}
+
+export interface ChatbotResponse {
+    conversation_id: number;
+    message: string;
+}
+
+export interface ChatConversation {
+    id: number;
+    title: string;
+    lastMessage: string;
+    lastMessageAt: string;
+}
+
+export interface ChatMessage {
+    id: number | string;
+    message: string;
+    created_at: string;
+    isUser: boolean;
+    text?: string; // Alias za message (za kompatibilnost)
+    timestamp?: string | Date; // Alias za created_at (za kompatibilnost)
+}
+
+
+
+// Funkcija za slanje poruke chatbotu
+export const sendChatMessage = async(token: string, request: ChatbotRequest): Promise<ChatbotResponse> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/chatbot/message/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({
+            message: request.message,
+            conversation_id: request.conversation_id,
+            title: request.title,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Chatbot request failed');
+    }
+
+    const data = await response.json();
+    return data as ChatbotResponse;
+}
+
+// Funkcija za ucitavanja svih razgovora
+export const fetchConversations = async(token: string): Promise<ChatConversation[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/chatbot/conversations/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Chatbot request failed');
+    }
+
+    const data = await response.json();
+    return data as ChatConversation[];
+}
+
+
+
+// Funkcija za ucitavanja svih razgovora
+export const fetchChatHistory = async(token: string, conversationId: number): Promise<ChatMessage[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/chatbot/conversations/${conversationId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Chatbot request failed');
+    }
+
+    const data = await response.json();
+    return data as ChatMessage[];
+}
