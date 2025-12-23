@@ -1,19 +1,21 @@
-import {ActivityIndicator, FlatList, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
+import {ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import React, {useMemo, useState} from 'react';
 import {MaterialIcons} from '@expo/vector-icons';
 import Markdown from 'react-native-markdown-display';
 import styles from '../styles/chatbot';
-import {Message, useChatConversation} from '../../hooks/useChatConversation';
-import {ConversationMeta, useChatHistory} from '../../hooks/useChatHistory';
-import {sendChatMessage} from '../../services/api';
+import {useConversations} from '../../hooks/useConversations';
+import {useChatHistory} from '../../hooks/useChatHistory';
+import {sendChatMessage, type ChatConversation, type ChatMessage} from '../../services/api';
 import {useAuth} from '../../contexts/AuthContext';
 
 const ChatbotTab = () => {
     const [message, setMessage] = useState('');
     const [conversationId, setConversationId] = useState<number | null>(null);
-    const {messages, loading, error} = useChatConversation(conversationId ? String(conversationId) : null);
-    const {items: historyItems} = useChatHistory();
-    const [localMessages, setLocalMessages] = useState<Message[]>([]);
+    const {getChatHistory, isLoading: isLoadingHistory, error: historyError} = useChatHistory();
+    const {getConversations, isLoading: isLoadingConversations, error: conversationsError} = useConversations();
+    const [localMessages, setLocalMessages] = useState<ChatMessage[]>([]);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [conversations, setConversations] = useState<ChatConversation[]>([]);
     const [showHistory, setShowHistory] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const {token} = useAuth();
@@ -27,11 +29,11 @@ const ChatbotTab = () => {
         setMessage('');
 
         // Dodaj user poruku odmah u UI
-        const tempUserMessage: Message = {
+        const tempUserMessage: ChatMessage = {
             id: `local-${Date.now()}`,
-            text: userMessage,
+            message: userMessage,
             isUser: true,
-            timestamp: new Date(),
+            created_at: String(new Date()),
         };
         setLocalMessages(prev => [...prev, tempUserMessage]);
 
@@ -51,21 +53,21 @@ const ChatbotTab = () => {
             }
 
             // Dodaj AI odgovor u UI
-            const aiMessage: Message = {
+            const aiMessage: ChatMessage = {
                 id: `ai-${Date.now()}`,
-                text: response.message,
+                message: response.message,
                 isUser: false,
-                timestamp: new Date(),
+                created_at: String(new Date()),
             };
             setLocalMessages(prev => [...prev, aiMessage]);
         } catch (err) {
             console.error('Error sending message:', err);
             // Dodaj error poruku
-            const errorMessage: Message = {
+            const errorMessage: ChatMessage = {
                 id: `error-${Date.now()}`,
-                text: '❌ Greška pri slanju poruke. Molimo pokušajte ponovno.',
+                message: '❌ Greška pri slanju poruke. Molimo pokušajte ponovno.',
                 isUser: false,
-                timestamp: new Date(),
+                created_at: String(new Date()),
             };
             setLocalMessages(prev => [...prev, errorMessage]);
         } finally {
@@ -76,28 +78,35 @@ const ChatbotTab = () => {
     const mergedMessages = useMemo(() => [...messages, ...localMessages], [messages, localMessages]);
 
     // Renderiranje poruke
-    const renderMessage = ({item}: {item: Message}) => (
-        <View style={styles.messageWrapper}>
-            {item.isUser ? (
-                <View style={styles.userBubble}>
-                    <Text style={styles.userMessageText}>{item.text}</Text>
-                    <Text style={[styles.messageTime, {color: 'rgba(255,255,255,0.8)'}]}>
-                        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                </View>
-            ) : (
-                <View>
-                    <Markdown style={{body: {fontSize: 17}}}>{item.text}</Markdown>
-                    <Text style={styles.messageTime}>
-                        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                </View>
-            )}
-        </View>
-    );
+    const renderMessage = ({item}: {item: ChatMessage}) => {
+        // Koristi created_at ili timestamp, bilo što je dostupno
+        const timeString = item.timestamp || item.created_at;
+        const timestamp = typeof timeString === 'string' ? new Date(timeString) : timeString;
+        const messageText = item.message || item.text || '';
 
-    // Stvaranje razgovora u historyu
-    const renderHistoryItem = ({item}: {item: ConversationMeta}) => (
+        return (
+            <View style={styles.messageWrapper}>
+                {item.isUser ? (
+                    <View style={styles.userBubble}>
+                        <Text style={styles.userMessageText}>{messageText}</Text>
+                        <Text style={[styles.messageTime, {color: 'rgba(255,255,255,0.8)'}]}>
+                            {timestamp?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Text>
+                    </View>
+                ) : (
+                    <View>
+                        <Markdown style={{body: {fontSize: 17}}}>{messageText}</Markdown>
+                        <Text style={styles.messageTime}>
+                            {timestamp?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Text>
+                    </View>
+                )}
+            </View>
+        );
+    };
+
+    // Renderiranje razgovora u historiju
+    const renderHistoryItem = ({item}: {item: ChatConversation}) => (
         <TouchableOpacity style={styles.historyItem} onPress={() => handleSelectConversation(item.id)}>
             <View style={styles.historyTextContainer}>
                 <Text style={styles.historyTitle}>{item.title}</Text>
@@ -107,27 +116,65 @@ const ChatbotTab = () => {
                     </Text>
                 )}
             </View>
-            {!!item.updatedAt && (
-                <Text style={styles.historyTime}>{item.updatedAt.toLocaleDateString()}</Text>
+            {!!item.lastMessageAt && (
+                <Text style={styles.historyTime}>{new Date(item.lastMessageAt).toLocaleDateString()}</Text>
             )}
         </TouchableOpacity>
     );
 
-    // Kad se selektira razgovor onda treba resetirat messages i postavit conversation ID
-    const handleSelectConversation = (id: string) => {
-        setConversationId(Number(id));
-        setLocalMessages([]);
+    // Dohvati sve razgovore kada se otvori history
+    const loadConversations = async () => {
+        try {
+            const convs = await getConversations();
+            setConversations(convs);
+        } catch (err) {
+            console.error('Error loading conversations:', err);
+        }
+    };
+
+    // Dohvati poruke za određeni razgovor
+    const loadChatHistory = async (convId: number) => {
+        try {
+            const history = await getChatHistory(convId);
+            // Transformiraj backend format u frontend format
+            const transformedMessages: ChatMessage[] = history.map(msg => ({
+                id: msg.id,
+                text: msg.message,
+                message: msg.message,
+                isUser: msg.isUser,
+                timestamp: msg.created_at,
+                created_at: msg.created_at,
+            }));
+            setMessages(transformedMessages);
+            setLocalMessages([]); // Ocisti lokalne poruke
+        } catch (err) {
+            console.error('Error loading chat history:', err);
+        }
+    };
+
+    // Kad se selektira razgovor
+    const handleSelectConversation = async (id: number) => {
+        setConversationId(id);
         setMessage('');
         setShowHistory(false);
+        await loadChatHistory(id);
     };
 
     // Handler za kreiranje novog razgovora
     const handleNewConversation = () => {
         setConversationId(null);
+        setMessages([]);
         setLocalMessages([]);
         setMessage('');
         setShowHistory(false);
     };
+
+    // Ucitaj razgovore kada se otvori history
+    React.useEffect(() => {
+        if (showHistory) {
+            loadConversations();
+        }
+    }, [showHistory]);
 
 
 
@@ -151,7 +198,12 @@ const ChatbotTab = () => {
                     
                     <View style={styles.chatContainer}>
                         {showHistory ? (
-                            historyItems.length === 0 ? (
+                            isLoadingConversations ? (
+                                <View style={styles.placeholderContainer}>
+                                    <ActivityIndicator size="small" color="#6B21A8" />
+                                    <Text style={styles.placeholderSubtext}>Učitavanje razgovora...</Text>
+                                </View>
+                            ) : conversations.length === 0 ? (
                                 <View style={styles.placeholderContainer}>
                                     <MaterialIcons name="inbox" size={64} color="#9CA3AF" />
                                     <Text style={styles.placeholderText}>Nema razgovora</Text>
@@ -161,8 +213,8 @@ const ChatbotTab = () => {
                                 </View>
                             ) : (
                                 <FlatList
-                                    data={historyItems}
-                                    keyExtractor={item => item.id}
+                                    data={conversations}
+                                    keyExtractor={item => String(item.id)}
                                     renderItem={renderHistoryItem}
                                     contentContainerStyle={styles.historyListContainer}
                                     style={styles.messagesList}
@@ -170,22 +222,22 @@ const ChatbotTab = () => {
                             )
                         ) : (
                             <>
-                                {loading && (
+                                {isLoadingHistory && (
                                     <View style={styles.placeholderContainer}>
                                         <ActivityIndicator size="small" color="#6B21A8" />
                                         <Text style={styles.placeholderSubtext}>Učitavanje razgovora...</Text>
                                     </View>
                                 )}
 
-                                {!!error && (
+                                {(!!historyError || !!conversationsError) && (
                                     <View style={styles.placeholderContainer}>
                                         <MaterialIcons name="error-outline" size={48} color="#EF4444" />
                                         <Text style={styles.placeholderText}>Greška</Text>
-                                        <Text style={styles.placeholderSubtext}>{error}</Text>
+                                        <Text style={styles.placeholderSubtext}>{historyError || conversationsError}</Text>
                                     </View>
                                 )}
 
-                                {!loading && !error && mergedMessages.length === 0 ? (
+                                {!isLoadingHistory && !historyError && mergedMessages.length === 0 ? (
                                     <View style={styles.placeholderContainer}>
                                         <MaterialIcons name="chat-bubble-outline" size={64} color="#9CA3AF" />
                                         <Text style={styles.placeholderText}>
@@ -198,7 +250,7 @@ const ChatbotTab = () => {
                                 ) : (
                                     <FlatList
                                         data={mergedMessages}
-                                        keyExtractor={item => item.id}
+                                        keyExtractor={item => String(item.id)}
                                         style={styles.messagesList}
                                         contentContainerStyle={styles.messagesContainer}
                                         renderItem={renderMessage}

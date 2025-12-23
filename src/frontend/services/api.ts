@@ -217,11 +217,29 @@ export interface ChatbotResponse {
     message: string;
 }
 
+export interface ChatConversation {
+    id: number;
+    title: string;
+    lastMessage: string;
+    lastMessageAt: string;
+}
+
+export interface ChatMessage {
+    id: number | string;
+    message: string;
+    created_at: string;
+    isUser: boolean;
+    text?: string; // Alias za message (za kompatibilnost)
+    timestamp?: string | Date; // Alias za created_at (za kompatibilnost)
+}
+
+
+
 // Funkcija za slanje poruke chatbotu
 export const sendChatMessage = async(token: string, request: ChatbotRequest): Promise<ChatbotResponse> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
 
-    const response = await fetch(`${url}/api/auth/chatbot/`, {
+    const response = await fetch(`${url}/api/conversation/chatbot/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -243,3 +261,46 @@ export const sendChatMessage = async(token: string, request: ChatbotRequest): Pr
     return data as ChatbotResponse;
 }
 
+// Funkcija za ucitavanja svih razgovora
+export const fetchConversations = async(token: string): Promise<ChatConversation[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/conversation/conversations/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Chatbot request failed');
+    }
+
+    const data = await response.json();
+    return data as ChatConversation[];
+}
+
+
+
+// Funkcija za ucitavanja svih razgovora
+export const fetchChatHistory = async(token: string, conversationId: number): Promise<ChatMessage[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/conversation/conversations/${conversationId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Chatbot request failed');
+    }
+
+    const data = await response.json();
+    return data as ChatMessage[];
+}

@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { fetchChatHistory, type ChatMessage} from '@/services/api';
+import {fetchConversations, ChatConversation} from '@/services/api';
 import { useAuth } from './useAuth';
-export const useChatHistory = () => {
+export const useConversations = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { token } = useAuth();
 
-    const getChatHistory = async (conversationId: number):Promise<ChatMessage[]> => {
+    const getConversations = async ():Promise<ChatConversation[]> => {
         if (!token) {
             throw new Error('Morate biti prijavljeni');
         }
@@ -15,7 +15,7 @@ export const useChatHistory = () => {
         setError(null);
 
         try {
-            const result: ChatMessage[] = await fetchChatHistory(token, conversationId);
+            const result: ChatConversation[] = await fetchConversations(token);
             console.log('Conversations fetched successfully:', result);
             setIsLoading(false);
             return result;
@@ -28,7 +28,7 @@ export const useChatHistory = () => {
     };
 
     return {
-        getChatHistory,
+        getConversations,
         isLoading,
         error,
     };
