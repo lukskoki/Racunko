@@ -18,6 +18,7 @@ from django.http import HttpResponse
 import random
 from django.shortcuts import get_object_or_404
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Dopusti bilo kome da se registrira
 def register(request):
@@ -441,3 +442,6 @@ def change_user_allowance(request):
     profile_member.allowance = allowance
     profile_member.save()
     return Response(ProfileSerializer(profile_member).data, status=200)
+    
+
+
