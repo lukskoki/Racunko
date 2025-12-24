@@ -144,15 +144,6 @@ export const sendTransaction = async(amount: number, category:number, date:strin
     } catch {
         throw new Error('Server vratio neočekivan format odgovora (nije JSON)');
     }
-
-    // Kovacevicev dio
-    // if (!response.ok) {
-    //     const errorData = await response.json();
-    //     throw new Error(errorData.error || 'Create transaction failed');
-    // }
-    //
-    // const data = await response.json();
-    // return data;
 }
 
 // s ovime se dohvacaju sve kategorije
@@ -303,4 +294,78 @@ export const fetchChatHistory = async(token: string, conversationId: number): Pr
 
     const data = await response.json();
     return data as ChatMessage[];
+}
+
+
+export interface Group {
+    id: number;
+    groupName: string;
+    groupCode: string;
+    budget: number | null;
+    income: number | null;
+}
+
+// s ovime se stvara nova grupa
+export const makeGroup = async(token: string, groupName: string): Promise<Group> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/create_group/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        },
+        body: JSON.stringify({
+            groupName: groupName
+        })
+    });
+
+    console.log("Group name: " + groupName);
+
+    console.log("Stvaram grupu.");
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Making group failed');
+    }
+
+    const data = await response.json();
+    return data as Group;
+}
+
+export interface Profile {
+    user: string;
+    group: string | null;
+    role: string;
+    isAdmin: boolean;
+    budget: number | null;
+    income: number | null;
+    allowance: number | null;
+    notifications: boolean;
+    income_date: string | null;
+    profile_completed: boolean;
+}
+
+// s ovime se pridruzuje grupi
+export const joinGroup = async(token: string, groupCode: string): Promise<Profile> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/join_group/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({
+            groupCode: groupCode,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Joining group failed');
+    }
+
+    const data = await response.json();
+    return data as Profile;
 }

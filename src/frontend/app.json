@@ -46,7 +46,8 @@
         }
       ],
       "expo-camera",
-      "react-native-vision-camera"
+      "react-native-vision-camera",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
