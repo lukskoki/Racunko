@@ -369,3 +369,142 @@ export const joinGroup = async(token: string, groupCode: string): Promise<Profil
     const data = await response.json();
     return data as Profile;
 }
+
+// Dohvaca informacije o grupi korisnika
+export const getGroup = async(token: string): Promise<Group> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_group/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching group failed');
+    }
+
+    const data = await response.json();
+    return data as Group;
+}
+
+// Member interface za get_members response
+export interface Member {
+    userId: number;
+    user: string;
+    group: string | null;
+    role: string;
+    isAdmin: boolean;
+    budget: number | null;
+    income: number | null;
+    allowance: number | null;
+    notifications: boolean;
+    income_date: string | null;
+    profile_completed: boolean;
+}
+
+// Dohvaca sve clanove grupe
+export const getMembers = async(token: string): Promise<Member[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_members/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching members failed');
+    }
+
+    const data = await response.json();
+    return data as Member[];
+}
+
+// Mijenja budzet grupe (samo GroupLeader)
+export const changeGroupBudget = async(token: string, budget: number): Promise<Group> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/change_group_budget/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({ budget }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Changing budget failed');
+    }
+
+    const data = await response.json();
+    return data as Group;
+}
+
+// Mijenja dopusteni limit clana (samo GroupLeader)
+export const changeUserAllowance = async(token: string, userId: number, allowance: number): Promise<Profile> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/change_user_allowance/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({ userId, allowance }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Changing allowance failed');
+    }
+
+    const data = await response.json();
+    return data as Profile;
+}
+
+// Napusta grupu
+export const leaveGroup = async(token: string): Promise<{ message: string }> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/leave_group/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Leaving group failed');
+    }
+
+    const data = await response.json();
+    return data;
+}
+
+// FUTURE: Interface za spending podatke (kad backend doda endpoint)
+export interface MemberSpending {
+    userId: number;
+    username: string;
+    totalSpent: number;
+    allowance: number | null;
+}
+
+// FUTURE: Interface za transakcije clana (kad backend doda endpoint)
+export interface MemberTransaction {
+    id: number;
+    amount: number;
+    date: string;
+    category: string;
+    transactionNote: string | null;
+}

@@ -1,14 +1,151 @@
 // hooks/useGroup.ts
-import { useState } from 'react';
-import { Profile, joinGroup, makeGroup } from '@/services/api';
+import { useState, useCallback } from 'react';
+import {
+    Profile,
+    Group,
+    Member,
+    joinGroup,
+    makeGroup,
+    getGroup,
+    getMembers,
+    changeGroupBudget,
+    changeUserAllowance,
+    leaveGroup
+} from '@/services/api';
 import { useAuth } from './useAuth';
 
 export const useGroup = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [group, setGroup] = useState<Group | null>(null);
+    const [members, setMembers] = useState<Member[]>([]);
+    const [hasGroup, setHasGroup] = useState<boolean | null>(null);
     const { token } = useAuth();
 
-    const makeGroupHandler = async (groupName: string): Promise<any> => {
+    // Dohvaca informacije o grupi
+    const fetchGroup = useCallback(async (): Promise<Group | null> => {
+        if (!token) {
+            throw new Error('Morate biti prijavljeni');
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const result = await getGroup(token);
+            setGroup(result);
+            setHasGroup(true);
+            setIsLoading(false);
+            return result;
+        } catch (err: any) {
+            // Ako korisnik nije u grupi, to nije greska
+            if (err.message?.includes('not in a group') || err.message?.includes('User is not in a group')) {
+                setHasGroup(false);
+                setGroup(null);
+                setIsLoading(false);
+                return null;
+            }
+            const errorMessage = err.message || 'Greška pri dohvaćanju grupe!';
+            setError(errorMessage);
+            setHasGroup(false);
+            setIsLoading(false);
+            return null;
+        }
+    }, [token]);
+
+    // Dohvaca sve clanove grupe
+    const fetchMembers = useCallback(async (): Promise<Member[]> => {
+        if (!token) {
+            throw new Error('Morate biti prijavljeni');
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const result = await getMembers(token);
+            setMembers(result);
+            setIsLoading(false);
+            return result;
+        } catch (err: any) {
+            const errorMessage = err.message || 'Greška pri dohvaćanju članova!';
+            setError(errorMessage);
+            setIsLoading(false);
+            return [];
+        }
+    }, [token]);
+
+    // Azurira budzet grupe (samo GroupLeader)
+    const updateGroupBudget = useCallback(async (budget: number): Promise<Group | null> => {
+        if (!token) {
+            throw new Error('Morate biti prijavljeni');
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const result = await changeGroupBudget(token, budget);
+            setGroup(result);
+            setIsLoading(false);
+            return result;
+        } catch (err: any) {
+            const errorMessage = err.message || 'Greška pri ažuriranju budžeta!';
+            setError(errorMessage);
+            setIsLoading(false);
+            throw new Error(errorMessage);
+        }
+    }, [token]);
+
+    // Azurira dopusteni limit clana (samo GroupLeader)
+    const updateMemberAllowance = useCallback(async (userId: number, allowance: number): Promise<void> => {
+        if (!token) {
+            throw new Error('Morate biti prijavljeni');
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await changeUserAllowance(token, userId, allowance);
+            // Azuriraj lokalno stanje
+            setMembers(prev =>
+                prev.map(m => m.userId === userId ? { ...m, allowance } : m)
+            );
+            setIsLoading(false);
+        } catch (err: any) {
+            const errorMessage = err.message || 'Greška pri ažuriranju limita!';
+            setError(errorMessage);
+            setIsLoading(false);
+            throw new Error(errorMessage);
+        }
+    }, [token]);
+
+    // Napusta grupu
+    const leaveGroupHandler = useCallback(async (): Promise<void> => {
+        if (!token) {
+            throw new Error('Morate biti prijavljeni');
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await leaveGroup(token);
+            setGroup(null);
+            setMembers([]);
+            setHasGroup(false);
+            setIsLoading(false);
+        } catch (err: any) {
+            const errorMessage = err.message || 'Greška pri napuštanju grupe!';
+            setError(errorMessage);
+            setIsLoading(false);
+            throw new Error(errorMessage);
+        }
+    }, [token]);
+
+    // Stvara novu grupu
+    const makeGroupHandler = async (groupName: string): Promise<Group> => {
         if (!token) {
             throw new Error('Morate biti prijavljeni');
         }
@@ -19,6 +156,8 @@ export const useGroup = () => {
         try {
             const result = await makeGroup(token, groupName);
             console.log('Group created successfully:', result);
+            setGroup(result);
+            setHasGroup(true);
             setIsLoading(false);
             return result;
         } catch (err: any) {
@@ -29,7 +168,7 @@ export const useGroup = () => {
         }
     };
 
-
+    // Pridruzuje se grupi
     const joinGroupHandler = async (groupCode: string): Promise<Profile> => {
         if (!token) {
             throw new Error('Morate biti prijavljeni');
@@ -41,6 +180,9 @@ export const useGroup = () => {
         try {
             const result: Profile = await joinGroup(token, groupCode);
             console.log('Successfully joined group:', result);
+            setHasGroup(true);
+            // Dohvati grupu nakon pridruživanja
+            await fetchGroup();
             setIsLoading(false);
             return result;
         } catch (err: any) {
@@ -52,9 +194,19 @@ export const useGroup = () => {
     };
 
     return {
-        joinGroupHandler,
-        makeGroupHandler,
+        // State
+        group,
+        members,
+        hasGroup,
         isLoading,
         error,
+        // Actions
+        fetchGroup,
+        fetchMembers,
+        updateGroupBudget,
+        updateMemberAllowance,
+        leaveGroupHandler,
+        joinGroupHandler,
+        makeGroupHandler,
     };
 };

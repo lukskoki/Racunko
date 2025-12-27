@@ -51,6 +51,7 @@ const ExpenseSetup = () => {
         }))
 
         const handleSubmit = async (): Promise<void> => {
+            router.push("/tabs/home-tab");
             try{
                 setExpenses(expenses);
                 await submitProfile({
