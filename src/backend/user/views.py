@@ -429,6 +429,22 @@ def change_group_budget(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_user_allowance(request):
+    """
+    Update a group member's allowance. This endpoint sets the `allowance` field on a profile belonging to the leader's group.
+    
+    Parameters:
+        request (rest_framework.request.Request): DRF request whose .data must include:
+            - "userId" (int): ID of the user whose allowance will be updated.
+            - "allowance" (numeric): New allowance value to assign.
+    
+    Returns:
+        dict: Serialized profile data for the updated member.
+    
+    Notes:
+        - The requesting user must have a profile.role of "GroupLeader"; otherwise a 400 response is returned.
+        - Returns a 400 response if "userId" or "allowance" is missing.
+        - Returns a 404 response if the specified user is not found in the leader's group.
+    """
     profile_leader = request.user.profile
     if not profile_leader.role == 'GroupLeader' :
         return Response("User is not the Leader", status=400)
@@ -451,8 +467,16 @@ def change_user_allowance(request):
 @permission_classes([IsAuthenticated])
 def get_member_spending(request):
     """
-    Returns spending totals for all members in the user's group (current month).
-    Any group member can access this.
+    Compute current-month spending totals for every member of the authenticated user's group.
+    
+    If the authenticated user is not assigned to a group, the view responds with HTTP 400. Otherwise returns a list where each entry contains the member's userId, username, totalSpent for the current month, and allowance (or None).
+    
+    Returns:
+        Response: A DRF Response whose body is a list of dicts with keys:
+            - userId (int): The member's user ID.
+            - username (str): The member's username.
+            - totalSpent (float): Sum of the member's transactions from the start of the current month to now.
+            - allowance (float or None): The member's allowance if set, otherwise None.
     """
     profile = request.user.profile
 
@@ -488,8 +512,15 @@ def get_member_spending(request):
 @permission_classes([IsAuthenticated])
 def get_member_transactions(request, user_id):
     """
-    Returns transactions for a specific group member (current month).
-    Only GroupLeader or isAdmin can access.
+    Retrieve the current-month transactions for a specified member of the requester's group.
+    
+    Only a GroupLeader or an admin may access another member's transactions; the requester must belong to the same group. If the requester is not in a group or lacks permission, the view returns an error Response (400 or 403).
+    
+    Parameters:
+        user_id (int): ID of the target user whose transactions to retrieve.
+    
+    Returns:
+        list: Serialized transaction objects for the target member that occurred within the current month.
     """
     profile = request.user.profile
 
@@ -519,4 +550,3 @@ def get_member_transactions(request, user_id):
 
     serializer = TransactionSerializer(transactions, many=True)
     return Response(serializer.data, status=200)
-
