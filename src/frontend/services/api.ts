@@ -492,7 +492,7 @@ export const leaveGroup = async(token: string): Promise<{ message: string }> => 
     return data;
 }
 
-// FUTURE: Interface za spending podatke (kad backend doda endpoint)
+// Interface za spending podatke
 export interface MemberSpending {
     userId: number;
     username: string;
@@ -500,11 +500,53 @@ export interface MemberSpending {
     allowance: number | null;
 }
 
-// FUTURE: Interface za transakcije clana (kad backend doda endpoint)
+// Interface za transakcije clana
 export interface MemberTransaction {
     id: number;
     amount: number;
     date: string;
     category: string;
     transactionNote: string | null;
+}
+
+// Dohvaca potrosnju svih clanova grupe (tekuci mjesec)
+export const getMemberSpending = async(token: string): Promise<MemberSpending[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_member_spending/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching member spending failed');
+    }
+
+    const data = await response.json();
+    return data as MemberSpending[];
+}
+
+// Dohvaca transakcije odredenog clana (tekuci mjesec) - samo GroupLeader ili admin
+export const getMemberTransactions = async(token: string, userId: number): Promise<MemberTransaction[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_member_transactions/${userId}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching member transactions failed');
+    }
+
+    const data = await response.json();
+    return data as MemberTransaction[];
 }

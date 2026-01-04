@@ -4,13 +4,15 @@ import {
     Profile,
     Group,
     Member,
+    MemberSpending,
     joinGroup,
     makeGroup,
     getGroup,
     getMembers,
     changeGroupBudget,
     changeUserAllowance,
-    leaveGroup
+    leaveGroup,
+    getMemberSpending
 } from '@/services/api';
 import { useAuth } from './useAuth';
 
@@ -20,6 +22,7 @@ export const useGroup = () => {
     const [group, setGroup] = useState<Group | null>(null);
     const [members, setMembers] = useState<Member[]>([]);
     const [hasGroup, setHasGroup] = useState<boolean | null>(null);
+    const [memberSpending, setMemberSpending] = useState<MemberSpending[]>([]);
     const { token } = useAuth();
 
     // Dohvaca informacije o grupi
@@ -71,6 +74,22 @@ export const useGroup = () => {
             const errorMessage = err.message || 'Greška pri dohvaćanju članova!';
             setError(errorMessage);
             setIsLoading(false);
+            return [];
+        }
+    }, [token]);
+
+    // Dohvaca potrosnju svih clanova (tekuci mjesec)
+    const fetchMemberSpending = useCallback(async (): Promise<MemberSpending[]> => {
+        if (!token) {
+            throw new Error('Morate biti prijavljeni');
+        }
+
+        try {
+            const result = await getMemberSpending(token);
+            setMemberSpending(result);
+            return result;
+        } catch (err: any) {
+            console.log('Error fetching member spending:', err.message);
             return [];
         }
     }, [token]);
@@ -197,12 +216,14 @@ export const useGroup = () => {
         // State
         group,
         members,
+        memberSpending,
         hasGroup,
         isLoading,
         error,
         // Actions
         fetchGroup,
         fetchMembers,
+        fetchMemberSpending,
         updateGroupBudget,
         updateMemberAllowance,
         leaveGroupHandler,

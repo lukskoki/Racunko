@@ -16,4 +16,6 @@ urlpatterns = [
     path('get_members/', views.get_members, name='get_members'),
     path('change_group_budget/', views.change_group_budget, name='change_group_budget'),
     path('change_user_allowance/', views.change_user_allowance, name='change_user_allowance'),
+    path('get_member_spending/', views.get_member_spending, name='get_member_spending'),
+    path('get_member_transactions/<int:user_id>/', views.get_member_transactions, name='get_member_transactions'),
 ]

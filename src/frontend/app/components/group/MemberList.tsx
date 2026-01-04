@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import styles from '@/app/styles/groupTab';
-import { Member } from '@/services/api';
+import { Member, MemberSpending } from '@/services/api';
 import MemberCard from './MemberCard';
 import AllowanceModal from './AllowanceModal';
+import MemberDetailModal from './MemberDetailModal';
 
 interface MemberListProps {
     members: Member[];
+    memberSpending: MemberSpending[];
     currentUserName: string;
     isOwner: boolean;
     onAllowanceChange: (userId: number, allowance: number) => Promise<unknown>;
@@ -15,6 +17,7 @@ interface MemberListProps {
 
 const MemberList = ({
     members,
+    memberSpending,
     currentUserName,
     isOwner,
     onAllowanceChange,
@@ -22,11 +25,21 @@ const MemberList = ({
 }: MemberListProps) => {
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const [showAllowanceModal, setShowAllowanceModal] = useState(false);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [detailMemberSpent, setDetailMemberSpent] = useState(0);
 
     const handleMenuPress = (member: Member) => {
         if (isOwner) {
             setSelectedMember(member);
             setShowAllowanceModal(true);
+        }
+    };
+
+    const handleCardPress = (member: Member, totalSpent: number) => {
+        if (isOwner) {
+            setSelectedMember(member);
+            setDetailMemberSpent(totalSpent);
+            setShowDetailModal(true);
         }
     };
 
@@ -38,14 +51,20 @@ const MemberList = ({
         }
     };
 
-    const renderMember = ({ item }: { item: Member }) => (
-        <MemberCard
-            member={item}
-            isCurrentUser={item.user === currentUserName}
-            canManage={isOwner && item.role !== 'GroupLeader'}
-            onMenuPress={() => handleMenuPress(item)}
-        />
-    );
+    const renderMember = ({ item }: { item: Member }) => {
+        const spending = memberSpending.find(s => s.userId === item.userId);
+        const totalSpent = spending?.totalSpent || 0;
+        return (
+            <MemberCard
+                member={item}
+                isCurrentUser={item.user === currentUserName}
+                canManage={isOwner && item.role !== 'GroupLeader'}
+                onMenuPress={() => handleMenuPress(item)}
+                onCardPress={() => handleCardPress(item, totalSpent)}
+                totalSpent={totalSpent}
+            />
+        );
+    };
 
     return (
         <View style={styles.memberListContainer}>
@@ -71,6 +90,18 @@ const MemberList = ({
                 }}
                 onSave={handleAllowanceSave}
                 isLoading={isLoading}
+            />
+
+            <MemberDetailModal
+                visible={showDetailModal}
+                memberId={selectedMember?.userId || 0}
+                memberName={selectedMember?.user || ''}
+                totalSpent={detailMemberSpent}
+                allowance={selectedMember?.allowance || null}
+                onClose={() => {
+                    setShowDetailModal(false);
+                    setSelectedMember(null);
+                }}
             />
         </View>
     );

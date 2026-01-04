@@ -8,6 +8,7 @@ import BudgetCard from './BudgetCard';
 import MemberList from './MemberList';
 import GroupMenuModal from './GroupMenuModal';
 import styles from '@/app/styles/groupTab';
+import NoGroupView from "@/app/components/group/NoGroupView";
 
 interface GroupViewProps {
     onGroupLeft?: () => void;
@@ -18,8 +19,10 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
     const {
         group,
         members,
+        memberSpending,
         fetchGroup,
         fetchMembers,
+        fetchMemberSpending,
         updateGroupBudget,
         updateMemberAllowance,
         leaveGroupHandler,
@@ -31,12 +34,28 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
     const [initialLoading, setInitialLoading] = useState(true);
 
     const loadData = useCallback(async () => {
-        await Promise.all([fetchGroup(), fetchMembers()]);
-    }, [fetchGroup, fetchMembers]);
+        await Promise.all([fetchGroup(), fetchMembers(), fetchMemberSpending()]);
+    }, [fetchGroup, fetchMembers, fetchMemberSpending]);
 
     useEffect(() => {
         loadData().finally(() => setInitialLoading(false));
     }, []);
+
+
+    useEffect(() => {
+        // Provjeri ima li korisnik grupu pri ucitavanju
+        fetchGroup().finally(() => setInitialLoading(false));
+    }, []);
+
+    // Callback za kad se korisnik pridruzi grupi
+    const handleGroupJoined = () => {
+        fetchGroup();
+    };
+
+    // Callback za kad korisnik kreira grupu
+    const handleGroupCreated = () => {
+        fetchGroup();
+    };
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -68,11 +87,10 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
 
     if (!group) {
         return (
-            <SafeAreaView style={styles.groupContainer}>
-                <View style={styles.loadingContainer}>
-                    <Text style={styles.errorText}>Nije moguće učitati grupu</Text>
-                </View>
-            </SafeAreaView>
+            <NoGroupView
+                onGroupJoined={handleGroupJoined}
+                onGroupCreated={handleGroupCreated}
+            />
         );
     }
 
@@ -104,6 +122,7 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
 
                 <MemberList
                     members={members}
+                    memberSpending={memberSpending}
                     currentUserName={user?.username || ''}
                     isOwner={isOwner}
                     onAllowanceChange={updateMemberAllowance}

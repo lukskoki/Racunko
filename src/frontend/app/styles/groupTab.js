@@ -400,6 +400,7 @@ export default StyleSheet.create({
     menuItem: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         paddingVertical: 16,
         borderTopWidth: 1,
         borderTopColor: '#E2E8F0',
@@ -423,5 +424,118 @@ export default StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: '#64748B',
+    },
+
+    // === Spending progress bar styles ===
+    spendingContainer: {
+        marginTop: 12,
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#E2E8F0',
+    },
+    spendingHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    spendingLabel: {
+        fontSize: 13,
+        color: '#64748B',
+    },
+    spendingValue: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#1E293B',
+    },
+    spendingValueOver: {
+        color: '#EF4444',
+    },
+    progressBarContainer: {
+        height: 8,
+        backgroundColor: '#E2E8F0',
+        borderRadius: 4,
+        overflow: 'hidden',
+    },
+    progressBar: {
+        height: '100%',
+        borderRadius: 4,
+    },
+    progressBarNormal: {
+        backgroundColor: '#22C55E',
+    },
+    progressBarOver: {
+        backgroundColor: '#EF4444',
+    },
+
+    // === Member detail modal styles ===
+    detailModalContent: {
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingHorizontal: 24,
+        paddingTop: 12,
+        paddingBottom: 32,
+        maxHeight: '80%',
+    },
+    detailSummary: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingVertical: 16,
+        marginBottom: 16,
+        backgroundColor: '#F8FAFC',
+        borderRadius: 12,
+    },
+    detailSummaryItem: {
+        alignItems: 'center',
+    },
+    detailSummaryLabel: {
+        fontSize: 13,
+        color: '#64748B',
+        marginBottom: 4,
+    },
+    detailSummaryValue: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#1E293B',
+    },
+    detailLoading: {
+        paddingVertical: 40,
+        alignItems: 'center',
+    },
+    transactionList: {
+        maxHeight: 300,
+    },
+    transactionItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E2E8F0',
+    },
+    transactionLeft: {
+        flex: 1,
+    },
+    transactionCategory: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#1E293B',
+    },
+    transactionDate: {
+        fontSize: 13,
+        color: '#64748B',
+        marginTop: 2,
+    },
+    transactionNote: {
+        fontSize: 12,
+        color: '#94A3B8',
+        marginTop: 4,
+        fontStyle: 'italic',
+    },
+    transactionAmount: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#1E293B',
     },
 })

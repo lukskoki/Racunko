@@ -62,7 +62,7 @@ const GroupMenuModal = ({
 
                     <Text style={styles.menuTitle}>Opcije grupe</Text>
 
-                    {/* Group Code Section */}
+                    {/* Kod za grupu */}
                     <View style={styles.groupCodeSection}>
                         <Text style={styles.groupCodeLabel}>Kod za pridruživanje</Text>
                         <View style={styles.groupCodeContainer}>
@@ -73,7 +73,7 @@ const GroupMenuModal = ({
                         </View>
                     </View>
 
-                    {/* Leave group */}
+                    {/* Napusti grupu gumb */}
                     <Pressable
                         style={styles.menuItem}
                         onPress={handleLeaveGroup}
