@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import *
-from .models import Transaction, Category
+from .models import Transaction, Category, Expense
 from user.models import Profile
 from rest_framework.response import Response
 import base64
@@ -83,4 +83,12 @@ def get_expenses(request):
     profile = request.user.profile
     expenses = profile.expenses.all()
     serializer = ExpenseSerializer(expenses, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_transactions(request):
+    profile = request.user.profile
+    transactions = profile.transactions.all()
+    serializer = TransactionSerializer(transactions, many=True)
     return Response(serializer.data)

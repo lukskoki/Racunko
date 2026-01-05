@@ -1,5 +1,5 @@
+import type {LoginProps, RegisterProps} from "@/contexts/AuthContext";
 
-import type { LoginProps, RegisterProps } from "@/contexts/AuthContext";
 export interface User {
     id: number;
     username: string;
@@ -205,102 +205,69 @@ export const sendProfileInfo = async(token: string, income: number, notification
 
 }
 
-// Chatbot interface
-export interface ChatbotRequest {
-    message: string;
-    conversation_id?: number;
-    title?: string;
-}
-
-export interface ChatbotResponse {
-    conversation_id: number;
-    message: string;
-}
-
-export interface ChatConversation {
-    id: number;
-    title: string;
-    lastMessage: string;
-    lastMessageAt: string;
-}
-
-export interface ChatMessage {
-    id: number | string;
-    message: string;
-    created_at: string;
-    isUser: boolean;
-    text?: string; // Alias za message (za kompatibilnost)
-    timestamp?: string | Date; // Alias za created_at (za kompatibilnost)
-}
 
 
-
-// Funkcija za slanje poruke chatbotu
-export const sendChatMessage = async(token: string, request: ChatbotRequest): Promise<ChatbotResponse> => {
+export const getExpenses = async(token: string) => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
-
-    const response = await fetch(`${url}/api/chatbot/message/`, {
-        method: 'POST',
+    const response = await(fetch(`${url}/api/transaction/get_expenses/`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Token ${token}`,
-        },
-        body: JSON.stringify({
-            message: request.message,
-            conversation_id: request.conversation_id,
-            title: request.title,
-        }),
-    });
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        }
+    }));
+    console.log("Dohvaćam Troškove.");
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching expenses failed');
+    }
+    const data = await response.json();
+    return data;
+}
+
+export const getAllTransactions = async(token: string) => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+
+    const response = await(fetch(`${url}/api/transaction/get_transactions/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        }
+    }));
+
+    console.log("Dohvaćam Transakcije.");
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Chatbot request failed');
+        throw new Error(errorData.error || 'Fetching transactions failed');
     }
 
     const data = await response.json();
-    return data as ChatbotResponse;
+    return data;
 }
 
-// Funkcija za ucitavanja svih razgovora
-export const fetchConversations = async(token: string): Promise<ChatConversation[]> => {
+
+export const getProfile = async(token: string) => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
 
-    const response = await fetch(`${url}/api/chatbot/conversations/`, {
+    const response = await(fetch(`${url}/api/auth/get_profile_income/`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Token ${token}`,
         }
-    });
+    }));
+    const text = await response.text();
+    console.log("Dohvaćam Profil income.");
 
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Chatbot request failed');
+        throw new Error(`HTTP ${response.status}: ${text.slice(0, 120)}`);
     }
-
-    const data = await response.json();
-    return data as ChatConversation[];
-}
-
-
-
-// Funkcija za ucitavanja svih razgovora
-export const fetchChatHistory = async(token: string, conversationId: number): Promise<ChatMessage[]> => {
-    const url = process.env.EXPO_PUBLIC_BASE_URL;
-
-    const response = await fetch(`${url}/api/chatbot/conversations/${conversationId}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Token ${token}`,
-        }
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Chatbot request failed');
+    const ct = response.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+        throw new Error(`Očekivan JSON, dobiveno: ${ct}. Body: ${text.slice(0, 120)}`);
     }
-
-    const data = await response.json();
-    return data as ChatMessage[];
+    return JSON.parse(text);
 }

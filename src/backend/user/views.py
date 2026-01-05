@@ -423,25 +423,9 @@ def change_group_budget(request):
     group.save()
     return Response(GroupSerializer(group).data, status=200)
 
-@api_view(['POST'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def change_user_allowance(request):
-    profile_leader = request.user.profile
-    if not profile_leader.role == 'GroupLeader' :
-        return Response("User is not the Leader", status=400)
-    user_id = request.data.get("userId")
-    allowance = request.data.get("allowance")
-    if user_id is None or allowance is None:
-        return Response("userId and allowance are required",status=400)
-    profile_member = get_object_or_404(
-        Profile,
-        user__id=user_id,
-        group=profile_leader.group
-    )
-    
-    profile_member.allowance = allowance
-    profile_member.save()
-    return Response(ProfileSerializer(profile_member).data, status=200)
-    
-
-
+def get_profile_income(request):
+    profile = request.user.profile
+    serializer = ProfileIncomeSerializer(profile)
+    return Response(serializer.data, status=200)

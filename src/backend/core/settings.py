@@ -38,7 +38,11 @@ SECRET_KEY = 'django-insecure-=l^(#_#vmlp&8#&&4=ny5&*u0o(8)kbou3b8c5rf4ivu=q5*5q
 
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes', 'on'] # Citaj DEBUG vrijednost iz .env, tako da se ne zeznemo u produkciji
 
-#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "172.20.10.3",
+]
 
 
 # Application definition
