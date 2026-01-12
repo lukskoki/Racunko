@@ -569,8 +569,8 @@ def analytics(request):
     
     category_breakdown = [
         {
-            'category': item['category__categoryName'],
-            'amount': float(item['total'])
+            'category': item['category__categoryName'] or 'Bez kategorije',
+            'amount': float(item['total']) 
         }
         for item in spending_by_category
     ]
