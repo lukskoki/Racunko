@@ -550,3 +550,69 @@ export const getMemberTransactions = async(token: string, userId: number): Promi
     const data = await response.json();
     return data as MemberTransaction[];
 }
+
+
+export interface CategorySpending {
+    category: string;
+    amount: number;
+}
+
+export interface Transaction {
+    id: number;
+    amount: number;
+    date: string;
+    category: string;
+    transactionNote: string | null;
+}
+
+export interface PersonalAnalytics {
+    totalSpent: number;
+    budget: number | null;
+    income: number | null;
+    spendingByCategory: CategorySpending[];
+    recentTransactions: Transaction[];
+    transactionCount: number;
+}
+
+export interface GroupMemberSpending {
+    userId: number;
+    username: string;
+    totalSpent: number;
+    allowance: number | null;
+    isCurrentUser: boolean;
+}
+
+export interface GroupAnalytics {
+    groupName: string;
+    groupBudget: number | null;
+    groupTotalSpent: number;
+    memberCount: number;
+    members: GroupMemberSpending[];
+}
+
+export interface AnalyticsResponse {
+    personalAnalytics: PersonalAnalytics;
+    groupAnalytics: GroupAnalytics | null;
+}
+
+// Dohvaca sve analytics podatke
+export const getAnalytics = async(token: string, month?: string): Promise<AnalyticsResponse> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+    const queryParam = month ? `?month=${month}` : '';
+
+    const response = await fetch(`${url}/api/auth/analytics/${queryParam}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching analytics failed');
+    }
+
+    const data = await response.json();
+    return data as AnalyticsResponse;
+}
