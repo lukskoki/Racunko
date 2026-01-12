@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
-from transaction.serializers import ExpenseSerializer
+from transaction.serializers import ExpenseSerializer, TransactionSerializer
+from transaction.models import Transaction
 from .serializers import *
 from .models import Profile
 from django.contrib.auth import authenticate, get_user_model
@@ -17,6 +18,8 @@ from urllib.parse import urlencode
 from django.http import HttpResponse
 import random
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from django.db.models import Sum
 
 
 @api_view(['POST'])
@@ -442,6 +445,151 @@ def change_user_allowance(request):
     profile_member.allowance = allowance
     profile_member.save()
     return Response(ProfileSerializer(profile_member).data, status=200)
-    
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_member_spending(request):
+    """
+    Returns spending totals for all members in the user's group (current month).
+    Any group member can access this.
+    """
+    profile = request.user.profile
+
+    if profile.group is None:
+        return Response("User is not in a group", status=400)
+
+    # Get first day of current month
+    now = timezone.now()
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    members = profile.group.members.all()
+    spending_data = []
+
+    for member in members:
+        # Sum all transactions for this member in current month
+        total_spent = Transaction.objects.filter(
+            profile=member,
+            date__gte=start_of_month,
+            date__lte=now
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        spending_data.append({
+            'userId': member.user.id,
+            'username': member.user.username,
+            'totalSpent': float(total_spent),
+            'allowance': float(member.allowance) if member.allowance else None
+        })
+
+    return Response(spending_data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_member_transactions(request, user_id):
+    """
+    Returns transactions for a specific group member (current month).
+    Only GroupLeader or isAdmin can access.
+    """
+    profile = request.user.profile
+
+    if profile.group is None:
+        return Response("User is not in a group", status=400)
+
+    # Check if user has permission (GroupLeader or admin)
+    if profile.role != 'GroupLeader' and not profile.isAdmin:
+        return Response("Not authorized to view member transactions", status=403)
+
+    # Get target member (must be in same group)
+    target_profile = get_object_or_404(
+        Profile,
+        user__id=user_id,
+        group=profile.group
+    )
+
+    # Get current month transactions
+    now = timezone.now()
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    transactions = Transaction.objects.filter(
+        profile=target_profile,
+        date__gte=start_of_month,
+        date__lte=now
+    ).order_by('-date')
+
+    serializer = TransactionSerializer(transactions, many=True)
+    return Response(serializer.data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def analytics(request):
+    
+    profile = request.user.profile
+
+    
+    month_param = request.GET.get('month')
+
+    if month_param:
+        try:
+            # Parsiraj month param format: YYYY-MM
+            year, month = map(int, month_param.split('-'))
+            start_of_month = timezone.datetime(year, month, 1, tzinfo=timezone.get_current_timezone())
+        except (ValueError, AttributeError):
+            return Response({
+                'error': 'Invalid month format. Use YYYY-MM (e.g., 2024-12)'
+            }, status=400)
+    else:
+        # Default je trenutni mjesec
+        now = timezone.now()
+        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Kraj mjeseca
+    if start_of_month.month == 12:
+        end_of_month = start_of_month.replace(year=start_of_month.year + 1, month=1)
+    else:
+        end_of_month = start_of_month.replace(month=start_of_month.month + 1)
+
+    # Transakcije za odabrani mjesec
+    transactions = Transaction.objects.filter(
+        profile=profile,
+        date__gte=start_of_month,
+        date__lt=end_of_month
+    ).order_by('-date')
+
+    # Potrosnja po kategorijama
+    spending_by_category = Transaction.objects.filter(
+        profile=profile,
+        date__gte=start_of_month,
+        date__lt=end_of_month
+    ).values('category__categoryName').annotate(
+        total=Sum('amount')
+    ).order_by('-total')
+
+    
+    category_breakdown = [
+        {
+            'category': item['category__categoryName'] or 'Bez kategorije',
+            'amount': float(item['total']) 
+        }
+        for item in spending_by_category
+    ]
+
+    # Ukupna potrosnja za mjesec
+    total_spent = transactions.aggregate(total=Sum('amount'))['total'] or 0
+
+    
+    personal_analytics = {
+        'totalSpent': float(total_spent),
+        'budget': float(profile.budget) if profile.budget else None,
+        'income': float(profile.income) if profile.income else None,
+        'spendingByCategory': category_breakdown,
+        'recentTransactions': TransactionSerializer(transactions, many=True).data,
+        'transactionCount': transactions.count(),
+        'month': start_of_month.strftime('%Y-%m')
+    }
+
+    return Response({
+        'personalAnalytics': personal_analytics
+    }, status=200)
 

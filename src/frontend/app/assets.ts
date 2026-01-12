@@ -24,4 +24,5 @@ export const images = {
     restorani: require('./assets/icons/restorani.png'),
     minus: require('./assets/icons/redminus.png'),
     bluePlus: require('./assets/icons/blueplus.png'),
+    groupImage: require('./assets/pictures/group.png'),
 }

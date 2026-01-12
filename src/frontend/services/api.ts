@@ -144,15 +144,6 @@ export const sendTransaction = async(amount: number, category:number, date:strin
     } catch {
         throw new Error('Server vratio neočekivan format odgovora (nije JSON)');
     }
-
-    // Kovacevicev dio
-    // if (!response.ok) {
-    //     const errorData = await response.json();
-    //     throw new Error(errorData.error || 'Create transaction failed');
-    // }
-    //
-    // const data = await response.json();
-    // return data;
 }
 
 // s ovime se dohvacaju sve kategorije
@@ -303,4 +294,310 @@ export const fetchChatHistory = async(token: string, conversationId: number): Pr
 
     const data = await response.json();
     return data as ChatMessage[];
+}
+
+
+export interface Group {
+    id: number;
+    groupName: string;
+    groupCode: string;
+    budget: number | null;
+    income: number | null;
+}
+
+// s ovime se stvara nova grupa
+export const makeGroup = async(token: string, groupName: string): Promise<Group> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/create_group/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        },
+        body: JSON.stringify({
+            groupName: groupName
+        })
+    });
+
+    console.log("Group name: " + groupName);
+
+    console.log("Stvaram grupu.");
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Making group failed');
+    }
+
+    const data = await response.json();
+    return data as Group;
+}
+
+export interface Profile {
+    user: string;
+    group: string | null;
+    role: string;
+    isAdmin: boolean;
+    budget: number | null;
+    income: number | null;
+    allowance: number | null;
+    notifications: boolean;
+    income_date: string | null;
+    profile_completed: boolean;
+}
+
+// s ovime se pridruzuje grupi
+export const joinGroup = async(token: string, groupCode: string): Promise<Profile> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/join_group/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({
+            groupCode: groupCode,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Joining group failed');
+    }
+
+    const data = await response.json();
+    return data as Profile;
+}
+
+// Dohvaca informacije o grupi korisnika
+export const getGroup = async(token: string): Promise<Group> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_group/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching group failed');
+    }
+
+    const data = await response.json();
+    return data as Group;
+}
+
+// Member interface za get_members response
+export interface Member {
+    userId: number;
+    user: string;
+    group: string | null;
+    role: string;
+    isAdmin: boolean;
+    budget: number | null;
+    income: number | null;
+    allowance: number | null;
+    notifications: boolean;
+    income_date: string | null;
+    profile_completed: boolean;
+}
+
+// Dohvaca sve clanove grupe
+export const getMembers = async(token: string): Promise<Member[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_members/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching members failed');
+    }
+
+    const data = await response.json();
+    return data as Member[];
+}
+
+// Mijenja budzet grupe (samo GroupLeader)
+export const changeGroupBudget = async(token: string, budget: number): Promise<Group> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/change_group_budget/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({ budget }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Changing budget failed');
+    }
+
+    const data = await response.json();
+    return data as Group;
+}
+
+// Mijenja dopusteni limit clana (samo GroupLeader)
+export const changeUserAllowance = async(token: string, userId: number, allowance: number): Promise<Profile> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/change_user_allowance/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+        body: JSON.stringify({ userId, allowance }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Changing allowance failed');
+    }
+
+    const data = await response.json();
+    return data as Profile;
+}
+
+// Napusta grupu
+export const leaveGroup = async(token: string): Promise<{ message: string }> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/leave_group/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Leaving group failed');
+    }
+
+    const data = await response.json();
+    return data;
+}
+
+// Interface za spending podatke
+export interface MemberSpending {
+    userId: number;
+    username: string;
+    totalSpent: number;
+    allowance: number | null;
+}
+
+// Interface za transakcije clana
+export interface MemberTransaction {
+    id: number;
+    amount: number;
+    date: string;
+    category: string;
+    transactionNote: string | null;
+}
+
+// Dohvaca potrosnju svih clanova grupe (tekuci mjesec)
+export const getMemberSpending = async(token: string): Promise<MemberSpending[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_member_spending/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching member spending failed');
+    }
+
+    const data = await response.json();
+    return data as MemberSpending[];
+}
+
+// Dohvaca transakcije odredenog clana (tekuci mjesec) - samo GroupLeader ili admin
+export const getMemberTransactions = async(token: string, userId: number): Promise<MemberTransaction[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/get_member_transactions/${userId}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching member transactions failed');
+    }
+
+    const data = await response.json();
+    return data as MemberTransaction[];
+}
+
+
+export interface CategorySpending {
+    category: string;
+    amount: number;
+}
+
+export interface Transaction {
+    id: number;
+    amount: number;
+    date: string;
+    category: string;
+    transactionNote: string | null;
+}
+
+export interface PersonalAnalytics {
+    totalSpent: number;
+    budget: number | null;
+    income: number | null;
+    spendingByCategory: CategorySpending[];
+    recentTransactions: Transaction[];
+    transactionCount: number;
+    month: string;
+}
+
+
+export interface AnalyticsResponse {
+    personalAnalytics: PersonalAnalytics;
+}
+
+// Dohvaca sve analytics podatke
+export const getAnalytics = async(token: string, month?: string): Promise<AnalyticsResponse> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+    const queryParam = month ? `?month=${month}` : '';
+
+    const response = await fetch(`${url}/api/auth/analytics/${queryParam}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Fetching analytics failed');
+    }
+
+    const data = await response.json();
+    return data as AnalyticsResponse;
 }

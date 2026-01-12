@@ -1,6 +1,11 @@
 import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
+    container: {
+        width: '100%',
+        justifyContent: 'center',
+        flex: 1,
+    },
     errorContainer: {
         alignSelf: 'center',
         width: '80%',
