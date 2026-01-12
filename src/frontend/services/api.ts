@@ -572,27 +572,12 @@ export interface PersonalAnalytics {
     spendingByCategory: CategorySpending[];
     recentTransactions: Transaction[];
     transactionCount: number;
+    month: string;
 }
 
-export interface GroupMemberSpending {
-    userId: number;
-    username: string;
-    totalSpent: number;
-    allowance: number | null;
-    isCurrentUser: boolean;
-}
-
-export interface GroupAnalytics {
-    groupName: string;
-    groupBudget: number | null;
-    groupTotalSpent: number;
-    memberCount: number;
-    members: GroupMemberSpending[];
-}
 
 export interface AnalyticsResponse {
     personalAnalytics: PersonalAnalytics;
-    groupAnalytics: GroupAnalytics | null;
 }
 
 // Dohvaca sve analytics podatke

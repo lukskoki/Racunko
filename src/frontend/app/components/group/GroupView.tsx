@@ -37,10 +37,6 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
         await Promise.all([fetchGroup(), fetchMembers(), fetchMemberSpending()]);
     }, [fetchGroup, fetchMembers, fetchMemberSpending]);
 
-    useEffect(() => {
-        loadData().finally(() => setInitialLoading(false));
-    }, []);
-
 
     useEffect(() => {
         // Provjeri ima li korisnik grupu pri ucitavanju
