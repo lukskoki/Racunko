@@ -18,4 +18,5 @@ urlpatterns = [
     path('change_user_allowance/', views.change_user_allowance, name='change_user_allowance'),
     path('get_member_spending/', views.get_member_spending, name='get_member_spending'),
     path('get_member_transactions/<int:user_id>/', views.get_member_transactions, name='get_member_transactions'),
+    path('analytics/', views.analytics, name='analytics'),
 ]
