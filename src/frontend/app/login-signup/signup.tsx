@@ -57,6 +57,10 @@ const Signup = () => {
     // S ovim provjeravamo da inputi nisu prazni - ako je prazno onda je gumb zasivljen
     const isFormValid = username.trim() !== '' && email.trim() !== '' && password.trim() !== '';
 
+    const handleClose = () => {
+        router.replace("/");
+    };
+
     return (
         <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
             <View style={stylesLandingPage.display}>
@@ -66,6 +70,9 @@ const Signup = () => {
                 </View>
 
                 <View style={style.loginPage}>
+                    <Pressable onPress={handleClose} style={style.closeButton} hitSlop={10}>
+                        <Ionicons name="close" size={22} color="#111827" />
+                    </Pressable>
                     <View style={style.titleBox}>
                         <Text style={style.title}>Započnite Besplatno</Text>
                         <Text style={style.secondaryTitle}>Besplatno zauvijek</Text>

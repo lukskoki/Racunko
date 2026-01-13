@@ -16,6 +16,15 @@ export default StyleSheet.create({
         height: '80%',
         paddingBottom: '8%',
     },
+    closeButton: {
+        position: 'absolute',
+        top: 14,
+        right: 16,
+        padding: 6,
+        borderRadius: 16,
+        backgroundColor: '#F3F4F6',
+        zIndex: 2,
+    },
     titleBox: {
         display: 'flex',
         flexDirection:'column',
