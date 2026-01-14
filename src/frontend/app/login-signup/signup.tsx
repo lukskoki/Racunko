@@ -144,7 +144,7 @@ const Signup = () => {
                         {/* Gumb za registraciju */}
                         <TouchableOpacity
                             style={[style.button, !isFormValid && style.buttonDisabled]}
-                            onPress={handleSignUpGoogle}
+                            onPress={handleSignup}
                             disabled={!isFormValid}
                             activeOpacity={0.7}
                         >
