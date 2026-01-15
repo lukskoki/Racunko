@@ -154,6 +154,13 @@ def login(request):
     }, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    Token.objects.filter(user=request.user).delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])  # samo ulogirani korisnici

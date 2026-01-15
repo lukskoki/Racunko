@@ -10,9 +10,9 @@ import { useAuth } from '@/hooks/useAuth';
 const Profil = () => {
     const { logout, user } = useAuth();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         // Ocisti token i user data
-        logout();
+        await logout();
     
         router.replace("/");
     };

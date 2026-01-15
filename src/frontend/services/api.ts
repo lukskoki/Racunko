@@ -70,6 +70,22 @@ export const register = async({username, password, email}: RegisterProps ): Prom
     return data as LoginResponse;
 }
 
+export const logout = async(token: string): Promise<void> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/logout/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok && response.status !== 401) {
+        throw new Error('Logout failed');
+    }
+}
+
 // Category interface
 export interface Category {
     id: number;

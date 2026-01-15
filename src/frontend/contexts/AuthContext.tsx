@@ -1,5 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect, useContext } from "react";
-import { login as apilogin, register as apiregister} from '@/services/api';
+import { login as apilogin, register as apiregister, logout as apilogout } from '@/services/api';
 import type { User } from '@/services/api';
 const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 import {
@@ -28,7 +28,7 @@ interface AuthContextType { // Format konteksta kojeg cemo koristit u drugim faj
     login: (props: LoginProps) => Promise<User>;
     register: (props: RegisterProps) => Promise<User>;
     loginGoogle: () => Promise<User>;
-    logout: () => void;
+    logout: () => Promise<void>;
 }
 
 const config: AuthRequestConfig = {
@@ -182,13 +182,21 @@ export function AuthProvider({ children } : { children: ReactNode }) {
         }
     }
 
-    function logout() {
-        // Clear-aj user i token state
-        setUser(undefined);
-        setToken(null);
-        setGoogleAuthError(null);
+    async function logout() {
+        const currentToken = token;
 
-        console.log("User logged out");
+        try {
+            if (currentToken) {
+                await apilogout(currentToken);
+            }
+        } catch (error) {
+            console.error("Logout failed: ", error);
+        } finally {
+            // Clear-aj user i token state
+            setUser(undefined);
+            setToken(null);
+            setGoogleAuthError(null);
+        }
     }
 
     return (
