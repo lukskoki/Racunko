@@ -13,7 +13,7 @@ const Profil = () => {
     const handleLogout = async () => {
         // Ocisti token i user data
         await logout();
-    
+        router.dismissAll();
         router.replace("/");
     };
 
