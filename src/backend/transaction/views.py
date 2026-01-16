@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import *
-from .models import Transaction, Category
+from .models import Transaction, Category, Expense
 from user.models import Profile
 from rest_framework.response import Response
 import base64
@@ -89,6 +89,19 @@ def get_expenses(request):
 @permission_classes([IsAuthenticated])
 def create_expense(request):
     profile = request.user.profile
+    expense_id = request.data.get('expenseId')
+
+    if expense_id:
+        try:
+            expense = Expense.objects.get(id=expense_id, profile=profile)
+        except Expense.DoesNotExist:
+            return Response({"detail": "not found"}, status=404)
+        serializer = ExpenseSerializer(expense, data=request.data, partial=True, context={'profile':profile})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
+
     expense_data = {
         'amount' : request.data.get('amount'),
         'category' : request.data.get('category'),
@@ -108,8 +121,8 @@ def delete_expense(request, expense_id):
     profile = request.user.profile
     try:
         expense = Expense.objects.get(id=expense_id, profile=profile)
-    except Exception as e:
-        return Response({"detail": e}, status=404)
+    except Expense.DoesNotExist:
+        return Response({"detail": "not found"}, status=404)
     expense.delete()
     return Response("Object deleted successfully", status=204)
 
