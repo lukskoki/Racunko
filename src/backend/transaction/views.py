@@ -84,3 +84,33 @@ def get_expenses(request):
     expenses = profile.expenses.all()
     serializer = ExpenseSerializer(expenses, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_expense(request):
+    profile = request.user.profile
+    expense_data = {
+        'amount' : request.data.get('amount'),
+        'category' : request.data.get('category'),
+        'expenseName': request.data.get('expenseName')
+    }
+    serializer = ExpenseSerializer(data= expense_data, context={'profile': profile})  #predavamo data i profile
+        
+    if serializer.is_valid():
+        expense = serializer.save()   #pravimo expense
+    else:
+        return Response(serializer.errors, status=400) #ako ne uspije serializer
+    return Response(ExpenseSerializer(expense).data, status=201)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_expense(request, expense_id):
+    profile = request.user.profile
+    try:
+        expense = Expense.objects.get(id=expense_id, profile=profile)
+    except Exception as e:
+        return Response({"detail": e}, status=404)
+    expense.delete()
+    return Response("Object deleted successfully", status=204)
+
+
