@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('user', '0009_remove_message_conversation_delete_conversation_and_more'),
+        ('user', '0008_message_isuser'),
     ]
 
     operations = [
