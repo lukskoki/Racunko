@@ -71,6 +71,7 @@ const Login = () => {
     const isFormValid = username.trim() !== '' && password.trim() !== '';
 
     const handleClose = () => {
+        router.dismissAll();
         router.replace("/");
     };
 

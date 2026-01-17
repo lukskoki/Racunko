@@ -58,6 +58,7 @@ const Signup = () => {
     const isFormValid = username.trim() !== '' && email.trim() !== '' && password.trim() !== '';
 
     const handleClose = () => {
+        router.dismissAll();
         router.replace("/");
     };
 

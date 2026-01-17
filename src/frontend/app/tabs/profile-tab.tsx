@@ -12,8 +12,9 @@ const Profil = () => {
 
     const handleLogout = () => {
         // Ocisti token i user data
+        // Nije dobro stavit await logout() jer onda usera nece izlogirat ako dode do greske, a trebalo bi u svakom slucaju
         logout();
-    
+        router.dismissAll();
         router.replace("/");
     };
 
