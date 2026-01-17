@@ -102,12 +102,8 @@ def create_expense(request):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    expense_data = {
-        'amount' : request.data.get('amount'),
-        'category' : request.data.get('category'),
-        'expenseName': request.data.get('expenseName')
-    }
-    serializer = ExpenseSerializer(data= expense_data, context={'profile': profile})  #predavamo data i profile
+    
+    serializer = ExpenseSerializer(data= request.data, context={'profile': profile})  #predavamo data i profile
         
     if serializer.is_valid():
         expense = serializer.save()   #pravimo expense
