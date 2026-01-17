@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import *
-from .models import Transaction, Category
+from .models import Transaction, Category, Expense
 from user.models import Profile
 from rest_framework.response import Response
 import base64
@@ -84,3 +84,42 @@ def get_expenses(request):
     expenses = profile.expenses.all()
     serializer = ExpenseSerializer(expenses, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_expense(request):
+    profile = request.user.profile
+    expense_id = request.data.get('expenseId')
+
+    if expense_id:
+        try:
+            expense = Expense.objects.get(id=expense_id, profile=profile)
+        except Expense.DoesNotExist:
+            return Response({"detail": "not found"}, status=404)
+        serializer = ExpenseSerializer(expense, data=request.data, partial=True, context={'profile':profile})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
+
+    
+    serializer = ExpenseSerializer(data= request.data, context={'profile': profile})  #predavamo data i profile
+        
+    if serializer.is_valid():
+        expense = serializer.save()   #pravimo expense
+    else:
+        return Response(serializer.errors, status=400) #ako ne uspije serializer
+    return Response(ExpenseSerializer(expense).data, status=201)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_expense(request, expense_id):
+    profile = request.user.profile
+    try:
+        expense = Expense.objects.get(id=expense_id, profile=profile)
+    except Expense.DoesNotExist:
+        return Response({"detail": "not found"}, status=404)
+    expense.delete()
+    return Response("Object deleted successfully", status=204)
+
+

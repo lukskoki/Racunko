@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from transaction.serializers import ExpenseSerializer, TransactionSerializer
-from transaction.models import Transaction
+from transaction.models import Transaction, Expense
 from .serializers import *
 from .models import Profile
 from django.contrib.auth import authenticate, get_user_model
@@ -20,6 +20,7 @@ import random
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Sum
+from collections import defaultdict
 
 
 @api_view(['POST'])
@@ -557,6 +558,9 @@ def analytics(request):
         date__lt=end_of_month
     ).order_by('-date')
 
+    expenses = Expense.objects.filter(
+        profile=profile
+    )
     # Potrosnja po kategorijama
     spending_by_category = Transaction.objects.filter(
         profile=profile,
@@ -565,19 +569,34 @@ def analytics(request):
     ).values('category__categoryName').annotate(
         total=Sum('amount')
     ).order_by('-total')
+    spending_by_category_expense =Expense.objects.filter(
+        profile=profile
+    ).values('category__categoryName').annotate(
+        total=Sum('amount')
+    ).order_by('-total')
 
-    
-    category_breakdown = [
-        {
-            'category': item['category__categoryName'] or 'Bez kategorije',
-            'amount': float(item['total']) 
-        }
-        for item in spending_by_category
-    ]
+    combined_totals = defaultdict(float)
+
+# Add transaction totals
+    for item in spending_by_category:
+        category_name = item['category__categoryName'] or 'Bez kategorije'
+        combined_totals[category_name] += float(item['total']) or 0
+
+# Add expense totals
+    for item in spending_by_category_expense:
+        category_name = item['category__categoryName'] or 'Bez kategorije'
+        combined_totals[category_name] += float(item['total']) or 0
+
+    category_breakdown = sorted(
+    [{'category': k, 'amount': float(v)} for k, v in combined_totals.items()],
+    key=lambda x: x['amount'],
+    reverse=True
+)
 
     # Ukupna potrosnja za mjesec
-    total_spent = transactions.aggregate(total=Sum('amount'))['total'] or 0
-
+    total_spent_transactions = transactions.aggregate(total=Sum('amount'))['total'] or 0
+    total_spent_expenses = expenses.aggregate(total = Sum('amount'))['total'] or 0
+    total_spent = total_spent_transactions + total_spent_expenses
     
     personal_analytics = {
         'totalSpent': float(total_spent),
@@ -586,7 +605,8 @@ def analytics(request):
         'spendingByCategory': category_breakdown,
         'recentTransactions': TransactionSerializer(transactions, many=True).data,
         'transactionCount': transactions.count(),
-        'month': start_of_month.strftime('%Y-%m')
+        'month': start_of_month.strftime('%Y-%m'),
+        'expenses': ExpenseSerializer(expenses,many=True).data,
     }
 
     return Response({
