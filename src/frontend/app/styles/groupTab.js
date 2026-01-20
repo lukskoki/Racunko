@@ -312,6 +312,9 @@ export default StyleSheet.create({
     roleBadgeOwner: {
         backgroundColor: '#DBEAFE',
     },
+    roleBadgeCoOwner: {
+        backgroundColor: '#DCFCE7',
+    },
     roleBadgeText: {
         fontSize: 12,
         fontWeight: '600',
@@ -319,6 +322,9 @@ export default StyleSheet.create({
     },
     roleBadgeTextOwner: {
         color: '#1D4ED8',
+    },
+    roleBadgeTextCoOwner: {
+        color: '#166534',
     },
     memberMenuButton: {
         padding: 8,
@@ -537,5 +543,57 @@ export default StyleSheet.create({
         fontSize: 15,
         fontWeight: '600',
         color: '#1E293B',
+    },
+    roleSection: {
+        marginBottom: 20,
+        paddingBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+    },
+    roleSectionTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 12,
+    },
+    roleToggleButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#F9FAFB',
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    roleToggleLeft: {
+        flex: 1,
+    },
+    roleToggleLabel: {
+        fontSize: 12,
+        color: '#6B7280',
+        marginBottom: 4,
+    },
+    roleToggleValue: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#2563EB',
+    },
+    roleToggleArrow: {
+        fontSize: 20,
+        color: '#2563EB',
+    },
+    roleDescription: {
+        fontSize: 12,
+        color: '#6B7280',
+        fontStyle: 'italic',
+    },
+    limitSection: {
+        marginBottom: 20,
+    },
+    limitSectionTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 12,
     },
 })

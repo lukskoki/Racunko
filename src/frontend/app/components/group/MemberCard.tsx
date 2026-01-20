@@ -16,7 +16,7 @@ interface MemberCardProps {
 const MemberCard = ({ member, isCurrentUser, canManage, onMenuPress, onCardPress, totalSpent = 0 }: MemberCardProps) => {
     const getRoleBadge = () => {
         if (member.role === 'GroupLeader') return 'Vlasnik';
-        if (member.isAdmin) return 'Admin';
+        if (member.role === 'GroupCoLeader') return 'Suvlasnik';
         return 'Član';
     };
 
@@ -60,11 +60,14 @@ const MemberCard = ({ member, isCurrentUser, canManage, onMenuPress, onCardPress
                     {roleBadge && (
                         <View style={[
                             styles.roleBadge,
-                            member.role === 'GroupLeader' && styles.roleBadgeOwner
+                            member.role === 'GroupLeader' && styles.roleBadgeOwner,
+                            member.role === 'GroupCoLeader' && styles.roleBadgeCoOwner,
+
                         ]}>
                             <Text style={[
                                 styles.roleBadgeText,
-                                member.role === 'GroupLeader' && styles.roleBadgeTextOwner
+                                member.role === 'GroupLeader' && styles.roleBadgeTextOwner,
+                                member.role === 'GroupCoLeader' && styles.roleBadgeTextCoOwner,
                             ]}>
                                 {roleBadge}
                             </Text>
@@ -79,15 +82,6 @@ const MemberCard = ({ member, isCurrentUser, canManage, onMenuPress, onCardPress
                     </Pressable>
                 )}
             </View>
-
-            {/*
-            <View style={styles.allowanceContainer}>
-                <Text style={styles.allowanceLabel}>Dopušteni limit:</Text>
-                <Text style={styles.allowanceValue}>
-                    {formatCurrency(member.allowance) || 'Nije postavljen'}
-                </Text>
-            </View>
-            */}
 
             {/* Progress bar za potrosnju */}
             {hasAllowance && (

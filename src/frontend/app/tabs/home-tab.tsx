@@ -1,11 +1,12 @@
-import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAnalytics} from '../../hooks/useAnalytics';
 import type {AnalyticsResponse} from '../../services/api';
 import styles from '../styles/homeTab';
 const Pocetna = () => {
     const {fetchAnalytics, isLoading, error} = useAnalytics();
+    const [refreshing, setRefreshing] = useState(false);
     const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
     const [selectedMonth, setSelectedMonth] = useState<string>(() => {
         const now = new Date();
@@ -24,6 +25,12 @@ const Pocetna = () => {
             console.error('Error loading analytics:', err);
         }
     };
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await loadAnalytics();
+        setRefreshing(false);
+    }, [loadAnalytics]);
 
     const changeMonth = (direction: 'prev' | 'next') => {
         const [year, month] = selectedMonth.split('-').map(Number);
@@ -56,7 +63,7 @@ const Pocetna = () => {
         return `${monthNames[parseInt(month) - 1]} ${year}`;
     };
 
-    if (isLoading) {
+    if (isLoading && !refreshing) {
         return (
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.container}>
@@ -111,7 +118,18 @@ const Pocetna = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollContainer}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={['#2563EB']}
+                        tintColor="#2563EB"
+                    />
+                }
+                >
                 <View style={styles.container}>
                 {/* Month Selector */}
                 <View style={styles.monthSelector}>

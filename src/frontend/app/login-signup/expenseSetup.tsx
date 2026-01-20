@@ -157,7 +157,7 @@ const ExpenseSetup = () => {
 
 
                     <Pressable style={styles.submit} onPress={handleSubmit}>
-                        <Text style={styles.submitText}>Submit</Text>
+                        <Text style={styles.submitText}>Spremi</Text>
                     </Pressable>
                 </View>
 

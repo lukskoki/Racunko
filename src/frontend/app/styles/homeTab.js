@@ -6,8 +6,11 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: '#F9FAFB',
     },
-    scrollContainer: {
+    scrollView: {
         flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 24,
     },
     container: {
         flex: 1,

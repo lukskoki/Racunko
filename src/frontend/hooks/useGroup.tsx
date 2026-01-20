@@ -12,7 +12,7 @@ import {
     changeGroupBudget,
     changeUserAllowance,
     leaveGroup,
-    getMemberSpending
+    getMemberSpending, toggleMemberAdmin
 } from '@/services/api';
 import { useAuth } from './useAuth';
 
@@ -212,6 +212,22 @@ export const useGroup = () => {
         }
     };
 
+    const changeMembersAuthority = async (userId: number) => {
+        if (!token) return;
+
+        setIsLoading(true);
+        try {
+            await toggleMemberAdmin(token, userId);
+            // Refresh podataka nakon promjene
+            await fetchMembers();
+        } catch (err: any) {
+            console.error('Error toggling member admin:', err);
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return {
         // State
         group,
@@ -229,5 +245,6 @@ export const useGroup = () => {
         leaveGroupHandler,
         joinGroupHandler,
         makeGroupHandler,
+        changeMembersAuthority,
     };
 };

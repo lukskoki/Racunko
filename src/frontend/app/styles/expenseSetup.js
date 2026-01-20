@@ -295,15 +295,16 @@ export default StyleSheet.create({
     },
     submit:{
         width:'30%',
-        height:40,
+        height:50,
         borderRadius:25,
         backgroundColor:'#2563EB',
         justifyContent:'center',
-        alignItems: 'center',
-
+        alignSelf:'center',
     },
     submitText:{
         fontSize:17,
         color:'white',
+        textAlign:'center',
+        fontWeight:'600',
     },
 })
