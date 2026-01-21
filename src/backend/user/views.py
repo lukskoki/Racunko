@@ -628,6 +628,11 @@ def toggle_member_admin(request, user_id):
     """
     requester_profile = request.user.profile
 
+    if requester_profile.group is None:
+        return Response({"error": "Korisnik nije u grupi"}, status=400)
+    if requester_profile.role != 'GroupLeader':
+        return Response({"error": "Korinsik nije autoriziran da mijenja roles"}, status=403)
+
     try:
         target_profile = Profile.objects.get(user_id=user_id)
 

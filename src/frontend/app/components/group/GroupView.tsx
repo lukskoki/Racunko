@@ -41,12 +41,12 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
 
     useEffect(() => {
         // Provjeri ima li korisnik grupu pri ucitavanju
-        fetchGroup().finally(() => setInitialLoading(false));
+        loadData().finally(() => setInitialLoading(false));
     }, []);
 
     // Callback za kad se korisnik pridruzi grupi ili ju napravi
     const handleGroupJoinedOrCreated = () => {
-        fetchGroup();
+        loadData();
     };
 
     const onRefresh = useCallback(async () => {
