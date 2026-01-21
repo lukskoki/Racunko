@@ -3,7 +3,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("message/", views.chatbot, name="chatbot"),
-    path("conversations/", views.getConversations, name="conversations"),
-    path("conversations/<int:conversation_id>", views.getMessages, name="messages")
+    path('admin/', admin.site.urls),
+    path('api/auth/', include('user.urls')),
+    path('api/transaction/', include('transaction.urls')),
 ]
+
+if os.environ.get("OPENAI_API_KEY"):
+    urlpatterns += [path('api/chatbot/', include('chatbot.urls'))]

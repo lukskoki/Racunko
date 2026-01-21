@@ -74,6 +74,7 @@ export const register = async({username, password, email}: RegisterProps ): Prom
 export interface Category {
     id: number;
     categoryName: string;
+    categoryBudget: number;
 }
 
 // Receipt categorization response interface

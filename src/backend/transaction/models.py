@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class Category(models.Model):
     categoryName = models.CharField(max_length=150)
-
+    categoryBudget = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     def __str__(self):
         return self.categoryName
 
