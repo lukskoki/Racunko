@@ -426,8 +426,8 @@ def change_group_budget(request):
     profile = request.user.profile
     if profile.group is None:
         return Response("User is not in a group", status=400)
-    if not profile.role == 'GroupLeader':
-        return Response("User is not the GroupLeader", status=400)
+    if profile.role not in ['GroupLeader', 'GroupCoLeader']:
+        return Response("User is not the GroupLeader or GroupCoLeader", status=400)
     
     group = profile.group
     group.budget = request.data.get('budget')
@@ -438,8 +438,8 @@ def change_group_budget(request):
 @permission_classes([IsAuthenticated])
 def change_user_allowance(request):
     profile_leader = request.user.profile
-    if not profile_leader.role == 'GroupLeader' :
-        return Response("User is not the Leader", status=400)
+    if profile_leader.role not in ['GroupLeader', 'GroupCoLeader']:
+        return Response("User doesnt have rights to change this.", status=400)
     user_id = request.data.get("userId")
     allowance = request.data.get("allowance")
     if user_id is None or allowance is None:
@@ -505,7 +505,7 @@ def get_member_transactions(request, user_id):
         return Response("User is not in a group", status=400)
 
     # Check if user has permission (GroupLeader or admin)
-    if profile.role != 'GroupLeader' and not profile.isAdmin:
+    if profile.role not in ['GroupLeader', 'GroupCoLeader']:
         return Response("Not authorized to view member transactions", status=403)
 
     # Get target member (must be in same group)
@@ -620,3 +620,41 @@ def analytics(request):
         'personalAnalytics': personal_analytics
     }, status=200)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_member_admin(request, user_id):
+    """
+    Toggle između GroupMember i GroupCoLeader
+    """
+    requester_profile = request.user.profile
+
+    if requester_profile.group is None:
+        return Response({"error": "Korisnik nije u grupi"}, status=400)
+    if requester_profile.role != 'GroupLeader':
+        return Response({"error": "Korinsik nije autoriziran da mijenja roles"}, status=403)
+
+    try:
+        target_profile = Profile.objects.get(user_id=user_id)
+
+        # Provjeri da li su u istoj grupi
+        if target_profile.group != requester_profile.group:
+            return Response({"error": "Korisnik nije u vašoj grupi"}, status=400)
+
+        # Ne diraj GroupLeader-a
+        if target_profile.role == 'GroupLeader':
+            return Response({"error": "Ne možete mijenjati vlasnika grupe"}, status=400)
+
+        # Toggle role
+        if target_profile.role == 'GroupMember':
+            target_profile.role = 'GroupCoLeader'
+            target_profile.isAdmin = True
+        else:
+            target_profile.role = 'GroupMember'
+            target_profile.isAdmin = False
+
+        target_profile.save()
+
+        return Response(status=200)
+
+    except Profile.DoesNotExist:
+        return Response({"error": "Korisnik ne postoji"}, status=404)

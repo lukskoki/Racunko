@@ -617,3 +617,21 @@ export const getAnalytics = async(token: string, month?: string): Promise<Analyt
     const data = await response.json();
     return data as AnalyticsResponse;
 }
+
+
+export const toggleMemberAdmin = async (token: string, userId: number): Promise<void> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/auth/toggle_member_admin/${userId}/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Greška pri promjeni role');
+    }
+};

@@ -6,19 +6,23 @@ interface AllowanceModalProps {
     visible: boolean;
     memberName: string;
     currentAllowance: number | null;
+    isCoOwner: boolean;
     onClose: () => void;
     onSave: (allowance: number) => Promise<void>;
+    onToggleAdmin: () => Promise<void>;
     isLoading?: boolean;
 }
 
 const AllowanceModal = ({
-    visible,
-    memberName,
-    currentAllowance,
-    onClose,
-    onSave,
-    isLoading
-}: AllowanceModalProps) => {
+                            visible,
+                            memberName,
+                            currentAllowance,
+                            isCoOwner,
+                            onClose,
+                            onSave,
+                            onToggleAdmin,
+                            isLoading
+                        }: AllowanceModalProps) => {
     const [allowanceInput, setAllowanceInput] = useState('');
 
     useEffect(() => {
@@ -42,6 +46,31 @@ const AllowanceModal = ({
         }
     };
 
+    const handleToggleAdmin = async () => {
+        const newRole = isCoOwner ? 'Član' : 'Suvlasnik';
+        Alert.alert(
+            'Potvrda',
+            `Jeste li sigurni da želite promijeniti ulogu u ${newRole}?`,
+            [
+                {
+                    text: 'Odustani',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Potvrdi',
+                    onPress: async () => {
+                        try {
+                            await onToggleAdmin();
+                            Alert.alert('Uspjeh', `Uloga promijenjena u ${newRole}`);
+                        } catch {
+                            Alert.alert('Greška', 'Nije moguće promijeniti ulogu');
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     return (
         <Modal
             visible={visible}
@@ -50,20 +79,46 @@ const AllowanceModal = ({
             onRequestClose={onClose}>
             <Pressable style={styles.statusModalOverlay} onPress={onClose}>
                 <Pressable style={styles.statusModalContent}>
-                    <Text style={styles.statusModalTitle}>Uredi limit</Text>
+                    <Text style={styles.statusModalTitle}>Uredi člana</Text>
                     <Text style={styles.statusModalSubtitle}>
                         Član: {memberName}
                     </Text>
 
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.currencyPrefix}>€</Text>
-                        <TextInput
-                            style={styles.budgetInput}
-                            value={allowanceInput}
-                            onChangeText={setAllowanceInput}
-                            keyboardType="decimal-pad"
-                            placeholder="0.00"
-                            placeholderTextColor="#94A3B8"/>
+                    {/* Toggle Admin Role */}
+                    <View style={styles.roleSection}>
+                        <Text style={styles.roleSectionTitle}>Ovlasti</Text>
+                        <Pressable
+                            style={styles.roleToggleButton}
+                            onPress={handleToggleAdmin}
+                            disabled={isLoading}>
+                            <View style={styles.roleToggleLeft}>
+                                <Text style={styles.roleToggleLabel}>Trenutna uloga:</Text>
+                                <Text style={styles.roleToggleValue}>
+                                    {isCoOwner ? 'Suvlasnik' : 'Član'}
+                                </Text>
+                            </View>
+                            <Text style={styles.roleToggleArrow}>→</Text>
+                        </Pressable>
+                        <Text style={styles.roleDescription}>
+                            {isCoOwner
+                                ? 'Suvlasnik može mijenjati budžet i limite članova'
+                                : 'Član može samo pregledati svoje transakcije'}
+                        </Text>
+                    </View>
+
+                    {/* Allowance Input */}
+                    <View style={styles.limitSection}>
+                        <Text style={styles.limitSectionTitle}>Mjesečni limit</Text>
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.currencyPrefix}>€</Text>
+                            <TextInput
+                                style={styles.budgetInput}
+                                value={allowanceInput}
+                                onChangeText={setAllowanceInput}
+                                keyboardType="decimal-pad"
+                                placeholder="0.00"
+                                placeholderTextColor="#94A3B8"/>
+                        </View>
                     </View>
 
                     <View style={styles.modalButtonContainer}>

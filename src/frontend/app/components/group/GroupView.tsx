@@ -26,7 +26,8 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
         updateGroupBudget,
         updateMemberAllowance,
         leaveGroupHandler,
-        isLoading
+        isLoading,
+        changeMembersAuthority
     } = useGroup();
 
     const [refreshing, setRefreshing] = useState(false);
@@ -40,17 +41,12 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
 
     useEffect(() => {
         // Provjeri ima li korisnik grupu pri ucitavanju
-        fetchGroup().finally(() => setInitialLoading(false));
+        loadData().finally(() => setInitialLoading(false));
     }, []);
 
-    // Callback za kad se korisnik pridruzi grupi
-    const handleGroupJoined = () => {
-        fetchGroup();
-    };
-
-    // Callback za kad korisnik kreira grupu
-    const handleGroupCreated = () => {
-        fetchGroup();
+    // Callback za kad se korisnik pridruzi grupi ili ju napravi
+    const handleGroupJoinedOrCreated = () => {
+        loadData();
     };
 
     const onRefresh = useCallback(async () => {
@@ -62,8 +58,8 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
     // Pronadi trenutnog korisnika u listi clanova
     const currentMember = members.find(m => m.user === user?.username);
     const isOwner = currentMember?.role === 'GroupLeader';
-    const isAdmin = currentMember?.isAdmin || false;
-    const canEdit = isOwner || isAdmin;
+    const isCoOwner = currentMember?.role === 'GroupCoLeader';
+    const canEdit = isOwner || isCoOwner;
 
     const handleLeaveGroup = async () => {
         await leaveGroupHandler();
@@ -84,8 +80,8 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
     if (!group) {
         return (
             <NoGroupView
-                onGroupJoined={handleGroupJoined}
-                onGroupCreated={handleGroupCreated}
+                onGroupJoined={handleGroupJoinedOrCreated}
+                onGroupCreated={handleGroupJoinedOrCreated}
             />
         );
     }
@@ -121,9 +117,13 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
                     memberSpending={memberSpending}
                     currentUserName={user?.username || ''}
                     isOwner={isOwner}
+                    isCoOwner={isCoOwner}
                     onAllowanceChange={updateMemberAllowance}
+                    onToggleAdmin={changeMembersAuthority}
+                    onRefreshNeeded={loadData}
                     isLoading={isLoading}
                 />
+
             </ScrollView>
 
             <GroupMenuModal
