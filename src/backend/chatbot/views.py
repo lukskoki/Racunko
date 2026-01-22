@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .utils.ai_chat_client import ai_chat
 from .models import Conversation, Message
-from transaction.models import Transaction
+from transaction.models import Expense, Transaction
 from transaction.serializers import TransactionSerializer
 from .serializers import *
 
@@ -38,6 +38,7 @@ def chatbot(request):
 
 
         transactions_qs = Transaction.objects.filter(profile__user=request.user) #ako user nema profile, i dalje moze pricati s chatbottom, samo nema nikakve transakcije za koje ga moze pitati jer nema profile
+        expenses_qs = Expense.objects.filter(profile__user=request.user)
         transactions = [
             {
                 "role": "user",
@@ -46,7 +47,16 @@ def chatbot(request):
             for t in transactions_qs
         ]
 
-        ai_result = ai_chat(history, transactions)  # {'message': '...'}
+        expenses = [
+            {
+                "role": "user",
+                "content": f"amount: {e.amount}, name: {e.expenseName}, category: {e.category}",
+            }
+            for e in expenses_qs
+        ]
+
+
+        ai_result = ai_chat(history, transactions, expenses)  # {'message': '...'}
         if not isinstance(ai_result, dict) or "message" not in ai_result:
             raise ValueError("Neispravan format odgovora")
 
