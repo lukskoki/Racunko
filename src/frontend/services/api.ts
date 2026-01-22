@@ -618,6 +618,83 @@ export const getAnalytics = async(token: string, month?: string): Promise<Analyt
     return data as AnalyticsResponse;
 }
 
+export interface Expense{
+    id: number;
+    amount: number;
+    category: string;
+    expenseName: string;
+    expenseNote: string | null;
+    expenseLength: number | 0;
+}
+
+export const getExpenses = async(token: string): Promise<Expense[]> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+    const response = await fetch(`${url}/api/transaction/get_expenses/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        }
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+    }
+    const data = await response.json();
+    return data as Expense[];
+}
+
+export const sendExpense = async(amount: number, category:number, expenseName: string, token: string): Promise<any> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+    const response = await fetch(`${url}/api/transaction/create_expense/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`, // Auth token za pristup
+        },
+        body: JSON.stringify({
+            amount,
+            category: category,
+            expenseName: expenseName,
+        })
+    });
+
+    const text = await response.text();
+    console.log('RAW response:', response.status, text);
+
+    if (!response.ok) {
+        try {
+            const errorData = JSON.parse(text);
+            throw new Error(errorData.error || 'Create expense failed');
+        } catch {
+            throw new Error(`Create expense failed (status ${response.status})`);
+        }
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch {
+        throw new Error('Server vratio neočekivan format odgovora (nije JSON)');
+    }
+}
+
+
+export const deleteExpense = async(expenseId: number, token: string) => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+    const response = await fetch(`${url}/api/transaction/delete_expense/${expenseId}/`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+    }
+
+    return true;
+}
 
 export const toggleMemberAdmin = async (token: string, userId: number): Promise<void> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
