@@ -26,4 +26,5 @@ export const images = {
     minus: require('./assets/icons/redminus.png'),
     bluePlus: require('./assets/icons/blueplus.png'),
     groupImage: require('./assets/pictures/group.png'),
+    trash: require('./assets/icons/trashcan.png'),
 }

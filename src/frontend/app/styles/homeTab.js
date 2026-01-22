@@ -87,6 +87,7 @@ export default StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
     },
+
     cardTitle: {
         fontSize: 20,
         fontWeight: '700',
@@ -203,6 +204,13 @@ export default StyleSheet.create({
         backgroundColor: '#3B82F6',
         marginRight: 12,
     },
+    categoryDot2: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#3B82F6',
+        marginTop: 7,
+    },
     categoryName: {
         fontSize: 15,
         color: '#374151',
@@ -241,4 +249,122 @@ export default StyleSheet.create({
         color: '#9CA3AF',
         fontStyle: 'italic',
     },
+    plusContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        height: 70,
+        backgroundColor: '#FFFFFF',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+
+    },
+    plusButton: {
+        width: '10%',
+        height: '50%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        shadowColor: '#323232',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3,
+        borderRadius: 4,
+        marginBottom: 16,
+    },
+    plus: {
+        color: '#3B82F6',
+        fontSize: 20,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
+    },
+    categoryBottomSheet: {
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
+        paddingBottom: 20,
+        maxHeight: '70%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 8,
+    },
+
+    modalHeader: {
+        alignItems: 'center',
+        paddingTop: 12,
+        paddingBottom: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F1F5F9',
+    },
+    modalHandle: {
+        width: 40,
+        height: 4,
+        backgroundColor: '#CBD5E1',
+        borderRadius: 2,
+        marginBottom: 12,
+    },
+
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1E293B',
+    },
+
+    loadingContainer: {
+        padding: 40,
+        alignItems: 'center',
+        gap: 12,
+    },
+
+    categoriesScrollView: {
+        paddingHorizontal: 20,
+        paddingTop: 8,
+    },
+
+    categoryItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 65,
+        gap: 12,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        marginBottom: 8,
+        backgroundColor: '#F8FAFC',
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+    },
+    categoryItemSelected: {
+        backgroundColor: '#EFF6FF',
+        borderColor: '#2563EB',
+    },
+
+    categoryItemText: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#1E293B',
+    },
+    categoryItemTextSelected: {
+        color: '#2563EB',
+        fontWeight: '600',
+    },
+
+    card1: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+        shadowColor: '#000000',
+        shadowOffset: {width: 0, height: 2},
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+
 });
