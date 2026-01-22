@@ -42,9 +42,9 @@ const AllowanceModal = ({
 
         try {
             await onSave(newAllowance);
-            Alert.alert('Uspjeh', 'Limit je ažuriran');
+            Alert.alert('Uspjeh', 'Promjene su pohranjene');
         } catch {
-            Alert.alert('Greška', 'Nije moguće ažurirati limit');
+            Alert.alert('Greška', 'Nije moguće pohreniti promjene');
         }
     };
 
@@ -104,7 +104,7 @@ const AllowanceModal = ({
                             </Pressable>
                             <Text style={styles.roleDescription}>
                                 {isCoOwner
-                                    ? 'Suvlasnik može mijenjati budžet i limite članova'
+                                    ? 'Suvlasnik može mijenjati budžet članova'
                                     : 'Član može samo pregledati svoje transakcije'}
                             </Text>
                         </View>

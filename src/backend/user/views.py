@@ -658,3 +658,36 @@ def toggle_member_admin(request, user_id):
 
     except Profile.DoesNotExist:
         return Response({"error": "Korisnik ne postoji"}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_group_spending(request):
+    """
+    Returns total spending for entire group (current month).
+    Any group member can access this.
+    """
+    profile = request.user.profile
+
+    if profile.group is None:
+        return Response("User is not in a group", status=400)
+
+    # Get first day of current month
+    now = timezone.now()
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Get all members in the group except the "GroupLeader"
+    members = profile.group.members.exclude(role='GroupLeader')
+
+    # Sum all transactions for all members in current month
+    total_group_spent = Transaction.objects.filter(
+        profile__in=members,
+        date__gte=start_of_month,
+        date__lte=now
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    return Response({
+        'totalSpent': float(total_group_spent),
+        'budget': float(profile.group.budget) if profile.group.budget else None,
+        'memberCount': members.count()
+    }, status=200)

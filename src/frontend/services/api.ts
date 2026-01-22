@@ -635,3 +635,29 @@ export const toggleMemberAdmin = async (token: string, userId: number): Promise<
         throw new Error(error.error || 'Greška pri promjeni role');
     }
 };
+
+export interface GroupSpending {
+    totalSpent: number;
+    budget: number | null;
+    memberCount: number;
+}
+
+export const getGroupSpending = async (token: string): Promise<GroupSpending> => {
+    const url = process.env.EXPO_PUBLIC_BASE_URL;
+
+
+    const response = await fetch(`${url}/api/auth/get_group_spending/`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch group spending');
+    }
+
+    return response.json();
+};

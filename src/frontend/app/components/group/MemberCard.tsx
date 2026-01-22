@@ -24,18 +24,6 @@ const MemberCard = ({ member, isCurrentUser, canManage, onMenuPress, onCardPress
         return member.user.charAt(0).toUpperCase();
     };
 
-    const formatCurrency = (amount: number | null) => {
-        if (amount === null || amount === undefined) {
-            return null;
-        }
-        // Convert to number in case it comes as string from API
-        const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-        if (isNaN(numAmount)) {
-            return null;
-        }
-        return `€${numAmount.toFixed(2)}`;
-    };
-
     const roleBadge = getRoleBadge();
 
     // Calculate progress bar percentage
@@ -76,15 +64,22 @@ const MemberCard = ({ member, isCurrentUser, canManage, onMenuPress, onCardPress
                 </View>
 
                 {/* Tri tockice menu za owner/admin */}
-                {canManage && (
+                {canManage && member.role !== 'GroupLeader' && (
                     <Pressable onPress={onMenuPress}>
                         <Ionicons name="ellipsis-vertical" size={20} color="#64748B" />
                     </Pressable>
                 )}
             </View>
 
+            { !canManage && ( member.role === 'GroupLeader' || member.role === 'GroupCoLeader' ) && (
+                <View style={styles.permissionNotice}>
+                    <Text style={styles.permissionNoticeText}>
+                        Nemate ovlasti za pregled transakcija ovog člana.</Text>
+                </View>
+            )}
+
             {/* Progress bar za potrosnju */}
-            {hasAllowance && (
+            {hasAllowance && ((member.role !== 'GroupLeader' && member.role !== 'GroupCoLeader' && !canManage) || canManage) && (
                 <View style={styles.spendingContainer}>
                     <View style={styles.spendingHeader}>
                         <Text style={styles.spendingLabel}>Potrošeno ovaj mjesec:</Text>

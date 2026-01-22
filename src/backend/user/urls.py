@@ -21,4 +21,5 @@ urlpatterns = [
     path('get_member_transactions/<int:user_id>/', views.get_member_transactions, name='get_member_transactions'),
     path('analytics/', views.analytics, name='analytics'),
     path('toggle_member_admin/<int:user_id>/', views.toggle_member_admin, name='toggle_member_admin'),
+    path('get_group_spending/', views.get_group_spending, name='get_group_spending'),
 ]

@@ -168,7 +168,11 @@ export default StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
+        marginTop: 16,
         paddingBottom: 24,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 15,
     },
 
     // === Header styles ===
@@ -194,7 +198,7 @@ export default StyleSheet.create({
 
     // === Budget card styles ===
     budgetCard: {
-        margin: 16,
+        marginHorizontal: 16,
         padding: 20,
         backgroundColor: '#2563EB',
         borderRadius: 16,
@@ -245,6 +249,10 @@ export default StyleSheet.create({
     // === Member list styles ===
     memberListContainer: {
         paddingHorizontal: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        gap: 10,
     },
     sectionTitle: {
         fontSize: 18,
@@ -265,6 +273,8 @@ export default StyleSheet.create({
         padding: 16,
         backgroundColor: '#F8FAFC',
         borderRadius: 12,
+        borderWidth: 0.3,
+        borderColor: '#64748B',
         marginBottom: 8,
     },
     currentUserItem: {
@@ -449,10 +459,19 @@ export default StyleSheet.create({
         fontSize: 13,
         color: '#64748B',
     },
+    spendingLabelGroupSpending: {
+        fontSize: 13,
+        color: '#FFFFFF',
+    },
     spendingValue: {
         fontSize: 13,
         fontWeight: '600',
         color: '#1E293B',
+    },
+    spendingValueGroupBudget: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#FFFFFF',
     },
     spendingValueOver: {
         color: '#EF4444',
@@ -596,4 +615,28 @@ export default StyleSheet.create({
         color: '#374151',
         marginBottom: 12,
     },
+    budgetHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    groupSpendingContainer: {
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#E5E7EB',
+    },
+    permissionNotice: {
+        marginTop: 8,
+        padding: 12,
+        borderRadius: 8,
+        backgroundColor: 'rgba(239, 68, 68, 0.08)',
+        borderWidth: 1,
+        borderColor: 'rgba(239, 68, 68, 0.3)',
+    },
+    permissionNoticeText: {
+        fontSize: 13,
+        color: '#991B1B',
+    },
+
 })

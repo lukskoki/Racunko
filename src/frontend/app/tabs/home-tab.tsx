@@ -66,7 +66,7 @@ const Pocetna = () => {
     if (isLoading && !refreshing) {
         return (
             <SafeAreaView style={styles.safeArea}>
-                <View style={styles.container}>
+                <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#2563EB" />
                     <Text style={styles.loadingText}>Učitavanje...</Text>
                 </View>
@@ -87,7 +87,7 @@ const Pocetna = () => {
     if (!analytics) {
         return (
             <SafeAreaView style={styles.safeArea}>
-                <View style={styles.container}>
+                <View style={styles.loadingContainer}>
                     <Text style={styles.emptyText}>Nema dostupnih podataka</Text>
                 </View>
             </SafeAreaView>
