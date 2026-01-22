@@ -20,9 +20,11 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
         group,
         members,
         memberSpending,
+        groupSpending,
         fetchGroup,
         fetchMembers,
         fetchMemberSpending,
+        fetchGroupSpending,
         updateGroupBudget,
         updateMemberAllowance,
         leaveGroupHandler,
@@ -35,7 +37,7 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
     const [initialLoading, setInitialLoading] = useState(true);
 
     const loadData = useCallback(async () => {
-        await Promise.all([fetchGroup(), fetchMembers(), fetchMemberSpending()]);
+        await Promise.all([fetchGroup(), fetchMembers(), fetchMemberSpending(), fetchGroupSpending()]);
     }, [fetchGroup, fetchMembers, fetchMemberSpending]);
 
 
@@ -107,6 +109,8 @@ const GroupView = ({ onGroupLeft }: GroupViewProps) => {
             >
                 <BudgetCard
                     budget={group.budget}
+                    groupSpending={groupSpending}
+                    isOwner={isOwner}
                     canEdit={canEdit}
                     onBudgetChange={updateGroupBudget}
                     isLoading={isLoading}

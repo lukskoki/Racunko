@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import styles from '@/app/styles/groupTab';
 import { Member, MemberSpending } from '@/services/api';
@@ -19,21 +19,54 @@ interface MemberListProps {
 }
 
 const MemberList = ({
-    members,
-    memberSpending,
-    currentUserName,
-    isOwner,
-    isCoOwner,
-    onAllowanceChange,
-    onToggleAdmin,
-    onRefreshNeeded,
-    isLoading
-}: MemberListProps) => {
+                        members,
+                        memberSpending,
+                        currentUserName,
+                        isOwner,
+                        isCoOwner,
+                        onAllowanceChange,
+                        onToggleAdmin,
+                        onRefreshNeeded,
+                        isLoading
+                    }: MemberListProps) => {
     const [selectedMember, setSelectedMember] = useState<Member | null>(null);
     const [showAllowanceModal, setShowAllowanceModal] = useState(false);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [detailMemberSpent, setDetailMemberSpent] = useState(0);
     const [hasAttemptedAutoRefresh, setHasAttemptedAutoRefresh] = useState(false);
+
+    const sortedMembers = useMemo(() => {
+        return members
+            .filter(m => m.role !== 'GroupLeader')
+            .sort((a, b) => {
+                const aIsCurrent = a.user === currentUserName;
+                const bIsCurrent = b.user === currentUserName;
+
+                if (aIsCurrent && !bIsCurrent) return -1;
+                if (!aIsCurrent && bIsCurrent) return 1;
+
+                const roleOrder = {
+                    GroupCoLeader: 0,
+                    GroupMember: 1,
+                } as const;
+
+                const orderA = roleOrder[a.role as keyof typeof roleOrder] ?? 99;
+                const orderB = roleOrder[b.role as keyof typeof roleOrder] ?? 99;
+
+                return orderA - orderB;
+            });
+    }, [members, currentUserName]);
+
+
+    const leader = useMemo(
+        () => members.find(m => m.role === 'GroupLeader') ?? null,
+        [members]
+    );
+
+    const otherMembers = useMemo(
+        () => sortedMembers.filter(m => m.role !== 'GroupLeader'),
+        [sortedMembers]
+    );
 
     // Auto-refresh ako nema članova prikazanih ali grupa postoji
     useEffect(() => {
@@ -89,6 +122,30 @@ const MemberList = ({
         }
     };
 
+    // render za vlasnika (bez onMenuPress i bez onCardPress)
+    const renderLeader = () => {
+        if (!leader) {
+            return (
+                <Text style={styles.emptyText}>
+                    {isLoading ? 'Učitavanje vlasnika...' : 'Nema vlasnika'}
+                </Text>
+            );
+        }
+
+        const spending = memberSpending.find(s => s.userId === leader.userId);
+        const totalSpent = spending?.totalSpent || 0;
+
+        return (
+            <MemberCard
+                member={leader}
+                isCurrentUser={leader.user === currentUserName}
+                canManage={isOwner}
+                totalSpent={totalSpent}
+            />
+        );
+    };
+
+    // render za ostale članove
     const renderMember = ({ item }: { item: Member }) => {
         const spending = memberSpending.find(s => s.userId === item.userId);
         const totalSpent = spending?.totalSpent || 0;
@@ -108,24 +165,31 @@ const MemberList = ({
 
     return (
         <View style={styles.memberListContainer}>
-            <Text style={styles.sectionTitle}>Članovi ({members.length})</Text>
+            <View>
+                <Text style={styles.sectionTitle}>Vlasnik</Text>
+                {renderLeader()}
+            </View>
 
-            <FlatList
-                data={members}
-                keyExtractor={(item) => item.userId.toString()}
-                renderItem={renderMember}
-                scrollEnabled={false}
-                ListEmptyComponent={
-                    <Text style={styles.emptyText}>
-                        {isLoading ? 'Učitavanje članova...' : 'Nema članova'}
-                    </Text>
-                }
-            />
+            <View>
+                <Text style={styles.sectionTitle}>Članovi ({sortedMembers.length})</Text>
+                <FlatList
+                    data={sortedMembers}
+                    keyExtractor={(item) => item.userId.toString()}
+                    renderItem={renderMember}
+                    scrollEnabled={false}
+                    ListEmptyComponent={
+                        <Text style={styles.emptyText}>
+                            {isLoading ? 'Učitavanje članova...' : 'Nema članova'}
+                        </Text>
+                    }
+                />
+            </View>
 
             <AllowanceModal
                 visible={showAllowanceModal}
                 memberName={selectedMember?.user || ''}
                 currentAllowance={selectedMember?.allowance || null}
+                isOwner={isOwner}
                 isCoOwner={selectedMember?.role === 'GroupCoLeader'}
                 onClose={() => {
                     setShowAllowanceModal(false);

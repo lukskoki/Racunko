@@ -16,6 +16,11 @@ export default StyleSheet.create({
         flex: 1,
         padding: 16,
     },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     monthSelector: {
         flexDirection: 'row',
         justifyContent: 'center',

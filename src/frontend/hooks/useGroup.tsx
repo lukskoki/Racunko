@@ -12,7 +12,7 @@ import {
     changeGroupBudget,
     changeUserAllowance,
     leaveGroup,
-    getMemberSpending, toggleMemberAdmin
+    getMemberSpending, toggleMemberAdmin, GroupSpending, getGroupSpending
 } from '@/services/api';
 import { useAuth } from './useAuth';
 
@@ -24,6 +24,8 @@ export const useGroup = () => {
     const [hasGroup, setHasGroup] = useState<boolean | null>(null);
     const [memberSpending, setMemberSpending] = useState<MemberSpending[]>([]);
     const { token } = useAuth();
+    const [groupSpending, setGroupSpending] = useState<GroupSpending | null>(null);
+
 
     // Dohvaca informacije o grupi
     const fetchGroup = useCallback(async (): Promise<Group | null> => {
@@ -228,6 +230,19 @@ export const useGroup = () => {
         }
     };
 
+    const fetchGroupSpending = useCallback(async () => {
+        if (!token) return null;
+
+        try {
+            const data = await getGroupSpending(token);
+            setGroupSpending(data);
+            return data;
+        } catch (err: any) {
+            console.error('Error fetching group spending:', err);
+            return null;
+        }
+    }, [token]);
+
     return {
         // State
         group,
@@ -236,6 +251,7 @@ export const useGroup = () => {
         hasGroup,
         isLoading,
         error,
+        groupSpending,
         // Actions
         fetchGroup,
         fetchMembers,
@@ -246,5 +262,6 @@ export const useGroup = () => {
         joinGroupHandler,
         makeGroupHandler,
         changeMembersAuthority,
+        fetchGroupSpending,
     };
 };

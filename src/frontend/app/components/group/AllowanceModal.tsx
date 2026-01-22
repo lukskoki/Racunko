@@ -6,6 +6,7 @@ interface AllowanceModalProps {
     visible: boolean;
     memberName: string;
     currentAllowance: number | null;
+    isOwner: boolean;
     isCoOwner: boolean;
     onClose: () => void;
     onSave: (allowance: number) => Promise<void>;
@@ -17,6 +18,7 @@ const AllowanceModal = ({
                             visible,
                             memberName,
                             currentAllowance,
+                            isOwner,
                             isCoOwner,
                             onClose,
                             onSave,
@@ -40,9 +42,9 @@ const AllowanceModal = ({
 
         try {
             await onSave(newAllowance);
-            Alert.alert('Uspjeh', 'Limit je ažuriran');
+            Alert.alert('Uspjeh', 'Promjene su pohranjene');
         } catch {
-            Alert.alert('Greška', 'Nije moguće ažurirati limit');
+            Alert.alert('Greška', 'Nije moguće pohreniti promjene');
         }
     };
 
@@ -85,26 +87,28 @@ const AllowanceModal = ({
                     </Text>
 
                     {/* Toggle Admin Role */}
-                    <View style={styles.roleSection}>
-                        <Text style={styles.roleSectionTitle}>Ovlasti</Text>
-                        <Pressable
-                            style={styles.roleToggleButton}
-                            onPress={handleToggleAdmin}
-                            disabled={isLoading}>
-                            <View style={styles.roleToggleLeft}>
-                                <Text style={styles.roleToggleLabel}>Trenutna uloga:</Text>
-                                <Text style={styles.roleToggleValue}>
-                                    {isCoOwner ? 'Suvlasnik' : 'Član'}
-                                </Text>
-                            </View>
-                            <Text style={styles.roleToggleArrow}>→</Text>
-                        </Pressable>
-                        <Text style={styles.roleDescription}>
-                            {isCoOwner
-                                ? 'Suvlasnik može mijenjati budžet i limite članova'
-                                : 'Član može samo pregledati svoje transakcije'}
-                        </Text>
-                    </View>
+                    { isOwner && (
+                        <View style={styles.roleSection}>
+                            <Text style={styles.roleSectionTitle}>Ovlasti</Text>
+                            <Pressable
+                                style={styles.roleToggleButton}
+                                onPress={handleToggleAdmin}
+                                disabled={isLoading}>
+                                <View style={styles.roleToggleLeft}>
+                                    <Text style={styles.roleToggleLabel}>Trenutna uloga:</Text>
+                                    <Text style={styles.roleToggleValue}>
+                                        {isCoOwner ? 'Suvlasnik' : 'Član'}
+                                    </Text>
+                                </View>
+                                <Text style={styles.roleToggleArrow}>→</Text>
+                            </Pressable>
+                            <Text style={styles.roleDescription}>
+                                {isCoOwner
+                                    ? 'Suvlasnik može mijenjati budžet članova'
+                                    : 'Član može samo pregledati svoje transakcije'}
+                            </Text>
+                        </View>
+                    )}
 
                     {/* Allowance Input */}
                     <View style={styles.limitSection}>
