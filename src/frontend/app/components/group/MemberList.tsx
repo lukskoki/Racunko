@@ -35,6 +35,19 @@ const MemberList = ({
     const [detailMemberSpent, setDetailMemberSpent] = useState(0);
     const [hasAttemptedAutoRefresh, setHasAttemptedAutoRefresh] = useState(false);
 
+    const sortedMembers = [...members].sort((a, b) => {
+        const roleOrder = {
+            'GroupLeader': 0,
+            'GroupCoOwner': 1,
+            'GroupMember': 2
+        };
+
+        const orderA = roleOrder[a.role as keyof typeof roleOrder] ?? 3;
+        const orderB = roleOrder[b.role as keyof typeof roleOrder] ?? 3;
+
+        return orderA - orderB;
+    });
+
     // Auto-refresh ako nema članova prikazanih ali grupa postoji
     useEffect(() => {
         const shouldAutoRefresh =
@@ -111,7 +124,7 @@ const MemberList = ({
             <Text style={styles.sectionTitle}>Članovi ({members.length})</Text>
 
             <FlatList
-                data={members}
+                data={sortedMembers}
                 keyExtractor={(item) => item.userId.toString()}
                 renderItem={renderMember}
                 scrollEnabled={false}
@@ -126,6 +139,7 @@ const MemberList = ({
                 visible={showAllowanceModal}
                 memberName={selectedMember?.user || ''}
                 currentAllowance={selectedMember?.allowance || null}
+                isOwner={isOwner}
                 isCoOwner={selectedMember?.role === 'GroupCoLeader'}
                 onClose={() => {
                     setShowAllowanceModal(false);
