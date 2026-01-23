@@ -5,6 +5,7 @@ import styles from "../../styles/camera"
 import {useFocusEffect, useNavigation} from "expo-router";
 import {images} from "@/app/assets";
 import React from "react";
+import * as ImagePicker from 'expo-image-picker';
 
 import { categorizeReceipt, type Category } from '@/services/api';
 import { useTransaction } from "@/hooks/useTransaction";
@@ -79,6 +80,69 @@ const CameraView = () => {
 
     function toggleCameraFacing() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
+    }
+
+    async function pickImageFromGallery() {
+        try {
+            // Zatraži dozvolu za pristup galeriji
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            if (!permissionResult.granted) {
+                Alert.alert("Dozvola potrebna", "Molimo dozvolite pristup galeriji");
+                return;
+            }
+
+            // Otvori image picker
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: false,
+                quality: 1,
+                base64: true,
+            });
+
+            if (result.canceled) {
+                return;
+            }
+
+            if (!result.assets[0].base64) {
+                Alert.alert("Greška", "Nije moguće učitati sliku");
+                return;
+            }
+
+            if (!token) {
+                Alert.alert("Greška", "Token nedostaje");
+                return;
+            }
+
+            // Analiziraj sliku kao i za kameru
+            setIsAnalyzing(true);
+            const aiResponse = await categorizeReceipt(result.assets[0].base64, token);
+
+            
+
+            setAvailableCategories(aiResponse.available_categories);
+
+            setReceiptData({
+                amount: aiResponse.amount,
+                category_name: aiResponse.category_name,
+                category_id: aiResponse.category_id
+            });
+
+            setEditedAmount(aiResponse.amount.toString());
+            setEditedCategoryId(aiResponse.category_id);
+            setEditedDate(new Date());
+
+            setIsAnalyzing(false);
+            setShowResultModal(true);
+
+        } catch (error: any) {
+            console.error("Error analyzing image from gallery:", error);
+            setIsAnalyzing(false);
+            Alert.alert(
+                "Greška pri analizi",
+                error.message || "Nije moguće analizirati sliku"
+            );
+        }
     }
 
     async function takePicture() {
@@ -330,7 +394,7 @@ const CameraView = () => {
                 </Modal>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={toggleCameraFacing} disabled={isAnalyzing} >
+                    <TouchableOpacity onPress={pickImageFromGallery} disabled={isAnalyzing} >
                         <Image source={images.thumbnail} style={styles.flipButton}/>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={takePicture} disabled={isAnalyzing}>
