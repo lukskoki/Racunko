@@ -1,0 +1,60 @@
+appId: "com.racunko.progi"
+
+---
+# Test: Dodavanje novog expense-a
+- launchApp:
+    clearState: true
+
+# Login
+- assertVisible: "Prijava"
+- tapOn:
+    text: "Prijava"
+    waitUntilVisible: true
+- tapOn:
+    id: "username-input"
+- inputText: "lukak2"
+- tapOn:
+    id: "password-input"
+- inputText: "@lukaK7676"
+- tapOn:
+    text: "Prijavi se"
+    retryTapIfNoChange: false
+- assertVisible:
+    text: "Računko"
+    timeout: 5000
+- takeScreenshot: screenshots/add-expense/01-home-screen.png
+
+# Klikni na + gumb za dodavanje expense-a
+- tapOn:
+    text: "+"
+- takeScreenshot: screenshots/add-expense/02-modal-opened.png
+
+# Odaberi prvu kategoriju (npr. expand accordion)
+- tapOn:
+    index: 0
+    # Ovo će kliknuti na prvu kategoriju u listi
+- takeScreenshot: screenshots/add-expense/03-category-expanded.png
+
+# Unesi naziv troška
+- tapOn:
+    text: "Naziv troška (opcionalno)"
+    optional: true
+- inputText: "Test trošak"
+
+# Unesi iznos
+- tapOn:
+    text: "Iznos"
+    optional: true
+- inputText: "50"
+- takeScreenshot: screenshots/add-expense/04-expense-filled.png
+
+# Klikni na gumb za submit (strelica →)
+- tapOn:
+    text: "→"
+- takeScreenshot: screenshots/add-expense/05-expense-added.png
+
+# Provjeri da je expense dodan (modal se zatvorio)
+- assertNotVisible:
+    text: "Odaberite Kategoriju"
+    timeout: 2000
+- takeScreenshot: screenshots/add-expense/06-modal-closed.png

@@ -1,0 +1,30 @@
+appId: "com.racunko.progi"
+
+---
+# Test: Registracija novog korisnika
+- launchApp
+- assertVisible: "Prijava"
+
+- tapOn:
+    text: "Registracija"
+
+# Username
+- tapOn:
+    id: "signup-username-input"
+- setClipboard: "testuser123"
+- pasteText
+
+# Email
+- tapOn:
+    id: "signup-email-input"
+- setClipboard: "test@example.com"
+- pasteText
+
+# Password
+- tapOn:
+    id: "signup-password-input"
+- setClipboard: "TestPassword123!"
+- pasteText
+
+- tapOn:
+    id: "signup-button"

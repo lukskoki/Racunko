@@ -79,7 +79,7 @@ const Profil = () => {
             </View>
 
             <View style={styles.logOutBox} >
-                <Pressable onPress={handleLogout} style={styles.logOutButton}>
+                <Pressable testID="logout-button" onPress={handleLogout} style={styles.logOutButton}>
                     <Text style={styles.logOutText}>Log Out</Text>
                 </Pressable>
             </View>

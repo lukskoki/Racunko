@@ -1,0 +1,40 @@
+appId: "com.racunko.progi"
+
+---
+# Test: Logout flow
+- launchApp:
+    clearState: true
+
+# Prijavi se prvo
+- assertVisible: "Prijava"
+- tapOn:
+    text: "Prijava"
+    waitUntilVisible: true
+- tapOn:
+    id: "username-input"
+- inputText: "lukak2"
+- tapOn:
+    id: "password-input"
+- inputText: "@lukaK7676"
+- tapOn:
+    id: "login-button"
+- assertVisible:
+    text: "Računko"
+    timeout: 5000
+- screenshot: screenshots/logout/01-logged-in.png
+
+# Navigiraj na profile tab (5. tab - koristi koordinate ili index)
+- tapOn:
+    point: 90%,95%
+- screenshot: screenshots/logout/02-profile-tab.png
+
+# Odjavi se
+- tapOn:
+    id: "logout-button"
+- screenshot: screenshots/logout/03-logout-button-pressed.png
+
+# Provjeri da smo na landing pageu
+- assertVisible:
+    text: "Prijava"
+    timeout: 3000
+- screenshot: screenshots/logout/04-back-to-landing.png

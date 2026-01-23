@@ -98,6 +98,7 @@ const Login = () => {
                             <Text style={style.thirdTitle}>Username</Text>
                             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                                 <TextInput
+                                    testID="username-input"
                                     style={style.input}
                                     textContentType="username"
                                     placeholder="pero123"
@@ -115,6 +116,7 @@ const Login = () => {
                             <View style={style.passwordBox}>
                                 <Text style={style.thirdTitle}>Šifra</Text>
                                 <TextInput
+                                    testID="password-input"
                                     style={style.inputPassword}
                                     placeholder="sifra123"
                                     placeholderTextColor="#888"
@@ -145,6 +147,7 @@ const Login = () => {
 
                         {/* Gumb za login */}
                         <TouchableOpacity
+                            testID="login-button"
                             style={[style.button, (!isFormValid) && style.buttonDisabled, (isFormValid && isLoadingLogin) && style.buttonDisabled]}
                             onPress={handleLogin}
                             disabled={!isFormValid}

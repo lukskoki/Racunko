@@ -86,6 +86,7 @@ const Signup = () => {
                             <Text style={style.thirdTitle}>Username</Text>
                             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                                 <TextInput
+                                    testID="signup-username-input"
                                     style={style.input}
                                     textContentType="name"
                                     placeholder="peroPeric123"
@@ -101,6 +102,7 @@ const Signup = () => {
                             <Text style={style.thirdTitle}>Email</Text>
                             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                                 <TextInput
+                                    testID="signup-email-input"
                                     style={style.input}
                                     textContentType="emailAddress"
                                     placeholder="primjer@gmail.com"
@@ -118,6 +120,7 @@ const Signup = () => {
                             <View style={style.passwordBox}>
                                 <Text style={style.thirdTitle}>Šifra</Text>
                                 <TextInput
+                                    testID="signup-password-input"
                                     style={style.inputPassword}
                                     placeholder="sifra123"
                                     placeholderTextColor="#888"
@@ -144,6 +147,7 @@ const Signup = () => {
                         )}
                         {/* Gumb za registraciju */}
                         <TouchableOpacity
+                            testID="signup-button"
                             style={[style.button, !isFormValid && style.buttonDisabled]}
                             onPress={handleSignup}
                             disabled={!isFormValid}
