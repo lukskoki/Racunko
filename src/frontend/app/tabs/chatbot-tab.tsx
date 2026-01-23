@@ -1,4 +1,4 @@
-import {ActivityIndicator, Animated, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Animated, FlatList, KeyboardAvoidingView, Platform, SafeAreaView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, View} from 'react-native';
 import React, {useMemo, useState, useEffect, useRef} from 'react';
 import {MaterialIcons} from '@expo/vector-icons';
 import Markdown from 'react-native-markdown-display';
@@ -196,7 +196,7 @@ const ChatbotTab = () => {
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={10}>
-                    
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.chatContainer}>
                         {showHistory ? (
                             isLoadingConversations ? (
@@ -219,6 +219,7 @@ const ChatbotTab = () => {
                                     renderItem={renderHistoryItem}
                                     contentContainerStyle={styles.historyListContainer}
                                     style={styles.messagesList}
+                                    keyboardShouldPersistTaps="handled"
                                 />
                             )
                         ) : (
@@ -256,12 +257,14 @@ const ChatbotTab = () => {
                                         contentContainerStyle={styles.messagesContainer}
                                         renderItem={renderMessage}
                                         showsVerticalScrollIndicator={false}
+                                        keyboardShouldPersistTaps="handled"
                                         ListFooterComponent={isSending ? <ThinkingDots /> : null}
                                     />
                                 )}
                             </>
                         )}
                     </View>
+                </TouchableWithoutFeedback>
                 {!showHistory && (
                     <View style={styles.inputContainer}>
                         <TextInput
