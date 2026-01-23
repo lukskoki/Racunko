@@ -17,7 +17,7 @@ SYSTEM_MESSAGE = {
     "content": "The response must be in Croatian and use Markdown format.",
 }
 
-def ai_chat(message_or_messages, transactions):
+def ai_chat(message_or_messages, transactions, expenses):
     """
     Pozove OpenAI i vrati dict {"message": "..."} prema json_schema formatu.
 
@@ -33,7 +33,7 @@ def ai_chat(message_or_messages, transactions):
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[SYSTEM_MESSAGE, *messages, *transactions], 
+            messages=[SYSTEM_MESSAGE, *messages, *transactions, *expenses], 
             response_format={
                 "type": "json_schema",
                 "json_schema": {
