@@ -10,7 +10,7 @@ export default StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingBottom: 24,
+        paddingBottom: 0,
     },
     container: {
         flex: 1,
@@ -314,13 +314,6 @@ export default StyleSheet.create({
         fontWeight: '700',
         color: '#1E293B',
     },
-
-    loadingContainer: {
-        padding: 40,
-        alignItems: 'center',
-        gap: 12,
-    },
-
     categoriesScrollView: {
         paddingHorizontal: 20,
         paddingTop: 8,

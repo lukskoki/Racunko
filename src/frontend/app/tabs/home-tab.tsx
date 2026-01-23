@@ -222,7 +222,7 @@ const Pocetna = () => {
     }
 
     const {personalAnalytics} = analytics;
-    
+
 
     // Grupiraj transakcije po danima za graf
     const dailySpending = personalAnalytics.recentTransactions.reduce((acc: { [key: string]: number }, transaction) => {
@@ -244,7 +244,7 @@ const Pocetna = () => {
     const maxDailySpending = Math.max(...sortedDays.map(([, amount]) => amount), 1);
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
@@ -256,90 +256,90 @@ const Pocetna = () => {
                         tintColor="#2563EB"
                     />
                 }
-                >
+            >
                 <View style={styles.container}>
-                {/* Month Selector */}
-                <View style={styles.monthSelector}>
-                    <TouchableOpacity
-                        onPress={() => changeMonth('prev')}
-                        style={styles.monthArrow}
-                    >
-                        <Text style={styles.monthArrowText}>←</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.monthText}>{formatMonthDisplay(selectedMonth)}</Text>
-                    <TouchableOpacity
-                        onPress={() => changeMonth('next')}
-                        style={styles.monthArrow}
-                    >
-                        <Text style={styles.monthArrowText}>→</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Header with Total Spending */}
-                <View style={styles.header}>
-                    <Text style={styles.headerSubtitle}>Ukupna potrošnja</Text>
-                    <Text style={styles.headerAmount}>
-                        {Number(personalAnalytics.totalSpent || 0).toFixed(2)} €
-                    </Text>
-                    {personalAnalytics.budget && (
-                        <Text style={styles.headerBudget}>
-                            od {Number(personalAnalytics.budget || 0).toFixed(2)} € budgeta
-                        </Text>
-                    )}
-                </View>
-
-                {/* Daily Spending Chart */}
-                {sortedDays.length > 0 && (
-                    <View style={styles.card}>
-                        <Text style={styles.cardTitle}>Potrošnja po danima</Text>
-                        <View style={styles.chartContainer}>
-                            {sortedDays.map(([date, amount]) => {
-                                const heightPercentage = (amount / maxDailySpending) * 100;
-                                return (
-                                    <View key={date} style={styles.chartBar}>
-                                        <Text style={styles.chartAmount}>
-                                            {Number(amount).toFixed(0)}€
-                                        </Text>
-                                        <View style={styles.chartBarWrapper}>
-                                            <View
-                                                style={[
-                                                    styles.chartBarFill,
-                                                    { height: `${heightPercentage}%` },
-                                                ]}
-                                            />
-                                        </View>
-                                        <Text style={styles.chartDate}>{date}</Text>
-                                    </View>
-                                );
-                            })}
-                        </View>
-
-                        <View style={styles.divider} />
-
-                        {/* Spending by Category */}
-                        <Text style={styles.sectionTitle}>Potrošnja po kategorijama</Text>
-                        {personalAnalytics.spendingByCategory.length > 0 ? (
-                            personalAnalytics.spendingByCategory.map((item, index) => (
-                                <View key={index} style={styles.categoryRow}>
-                                    <View style={styles.categoryLeft}>
-                                        <View style={styles.categoryDot} />
-                                        <Text style={styles.categoryName}>{item.category}</Text>
-                                    </View>
-                                    <Text style={styles.categoryAmount}>
-                                        {Number(item.amount || 0).toFixed(2)} €
-                                    </Text>
-                                </View>
-                            ))
-                        ) : (
-                            <Text style={styles.emptyText}>Nema transakcija ovaj mjesec</Text>
-                        )}
-
-
-
-
-
+                    {/* Month Selector */}
+                    <View style={styles.monthSelector}>
+                        <TouchableOpacity
+                            onPress={() => changeMonth('prev')}
+                            style={styles.monthArrow}
+                        >
+                            <Text style={styles.monthArrowText}>←</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.monthText}>{formatMonthDisplay(selectedMonth)}</Text>
+                        <TouchableOpacity
+                            onPress={() => changeMonth('next')}
+                            style={styles.monthArrow}
+                        >
+                            <Text style={styles.monthArrowText}>→</Text>
+                        </TouchableOpacity>
                     </View>
-                )}
+
+                    {/* Header with Total Spending */}
+                    <View style={styles.header}>
+                        <Text style={styles.headerSubtitle}>Ukupna potrošnja</Text>
+                        <Text style={styles.headerAmount}>
+                            {Number(personalAnalytics.totalSpent || 0).toFixed(2)} €
+                        </Text>
+                        {personalAnalytics.budget && (
+                            <Text style={styles.headerBudget}>
+                                od {Number(personalAnalytics.budget || 0).toFixed(2)} € budgeta
+                            </Text>
+                        )}
+                    </View>
+
+                    {/* Daily Spending Chart */}
+                    {sortedDays.length > 0 && (
+                        <View style={styles.card}>
+                            <Text style={styles.cardTitle}>Potrošnja po danima</Text>
+                            <View style={styles.chartContainer}>
+                                {sortedDays.map(([date, amount]) => {
+                                    const heightPercentage = (amount / maxDailySpending) * 100;
+                                    return (
+                                        <View key={date} style={styles.chartBar}>
+                                            <Text style={styles.chartAmount}>
+                                                {Number(amount).toFixed(0)}€
+                                            </Text>
+                                            <View style={styles.chartBarWrapper}>
+                                                <View
+                                                    style={[
+                                                        styles.chartBarFill,
+                                                        { height: `${heightPercentage}%` },
+                                                    ]}
+                                                />
+                                            </View>
+                                            <Text style={styles.chartDate}>{date}</Text>
+                                        </View>
+                                    );
+                                })}
+                            </View>
+
+                            <View style={styles.divider} />
+
+                            {/* Spending by Category */}
+                            <Text style={styles.sectionTitle}>Potrošnja po kategorijama</Text>
+                            {personalAnalytics.spendingByCategory.length > 0 ? (
+                                personalAnalytics.spendingByCategory.map((item, index) => (
+                                    <View key={index} style={styles.categoryRow}>
+                                        <View style={styles.categoryLeft}>
+                                            <View style={styles.categoryDot} />
+                                            <Text style={styles.categoryName}>{item.category}</Text>
+                                        </View>
+                                        <Text style={styles.categoryAmount}>
+                                            {Number(item.amount || 0).toFixed(2)} €
+                                        </Text>
+                                    </View>
+                                ))
+                            ) : (
+                                <Text style={styles.emptyText}>Nema transakcija ovaj mjesec</Text>
+                            )}
+
+
+
+
+
+                        </View>
+                    )}
 
 
 
@@ -357,18 +357,19 @@ const Pocetna = () => {
 
                         {expenses.map((item) => {
                             return (
-                                <View style={{
-                                    width: "100%",
-                                    marginBottom: 10,
-                                    flexDirection: "row",
-                                    justifyContent: "flex-start",
-                                    gap: 10,
-                                    alignItems: "center",
-                                }}>
-                                    <ExpenseItem expense={item} onDelete={handleDeleteExpense}></ExpenseItem>
-
+                                <View
+                                    key={item.id}
+                                    style={{
+                                        width: "100%",
+                                        marginBottom: 10,
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        gap: 10,
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <ExpenseItem expense={item} onDelete={handleDeleteExpense} />
                                 </View>
-
                             );
                         })}
                     </View>
@@ -397,152 +398,152 @@ const Pocetna = () => {
                                     style={styles.categoryBottomSheet}
                                     onPress={(e) => e.stopPropagation()}
                                 >
-                                {/* Header */}
-                                <View style={styles.modalHeader}>
-                                    <View style={styles.modalHandle} />
-                                    <Text style={styles.modalTitle}>Odaberite Kategoriju</Text>
-                                </View>
-
-                                {/* Kategorije */}
-                                {loadingCategories ? (
-                                    <View style={styles.loadingContainer}>
-                                        <ActivityIndicator size="large" color="#2563EB" />
-                                        <Text style={styles.loadingText}>Učitavam kategorije...</Text>
+                                    {/* Header */}
+                                    <View style={styles.modalHeader}>
+                                        <View style={styles.modalHandle} />
+                                        <Text style={styles.modalTitle}>Odaberite Kategoriju</Text>
                                     </View>
-                                ) : (
-                                    <ScrollView
-                                        style={styles.categoriesScrollView}
-                                        keyboardShouldPersistTaps="handled"
-                                    >
-                                        {categories.map((category) => (
 
-                                            <List.Accordion
-                                                key={category.id}
-                                                style={[
-                                                    styles.categoryItem,
-                                                ]}
-                                                left={() => <View style={styles.categoryDot2} />}
-                                                title={category.categoryName}
-                                                onPress={() => selectCategory(category)}
-                                            >
+                                    {/* Kategorije */}
+                                    {loadingCategories ? (
+                                        <View style={styles.loadingContainer}>
+                                            <ActivityIndicator size="large" color="#2563EB" />
+                                            <Text style={styles.loadingText}>Učitavam kategorije...</Text>
+                                        </View>
+                                    ) : (
+                                        <ScrollView
+                                            style={styles.categoriesScrollView}
+                                            keyboardShouldPersistTaps="handled"
+                                        >
+                                            {categories.map((category) => (
 
-
-                                                <View style={{paddingBottom: 12, paddingLeft: 12, flexDirection:"row", justifyContent: "flex-start", gap: 10, alignItems: "center"}}>
-                                                    <TextInput
-                                                        label="Unesite vrstu troška..."
-                                                        keyboardType="default"
-                                                        returnKeyType="done"
-                                                        value={nameByCategory[category.id] ?? ""}
-                                                        onChangeText={(text) =>
-                                                            setNameByCategory(prev =>({
-                                                                ...prev,
-                                                                [category.id]: text,
-                                                            }))}
-                                                        style={{
-                                                            borderStyle: "solid",
-                                                            borderWidth: 1,
-                                                            width: "85%",
-                                                            borderColor: '#2563EB',
-                                                            backgroundColor: 'white',
-                                                            borderRadius: 6,
-                                                            fontSize: 16,
-
-                                                        }}
-                                                        underlineColor={transparent}
-                                                        activeUnderlineColor={transparent}
-
-                                                        contentStyle={{ textAlign: "left" }}
+                                                <List.Accordion
+                                                    key={category.id}
+                                                    style={[
+                                                        styles.categoryItem,
+                                                    ]}
+                                                    left={() => <View style={styles.categoryDot2} />}
+                                                    title={category.categoryName}
+                                                    onPress={() => selectCategory(category)}
+                                                >
 
 
-                                                    />
-                                                </View>
+                                                    <View style={{paddingBottom: 12, paddingLeft: 12, flexDirection:"row", justifyContent: "flex-start", gap: 10, alignItems: "center"}}>
+                                                        <TextInput
+                                                            label="Unesite vrstu troška..."
+                                                            keyboardType="default"
+                                                            returnKeyType="done"
+                                                            value={nameByCategory[category.id] ?? ""}
+                                                            onChangeText={(text) =>
+                                                                setNameByCategory(prev =>({
+                                                                    ...prev,
+                                                                    [category.id]: text,
+                                                                }))}
+                                                            style={{
+                                                                borderStyle: "solid",
+                                                                borderWidth: 1,
+                                                                width: "85%",
+                                                                borderColor: '#2563EB',
+                                                                backgroundColor: 'white',
+                                                                borderRadius: 6,
+                                                                fontSize: 16,
+
+                                                            }}
+                                                            underlineColor={transparent}
+                                                            activeUnderlineColor={transparent}
+
+                                                            contentStyle={{ textAlign: "left" }}
 
 
-
-
-                                                <View style={{paddingBottom: 12, paddingLeft: 12, flexDirection:"row", justifyContent: "flex-start", gap: 10, alignItems: "center"}}>
-                                                    <TextInput
-                                                        label="Unesite iznos..."
-                                                        keyboardType="decimal-pad"
-                                                        returnKeyType="done"
-                                                        value={amountByCategory[category.id] ?? ""}
-                                                        onChangeText={(text) =>
-                                                            setAmountByCategory(prev =>({
-                                                                ...prev,
-                                                                [category.id]: text,
-                                                            }))}
-                                                        style={{
-                                                            borderStyle: "solid",
-                                                            borderWidth: 1,
-                                                            width: "85%",
-                                                            borderColor: '#2563EB',
-                                                            backgroundColor: 'white',
-                                                            borderRadius: 6,
-                                                            fontSize: 16,
-
-                                                        }}
-                                                        underlineColor={transparent}
-                                                        activeUnderlineColor={transparent}
-
-                                                        contentStyle={{ textAlign: "left" }}
-                                                        left={<TextInput.Affix text="€" />}
-
-                                                    />
-
-                                                    <TouchableOpacity
-                                                        style={{
-                                                            width: 45,
-                                                            height: 45,
-                                                            borderWidth: 1,
-                                                            borderColor: '#FFFFFF',
-                                                            backgroundColor: "#FFFFFF",
-                                                            borderRadius: 8,
-                                                            shadowColor: '#404040',
-                                                            shadowOffset: { width: 0, height:2},
-                                                            shadowOpacity: 0.1,
-                                                            shadowRadius: 5,
-                                                            justifyContent: "center",
-                                                            alignItems: "center",
-                                                        }}
-
-                                                        onPress={() => handleCreateExpense(category.id)}
-                                                    >
-                                                        <Text style={{
-                                                            color: "#2563EB",
-                                                            fontSize: 16,
-                                                        }}>
-                                                            →
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                </View>
+                                                        />
+                                                    </View>
 
 
 
 
-                                            </List.Accordion>
+                                                    <View style={{paddingBottom: 12, paddingLeft: 12, flexDirection:"row", justifyContent: "flex-start", gap: 10, alignItems: "center"}}>
+                                                        <TextInput
+                                                            label="Unesite iznos..."
+                                                            keyboardType="decimal-pad"
+                                                            returnKeyType="done"
+                                                            value={amountByCategory[category.id] ?? ""}
+                                                            onChangeText={(text) =>
+                                                                setAmountByCategory(prev =>({
+                                                                    ...prev,
+                                                                    [category.id]: text,
+                                                                }))}
+                                                            style={{
+                                                                borderStyle: "solid",
+                                                                borderWidth: 1,
+                                                                width: "85%",
+                                                                borderColor: '#2563EB',
+                                                                backgroundColor: 'white',
+                                                                borderRadius: 6,
+                                                                fontSize: 16,
+
+                                                            }}
+                                                            underlineColor={transparent}
+                                                            activeUnderlineColor={transparent}
+
+                                                            contentStyle={{ textAlign: "left" }}
+                                                            left={<TextInput.Affix text="€" />}
+
+                                                        />
+
+                                                        <TouchableOpacity
+                                                            style={{
+                                                                width: 45,
+                                                                height: 45,
+                                                                borderWidth: 1,
+                                                                borderColor: '#FFFFFF',
+                                                                backgroundColor: "#FFFFFF",
+                                                                borderRadius: 8,
+                                                                shadowColor: '#404040',
+                                                                shadowOffset: { width: 0, height:2},
+                                                                shadowOpacity: 0.1,
+                                                                shadowRadius: 5,
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                            }}
+
+                                                            onPress={() => handleCreateExpense(category.id)}
+                                                        >
+                                                            <Text style={{
+                                                                color: "#2563EB",
+                                                                fontSize: 16,
+                                                            }}>
+                                                                →
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    </View>
 
 
-                                        ))}
-                                    </ScrollView>
-                                )}
+
+
+                                                </List.Accordion>
+
+
+                                            ))}
+                                        </ScrollView>
+                                    )}
+                                </Pressable>
                             </Pressable>
-                        </Pressable>
                         </KeyboardAvoidingView>
                     </Modal>
-                
 
-                {/* Transaction Count */}
-                <View style={styles.card}>
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.sectionTitle}>Ukupno transakcija ovaj mjesec:</Text>
-                        <Text style={styles.summaryValue}>{personalAnalytics.transactionCount}</Text>
+
+                    {/* Transaction Count */}
+                    <View style={styles.card}>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.sectionTitle}>Ukupno transakcija ovaj mjesec:</Text>
+                            <Text style={styles.summaryValue}>{personalAnalytics.transactionCount}</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
         </SafeAreaView>
     );
 };
- 
+
 
 export default Pocetna;
