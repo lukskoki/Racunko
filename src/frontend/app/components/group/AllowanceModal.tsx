@@ -42,9 +42,9 @@ const AllowanceModal = ({
 
         try {
             await onSave(newAllowance);
-            Alert.alert('Uspjeh', 'Promjene su pohranjene');
+            Alert.alert('Uspjeh', 'Promjene su ažurirane');
         } catch {
-            Alert.alert('Greška', 'Nije moguće pohreniti promjene');
+            Alert.alert('Greška', 'Nije moguće ažurirati promjene');
         }
     };
 
