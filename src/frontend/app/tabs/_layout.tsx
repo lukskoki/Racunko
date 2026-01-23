@@ -29,10 +29,12 @@ export default function TabLayout() {
                 name="home-tab"
                 options={{
                     title: '',
+                    tabBarAccessibilityLabel: 'home-tab-button',
                     tabBarIcon: ({ focused }) => <Ionicons
                     name={focused ? "home" : "home-outline"}
                     size={30}
-                    color={focused ? "#2563EB" : "#888"} />,
+                    color={focused ? "#2563EB" : "#888"}
+                    testID="home-tab-icon" />,
                     headerShown: false,
                 }}
             />
@@ -40,10 +42,12 @@ export default function TabLayout() {
                 name="group-tab"
                 options={{
                     title: '',
+                    tabBarAccessibilityLabel: 'group-tab-button',
                     tabBarIcon: ({ focused }) => <Ionicons
                     name={focused ? "people" : "people-outline"}
                     size={30}
-                    color={focused ? "#2563EB" : "#888"} />,
+                    color={focused ? "#2563EB" : "#888"}
+                    testID="group-tab-icon" />,
                     headerShown: false,
                 }}
             />
@@ -51,10 +55,12 @@ export default function TabLayout() {
                 name="camera-tab"
                 options={{
                     title: '',
+                    tabBarAccessibilityLabel: 'camera-tab-button',
                     tabBarIcon: ({ focused }) => <Ionicons
                         name="add"
                         size={30}
-                        color={focused ? "#2563EB" : "#888"}/>,
+                        color={focused ? "#2563EB" : "#888"}
+                        testID="camera-tab-icon" />,
                     headerShown: false,
                 }}
             />
@@ -62,10 +68,12 @@ export default function TabLayout() {
                 name="chatbot-tab"
                 options={{
                     title: '',
+                    tabBarAccessibilityLabel: 'chatbot-tab-button',
                     tabBarIcon: ({ focused }) => <Ionicons
                         name={focused ? "chatbubbles" : "chatbubbles-outline"}
                         size={30}
-                        color={focused ? "#2563EB" : "#888"}/>,
+                        color={focused ? "#2563EB" : "#888"}
+                        testID="chatbot-tab-icon" />,
                     headerShown: false,
                 }}
             />
@@ -73,10 +81,12 @@ export default function TabLayout() {
                 name="profile-tab"
                 options={{
                     title: '',
+                    tabBarAccessibilityLabel: 'profile-tab-button',
                     tabBarIcon: ({ focused }) => <Ionicons
                         name={focused ? "person" : "person-outline"}
                         size={30}
-                        color={focused ? "#2563EB" : "#888"}/>,
+                        color={focused ? "#2563EB" : "#888"}
+                        testID="profile-tab-icon" />,
                     headerShown: false,
                 }}
             />

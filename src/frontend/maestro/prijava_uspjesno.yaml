@@ -1,34 +1,21 @@
 appId: "com.racunko.progi"
 
 ---
-# Test: Uspješna prijava sa ispravnim podacima
-- launchApp:
-    clearState: true
+- launchApp
 - assertVisible: "Prijava"
-- screenshot: screenshots/login-success/01-landing-page.png
 
-# Klikni na gumb Prijava
 - tapOn:
     text: "Prijava"
-    waitUntilVisible: true
-- screenshot: screenshots/login-success/02-login-screen.png
 
-# Unesi ispravne kredencijale
 - tapOn:
     id: "username-input"
-- inputText: "lukak2"
+- inputText: "testuser123"
+
 - tapOn:
     id: "password-input"
-- inputText: "@lukaK7676"
-- screenshot: screenshots/login-success/03-credentials-filled.png
+- inputText: "@TestPassword123!"
 
-# Prijavi se
 - tapOn:
-    text: "Prijavi se"
-    retryTapIfNoChange: false
+    id: "login-button"
 
-# Čekaj da se učita home screen
-- assertVisible:
-    text: "Računko"
-    timeout: 5000
-- screenshot: screenshots/login-success/04-home-screen.png
+- assertVisible: "Fiksni"

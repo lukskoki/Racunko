@@ -1,23 +1,21 @@
 appId: "com.racunko.progi"
 
 ---
-- launchApp:
-    clearState: true
+- launchApp
 - assertVisible: "Prijava"
-- screenshot: screenshots/01-landing-page.png
+
 - tapOn:
     text: "Prijava"
-    waitUntilVisible: true
-- screenshot: screenshots/02-login-screen.png
+
 - tapOn:
     id: "username-input"
 - inputText: "lukak2"
+
 - tapOn:
     id: "password-input"
-- inputText: "@testS1234"
-- screenshot: screenshots/03-credentials-filled.png
+- inputText: "wrongpassword"
+
 - tapOn:
-    text: "Prijavi se"
-    retryTapIfNoChange: false
+    id: "login-button"
+
 - assertVisible: "Login failed"
-- screenshot: screenshots/04-after-login.png

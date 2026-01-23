@@ -1,61 +1,40 @@
 appId: "com.racunko.progi"
 
 ---
-# Test: Navigacija između tabova
-- launchApp:
-    clearState: true
-
-# Login
+- launchApp
 - assertVisible: "Prijava"
+
 - tapOn:
     text: "Prijava"
-    waitUntilVisible: true
+
 - tapOn:
     id: "username-input"
-- inputText: "lukak2"
+- inputText: "testuser123"
+
 - tapOn:
     id: "password-input"
-- inputText: "@lukaK7676"
+- inputText: "@TestPassword123!"
+
 - tapOn:
     id: "login-button"
-- assertVisible:
-    text: "Računko"
-    timeout: 5000
-- screenshot: screenshots/navigation/01-home-tab.png
 
-# Navigiraj na Group tab (2. tab ikona)
-- tapOn:
-    point: 30%,95%
-- assertVisible:
-    text: "Grupe"
-    timeout: 2000
-- screenshot: screenshots/navigation/02-groups-tab.png
+- assertVisible: "Fiksni"
 
-# Navigiraj na Camera tab (3. tab - srednji + gumb)
 - tapOn:
-    point: 50%,95%
-- screenshot: screenshots/navigation/03-camera-tab.png
+    id: "group-tab-icon"
+- assertVisible: "Grupe"
 
-# Navigiraj na Chatbot tab (4. tab)
 - tapOn:
-    point: 70%,95%
-- assertVisible:
-    text: "Financijski asistent"
-    timeout: 2000
-- screenshot: screenshots/navigation/04-chatbot-tab.png
+    id: "camera-tab-icon"
 
-# Navigiraj na Profile tab (5. tab)
 - tapOn:
-    point: 90%,95%
-- assertVisible:
-    text: "Moj profil"
-    timeout: 2000
-- screenshot: screenshots/navigation/05-profile-tab.png
+    id: "chatbot-tab-icon"
+- assertVisible: "Financijski asistent"
 
-# Vrati se nazad na Home tab (1. tab)
 - tapOn:
-    point: 10%,95%
-- assertVisible:
-    text: "Računko"
-    timeout: 2000
-- screenshot: screenshots/navigation/06-back-to-home.png
+    id: "profile-tab-icon"
+- assertVisible: "Moj profil"
+
+- tapOn:
+    id: "home-tab-icon"
+- assertVisible: "Fiksni"

@@ -11,20 +11,22 @@ appId: "com.racunko.progi"
 # Username
 - tapOn:
     id: "signup-username-input"
-- setClipboard: "testuser123"
-- pasteText
+- inputText: "testuser123"
+
 
 # Email
 - tapOn:
     id: "signup-email-input"
-- setClipboard: "test@example.com"
-- pasteText
+- inputText: "test@example.com"
+
 
 # Password
 - tapOn:
     id: "signup-password-input"
-- setClipboard: "TestPassword123!"
-- pasteText
+- inputText: "@TestPassword123!"
+
 
 - tapOn:
     id: "signup-button"
+
+- assertVisible: "Fiksni"
