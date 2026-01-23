@@ -1,0 +1,65 @@
+```
+1. sastanak
+Datum: 9. 10. 2025.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Definirali ideju i izgled cijelog sustava
+- Napravili inicijalnu podjelu posla, uz dogovor da će se po potrebi mijenjati nakon što vidimo kako se tko snašao
+
+2. sastanak
+Datum: 15. 10. 2025.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Daljnja razrada organizacije rada: postavljanje GitHub Projects i objašnjenje rada s issues
+- Dogovor da se prvo napravi dizajn u Figmi te da se prema njemu vodi kod programiranja
+- U backendu odlučeno prvo napraviti inicijalni model baze
+
+3. sastanak
+Datum: 23. 10. 2025.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Napravljen veliki dio dokumentacije
+- Daljnja podjela koraka za frontend i backend: login i register funkcionalnosti
+
+4. sastanak
+Datum: 29. 10. 2025.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Backend planovi: profile setup, dodavanje transakcija, Google OAuth, povezivanje OpenAI API-ja
+- Frontend planovi: Camera view (odabir tipa unosa – slika ili ručno) te dizajn za profile setup
+
+5. sastanak
+Datum: 9. 11. 2025.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Sve je bilo spremno za prvu predaju, pa je dogovoreno poboljšati dizajn i user experience na frontendu
+- Dodano još 3 stavke u dokumentaciji
+
+6. sastanak
+Datum: 10. 12. 2025.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Definirani planovi: imati funkcionalnu aplikaciju do Božića
+- Plan za sljedeća dva tjedna: Chatbot page, Home page, Group page, Profile page
+- Raspodjela zadataka: Frontend (Chatbot-L.Kovačević, Group-T.Menalo, Home-L.Majcen), Backend (Chatbot-A.Galić/L.Kovačević, Group/Home-L.Uršić/L.Kovačević)
+
+7. sastanak
+Datum: 5. 1. 2026.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Dogovorena daljnja implementacija: Home tab (analytics endpoint), Group page
+
+8. sastanak
+Datum: 14. 1. 2026.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Napravljena daljnja podjela zadataka: T.Menalo (grupa član), L.Uršić (expenses endpointi), L.Majcen (Home expenses), A.Galić (logout), L.Kovačević (chatbot bugovi/testovi)
+
+9. sastanak
+Datum: 23. 1. 2026.
+Prisustvovali: L. Kovačević, L. Majcen, L. Uršić, T. Menalo, A. Galić, F. Šturlić
+Teme sastanka:
+- Pregled završnih aktivnosti prije konačne predaje
+- Finalizacija dokumentacije i testiranja
+- Plan za prezentaciju i deploy
+```
