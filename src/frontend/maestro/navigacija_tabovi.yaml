@@ -5,7 +5,7 @@ appId: "com.racunko.progi"
 - assertVisible: "Prijava"
 
 - tapOn:
-    text: "Prijava"
+    id: "login-button-landing"
 
 - tapOn:
     id: "username-input"

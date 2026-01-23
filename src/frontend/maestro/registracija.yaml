@@ -6,7 +6,7 @@ appId: "com.racunko.progi"
 - assertVisible: "Prijava"
 
 - tapOn:
-    text: "Registracija"
+    id: "registration-button"
 
 # Username
 - tapOn:

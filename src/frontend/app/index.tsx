@@ -27,8 +27,9 @@ export default function Index() {
 
               <View style={styles.buttonBox}>
                 {/* Registracija */}
-                  <TouchableOpacity 
-                    style={styles.registracija} 
+                  <TouchableOpacity
+                    testID="registration-button"
+                    style={styles.registracija}
                     onPress={() => router.push(("/login-signup/signup"))}
                     activeOpacity={0.7}
                   >
@@ -37,8 +38,9 @@ export default function Index() {
                   </TouchableOpacity>
 
                     {/* Prijava */}
-                    <TouchableOpacity 
-                        style={styles.prijava} 
+                    <TouchableOpacity
+                        testID="login-button-landing"
+                        style={styles.prijava}
                         onPress={() => router.push("/login-signup/login")}
                         activeOpacity={0.7}
                     >
