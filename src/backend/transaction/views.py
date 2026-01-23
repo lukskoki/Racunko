@@ -120,6 +120,6 @@ def delete_expense(request, expense_id):
     except Expense.DoesNotExist:
         return Response({"detail": "not found"}, status=404)
     expense.delete()
-    return Response("Object deleted successfully", status=204)
+    return Response(status=204)
 
 

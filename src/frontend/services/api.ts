@@ -679,7 +679,7 @@ export const sendExpense = async(amount: number, category:number, expenseName: s
 }
 
 
-export const deleteExpense = async(expenseId: number, token: string) => {
+export const deleteExpense = async(expenseId: number, token: string): Promise<void> => {
     const url = process.env.EXPO_PUBLIC_BASE_URL;
     const response = await fetch(`${url}/api/transaction/delete_expense/${expenseId}/`, {
         method: 'DELETE',
@@ -690,10 +690,13 @@ export const deleteExpense = async(expenseId: number, token: string) => {
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
+        try {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Delete expense failed');
+        } catch (e) {
+            throw new Error(`Delete expense failed (status ${response.status})`);
+        }
     }
-
-    return true;
 }
 
 export const toggleMemberAdmin = async (token: string, userId: number): Promise<void> => {

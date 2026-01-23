@@ -1,12 +1,14 @@
 import {
-    ActivityIndicator, Modal,
+    ActivityIndicator,
+    Modal,
     Pressable,
     RefreshControl,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    KeyboardAvoidingView,
+    Platform
 } from 'react-native';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -111,7 +113,42 @@ const Pocetna = () => {
             : [...prev, category.id]
         );
         setExpandedId(prev => (prev === category.id ? null : category.id));
+    };
 
+    const handleCreateExpense = async (categoryId: number) => {
+        try {
+            const amount = Number((amountByCategory[categoryId] ?? "0").replace(",", "."));
+            const name = String(nameByCategory[categoryId] ?? "");
+
+            if (amount === 0) {
+                return;
+            }
+
+            const newExpense = await createExpense({
+                amount,
+                category: categoryId,
+                expenseName: name,
+            });
+
+            // Dodaj novi expense u state ako je uspješno kreiran
+            if (newExpense) {
+                setExpenses(prev => [...prev, newExpense]);
+            }
+
+            // Očisti input polja
+            setAmountByCategory(prev => ({
+                ...prev,
+                [categoryId]: "",
+            }));
+            setNameByCategory(prev => ({
+                ...prev,
+                [categoryId]: "",
+            }));
+
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Create expense error: ", error);
+        }
     }
 
     const onRefresh = useCallback(async () => {
@@ -348,14 +385,18 @@ const Pocetna = () => {
                         animationType="slide"
                         onRequestClose={() => setModalVisible(false)}
                     >
-                        <Pressable
-                            style={styles.modalOverlay}
-                            onPress={() => setModalVisible(false)}
+                        <KeyboardAvoidingView
+                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                            style={{ flex: 1 }}
                         >
                             <Pressable
-                                style={styles.categoryBottomSheet}
-                                onPress={(e) => e.stopPropagation()}
+                                style={styles.modalOverlay}
+                                onPress={() => setModalVisible(false)}
                             >
+                                <Pressable
+                                    style={styles.categoryBottomSheet}
+                                    onPress={(e) => e.stopPropagation()}
+                                >
                                 {/* Header */}
                                 <View style={styles.modalHeader}>
                                     <View style={styles.modalHandle} />
@@ -369,7 +410,10 @@ const Pocetna = () => {
                                         <Text style={styles.loadingText}>Učitavam kategorije...</Text>
                                     </View>
                                 ) : (
-                                    <ScrollView style={styles.categoriesScrollView}>
+                                    <ScrollView
+                                        style={styles.categoriesScrollView}
+                                        keyboardShouldPersistTaps="handled"
+                                    >
                                         {categories.map((category) => (
 
                                             <List.Accordion
@@ -461,31 +505,7 @@ const Pocetna = () => {
                                                             alignItems: "center",
                                                         }}
 
-                                                        onPress={async () => {
-                                                            try{
-                                                                const amount = Number((amountByCategory[category.id] ?? "0").replace(",", "."));
-                                                                const name = String(nameByCategory[category.id] ?? "");
-                                                                if(amount != 0) {
-                                                                    await createExpense({
-                                                                        amount,
-                                                                        category: category.id,
-                                                                        expenseName: name,
-                                                                    });
-                                                                }else {
-                                                                    return;
-                                                                }
-
-
-                                                                setAmountByCategory(prev => ({
-                                                                    ...prev,
-                                                                    [category.id]: "",
-                                                                }));
-                                                                setModalVisible(false);
-
-                                                            } catch (error) {
-                                                                console.error("Create expense error: ", error);
-                                                            }
-                                                        }}
+                                                        onPress={() => handleCreateExpense(category.id)}
                                                     >
                                                         <Text style={{
                                                             color: "#2563EB",
@@ -507,6 +527,7 @@ const Pocetna = () => {
                                 )}
                             </Pressable>
                         </Pressable>
+                        </KeyboardAvoidingView>
                     </Modal>
                 
 
